@@ -1,0 +1,9 @@
+{
+  "name": "Hello-Books-FE",
+  "version": "1.0.0",
+  "description": "A system that allows efficient, cost-effective management of our library",
+  "main": "index.js",
+  "repository": "git@github.com:KvNGCzA/Hello-Books-FE.git",
+  "author": "KvNGCzA <akanmuoluwadamilare@yahoo.com>",
+  "license": "MIT"
+}
