@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "A system that allows efficient, cost-effective management of our library",
   "main": "index.js",
+  "scripts": {
+    "start": "node server/index.js"
+  },
   "repository": "git@github.com:KvNGCzA/Hello-Books-BE.git",
   "author": "KvNGCzA <akanmuoluwadamilare@yahoo.com>",
   "license": "MIT",
