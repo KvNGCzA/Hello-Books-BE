@@ -2,6 +2,7 @@
 import express, { json, urlencoded } from 'express';
 import { config } from 'dotenv';
 import logger from 'morgan';
+import validator from 'express-validator';
 import cors from 'cors';
 
 config();
@@ -14,6 +15,7 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 app.use(logger('dev'));
 app.use(json());
 app.use(urlencoded({ extended: false }));
+app.use(validator());
 app.use(cors());
 
 // index route
