@@ -5,5 +5,8 @@
   "main": "index.js",
   "repository": "git@github.com:KvNGCzA/Hello-Books-BE.git",
   "author": "KvNGCzA <akanmuoluwadamilare@yahoo.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
