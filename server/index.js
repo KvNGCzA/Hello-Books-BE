@@ -6,15 +6,15 @@ const app = express(); // calling an instance of express
 app.get('/', (request, response) => {
     try{
         response.status(200).send('Hello Books');
-    } catch (e){
-        response.status(404).send('Address not found');  
+    } catch (error){
+        response.status(404).send('Error: Address not found');  
     }
 });
 
 app.listen(PORT, () => {
     try{
         console.log(`Server is running on PORT ${PORT}`);
-    } catch (e){
-        console.log(`Server is not running`);
+    } catch (error){
+        console.log(`Error: Server is not running`);
     }
 });
