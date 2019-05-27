@@ -7,6 +7,7 @@
   "author": "KvNGCzA <akanmuoluwadamilare@yahoo.com>",
   "license": "MIT",
   "dependencies": {
+    "dotenv": "^8.0.0",
     "express": "^4.17.1"
   }
 }
