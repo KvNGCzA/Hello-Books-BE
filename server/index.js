@@ -2,7 +2,7 @@ import { config } from 'dotenv';
 import express from 'express';
 
 config();
-const { PORT } = process.env; // setup PORT to be used
+const port = process.env.PORT; // setup port to be used
 const app = express(); // calling an instance of express
 
 app.get('/', (request, response) => {
@@ -13,9 +13,9 @@ app.get('/', (request, response) => {
     }
 });
 
-app.listen(PORT, () => {
+app.listen(port, () => {
     try{
-        console.log(`Server is running on PORT ${PORT}`);
+        console.log(`Server is running on PORT ${port}`);
     } catch (error){
         console.log(`Error: Server is not running`);
     }
