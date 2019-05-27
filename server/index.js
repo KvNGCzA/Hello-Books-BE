@@ -1,37 +1,48 @@
+
+import express, { json, urlencoded } from 'express';
 import { config } from 'dotenv';
-import express from 'express';
+import logger from 'morgan';
+import cors from 'cors';
 
 config();
-const port = process.env.PORT || 5000; // setup port to be used
+
+const { PORT = 5000 } = process.env; // setup port to be used
 const app = express(); // calling an instance of express
 
+const isDevelopment = process.env.NODE_ENV === 'development';
+
+app.use(logger('dev'));
+app.use(json());
+app.use(urlencoded({ extended: false }));
+app.use(cors());
+
+// index route
 app.get('/', (request, response) => {
-    try{
-        response.status(200).send('Hello Books');
-    } catch (error){
-        response.status(500).send('Server error');  
+    response.status(200).send('Hello Books');
+});
+
+// catch 404 and forward to error handler
+app.use((request, response, next) => {
+    const error = new Error('Not Found');
+    error.status = 404;
+    next(error);
+});
+
+// error handler
+app.use((error, request, response, next) => {
+    response.status(error.status || 500);
+    response.json({
+        status: error.statusMessage || 'Failure',
+        errors: {
+        message: error.message,
+        }
+    });
+
+    if (isDevelopment) {
+        next(error);
     }
 });
 
-app.use('/*', (request, response) => {
-    try{
-        response.status(404).json({
-            status: 404,
-            message: 'Address not found!',
-        });
-    } catch (error){
-        response.status(500).json({
-            status: 500,
-            message: 'Server Error',
-        });  
-    }
-    
-});
+app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 
-app.listen(port, () => {
-    try{
-        console.log(`Server is running on PORT ${port}`);
-    } catch (error){
-        console.log(`Error: Server is not running`);
-    }
-});
+export default app;
