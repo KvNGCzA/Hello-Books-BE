@@ -21,5 +21,5 @@ chai.request(server)
                     expect(res, 'must have a status 404 not found').to.have.status(404);
                     done();
                 });
-        })
+        });
     });
