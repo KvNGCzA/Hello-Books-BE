@@ -1,12 +1,11 @@
 {
-
     "name": "Hello-Books-BE",
     "version": "1.0.0",
     "description": "A system that allows efficient, cost-effective management of our library",
     "main": "index.js",
     "scripts": {
         "start": "node server/index.js",
-        "startDev": "babel-node server/index.js"
+        "start:dev": "nodemon --exec babel-node server/index.js"
     },
     "repository": "git@github.com:KvNGCzA/Hello-Books-BE.git",
     "author": "KvNGCzA <akanmuoluwadamilare@yahoo.com>",
@@ -16,7 +15,8 @@
         "dotenv": "^8.0.0",
         "express": "^4.17.1",
         "express-validator": "^5.3.1",
-        "morgan": "^1.9.1"
+        "morgan": "^1.9.1",
+        "nodemon": "^1.19.1"
     },
     "devDependencies": {
         "@babel/cli": "^7.4.4",
@@ -26,4 +26,3 @@
         "@babel/register": "^7.4.4"
     }
 }
- 
