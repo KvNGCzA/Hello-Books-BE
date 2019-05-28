@@ -11,7 +11,8 @@
         "db:rollback": "npm run db:back && npm run db:roll && npm run db:seed",
         "db:roll": "sequelize db:migrate",
         "db:back": "sequelize db:migrate:undo:all",
-        "db:seed": "sequelize db:seed:all"
+        "db:seed": "sequelize db:seed:all",
+        "coverage": "npm run generate-lcov"
     },
     "repository": "git@github.com:KvNGCzA/Hello-Books-BE.git",
     "author": "KvNGCzA <akanmuoluwadamilare@yahoo.com>",
