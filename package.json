@@ -5,7 +5,9 @@
     "main": "index.js",
     "scripts": {
         "start": "node server/index.js",
-        "start:dev": "nodemon --exec babel-node server/index.js"
+        "start:dev": "nodemon --exec babel-node server/index.js",
+        "test": "nyc mocha --timeout 10000 -r esm --exit",
+        "generate-lcov": "nyc report --reporter=text-lcov > lcov.info"
     },
     "repository": "git@github.com:KvNGCzA/Hello-Books-BE.git",
     "author": "KvNGCzA <akanmuoluwadamilare@yahoo.com>",
@@ -24,6 +26,5 @@
         "@babel/preset-env": "^7.4.5",
         "@babel/register": "^7.4.4",
         "nodemon": "^1.19.1"
-
     }
 }
