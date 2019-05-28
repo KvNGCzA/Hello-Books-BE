@@ -5,7 +5,7 @@
     "description": "A system that allows efficient, cost-effective management of our library",
     "main": "index.js",
     "scripts": {
-        "start": "node server/index.js"
+        "start": "node server/index.js",
         "startDev": "babel-node server/index.js"
     },
     "repository": "git@github.com:KvNGCzA/Hello-Books-BE.git",
