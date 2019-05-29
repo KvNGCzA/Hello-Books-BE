@@ -4,9 +4,10 @@
     "description": "A system that allows efficient, cost-effective management of our library",
     "main": "index.js",
     "scripts": {
-        "build": "babel ./server -d build",
-        "start": "babel  ./server -d build && node build/index.js",
+        "build": "babel ./server -d dist",
+        "start": "node dist/index.js",
         "start:dev": "nodemon --exec babel-node server/index.js",
+        "heroku-postbuild": "npm run build",
         "test": "nyc mocha --timeout 10000 -r esm --exit",
         "generate-lcov": "nyc report --reporter=text-lcov > lcov.info",
         "db:rollback": "npm run db:back && npm run db:roll && npm run db:seed",
