@@ -4,7 +4,8 @@
     "description": "A system that allows efficient, cost-effective management of our library",
     "main": "index.js",
     "scripts": {
-        "start": "node server/index.js",
+        "build": "babel ./server -d build",
+        "start": "babel  ./server -d build && node build/index.js",
         "start:dev": "nodemon --exec babel-node server/index.js",
         "test": "nyc mocha --timeout 10000 -r esm --exit",
         "generate-lcov": "nyc report --reporter=text-lcov > lcov.info",
@@ -44,5 +45,9 @@
         "eslint-config-airbnb-base": "^13.1.0",
         "eslint-plugin-import": "^2.17.3",
         "sequelize-cli": "^5.4.0"
-    }
+    },
+      "engines": {
+        "node": "v11.8.0",
+        "npm": "6.5.0"
+      }
 }
