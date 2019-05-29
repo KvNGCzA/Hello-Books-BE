@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "openapi" : "3.0.0",
   "info" : {
     "title" : "Hello Books",
@@ -26,6 +27,39 @@
               "text/plain" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/home"
+=======
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Hello Books",
+    "description": "Hello Books is a system that allows efficient, cost-effective management of library operations.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://virtserver.swaggerhub.com/henryade/helloBooks/1.0.0",
+      "description": "SwaggerHub API Auto Mocking"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Home",
+      "description": "To get home page and test server"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "tags": ["Home"],
+        "summary": "Get home route",
+        "operationId": "home",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/home"
+>>>>>>> 166214087-chore(backend): configure-prettier
                 }
               }
             }
@@ -34,11 +68,19 @@
       }
     }
   },
+<<<<<<< HEAD
   "components" : {
     "schemas" : {
       "home" : {
         "type" : "string",
         "example" : "Hello Books"
+=======
+  "components": {
+    "schemas": {
+      "home": {
+        "type": "string",
+        "example": "Hello Books"
+>>>>>>> 166214087-chore(backend): configure-prettier
       }
     }
   }
