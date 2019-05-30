@@ -8,6 +8,9 @@
         "start:dev": "nodemon --exec babel-node server/index.js",
         "test": "nyc mocha --timeout 10000 -r esm --exit",
         "generate-lcov": "nyc report --reporter=text-lcov > lcov.info",
+        "coveralls-coverage": "coveralls < lcov.info",
+        "codeclimate-coverage": "codeclimate-test-reporter < lcov.info",
+        "coverage": "nyc npm test && npm run generate-lcov && npm run coveralls-coverage && npm run codeclimate-coverage",
         "db:rollback": "npm run db:back && npm run db:roll && npm run db:seed",
         "db:roll": "sequelize db:migrate",
         "db:back": "sequelize db:migrate:undo:all",
@@ -17,15 +20,18 @@
     "author": "KvNGCzA <akanmuoluwadamilare@yahoo.com>",
     "license": "MIT",
     "dependencies": {
+        "codeclimate-test-reporter": "^0.5.1",
         "cors": "^2.8.5",
+        "coveralls": "^3.0.3",
         "dotenv": "^8.0.0",
         "express": "^4.17.1",
         "express-validator": "^5.3.1",
         "morgan": "^1.9.1",
         "pg": "^7.11.0",
         "pg-hstore": "^2.3.2",
-        "swagger-ui-express": "^4.0.5",
-        "sequelize": "^5.8.6"
+        "save-dev": "^2.0.0",
+        "sequelize": "^5.8.6",
+        "swagger-ui-express": "^4.0.5"
     },
     "devDependencies": {
         "@babel/cli": "^7.4.4",
