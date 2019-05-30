@@ -20,6 +20,7 @@
     "author": "KvNGCzA <akanmuoluwadamilare@yahoo.com>",
     "license": "MIT",
     "dependencies": {
+        "bcryptjs": "^2.4.3",
         "cors": "^2.8.5",
         "dotenv": "^8.0.0",
         "express": "^4.17.1",
@@ -27,8 +28,8 @@
         "morgan": "^1.9.1",
         "pg": "^7.11.0",
         "pg-hstore": "^2.3.2",
-        "swagger-ui-express": "^4.0.5",
-        "sequelize": "^5.8.6"
+        "sequelize": "^5.8.6",
+        "swagger-ui-express": "^4.0.5"
     },
     "devDependencies": {
         "@babel/cli": "^7.4.4",

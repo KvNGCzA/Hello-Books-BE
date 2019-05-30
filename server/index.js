@@ -20,17 +20,18 @@ app.use(cors());
 
 // index route
 app.get('/', (request, response) => {
-    response.status(200).send('Hello Books');
+  response.status(200).send('Hello Books');
 });
 
-//load swagger documentation
+// load swagger documentation
 swaggerDocument.servers[0].url = `http://localhost:${PORT}`;
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 app.use('*', (request, response) => {
-    response.status(404).send('Not Found'); 
+  response.status(404).send('Not Found');
 });
 
+// eslint-disable-next-line no-console
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 
 export default app;
