@@ -13,6 +13,15 @@ module.exports = {
       verified: false,
       createdAt: new Date(),
       updatedAt: new Date()
+    }, {
+      firstName: 'Eden',
+      lastName: 'Hazard',
+      email: 'eden@gmail.com',
+      password: bcrypt.hashSync('edenHazard', 10),
+      avatarUrl: '',
+      verified: false,
+      createdAt: new Date(),
+      updatedAt: new Date()
     }], {});
   },
 
