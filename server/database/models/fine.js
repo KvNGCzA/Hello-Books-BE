@@ -9,8 +9,7 @@ module.exports = (sequelize, DataTypes) => {
     description: DataTypes.STRING,
     type: DataTypes.STRING
   }, {});
-  Fine.associate = function (models) {
-    // associations can be defined here
+  Fine.associate = (models) => {
     Fine.belongsTo(models.User, {
       foreignKey: 'userId',
       onDelete: 'CASCADE'
