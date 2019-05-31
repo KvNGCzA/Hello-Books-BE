@@ -11,6 +11,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'authorId',
       onDelete: 'CASCADE'
     });
+    Author.hasMany(models.Favourites, {
+      foreignKey: 'authorId',
+      onDelete: 'CASCADE'
+    });
   };
   return Author;
 };
