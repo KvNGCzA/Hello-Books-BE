@@ -10,25 +10,42 @@
     "description" : "SwaggerHub API Auto Mocking"
   } ],
   "tags" : [ {
-    "name" : "Home",
-    "description" : "To get home page and test server"
+    "name" : "Users",
+    "description" : "Users API Endpoints"
   } ],
   "paths" : {
-    "/" : {
-      "get" : {
-        "tags" : [ "Home" ],
-        "summary" : "Get home route",
-        "operationId" : "home",
-        "responses" : {
-          "200" : {
-            "description" : "Success",
-            "content" : {
-              "text/plain" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/home"
-                }
-              }
+    
+    "/signup" : {
+      "post" : {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Registers a new user in the app",
+        "description": "",
+        "operationId": "signupUser",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "User object that needs to be registered",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/users"
             }
+          }
+        ],
+        "responses" : {
+          "201" : {
+            "description" : "Sign up Successful"
+            
+          }, "400" : {
+            "description" : "User already exist"
           }
         }
       }
@@ -36,10 +53,43 @@
   },
   "components" : {
     "schemas" : {
-      "home" : {
-        "type" : "string",
-        "example" : "Hello Books"
-      }
+      "users" : {
+        "type" : "object",
+        "required": [
+          "firstName",
+          "lastName",
+          "email",
+          "password",
+          "avatarUrl",
+          "verified"
+        ],
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Doe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "johndoe@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "password"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "example": "https://gravatar.com/avatar/aed61baf1e9256ed7d70e2cbbfcba9aa?s=400&d=robohash&r=x"
+          },
+          "verified": {
+            "type": "boolean",
+            "example": "true"
+          }
+        }      }
     }
   }
 }

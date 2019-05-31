@@ -1,4 +1,3 @@
-
 import express, { json, urlencoded } from 'express';
 import { config } from 'dotenv';
 import logger from 'morgan';
@@ -6,6 +5,7 @@ import validator from 'express-validator';
 import cors from 'cors';
 import swaggerUI from 'swagger-ui-express';
 import swaggerDocument from '../swagger.json';
+import routes from './routes';
 
 config();
 
@@ -22,6 +22,8 @@ app.use(cors());
 app.get('/', (request, response) => {
   response.status(200).send('Hello Books');
 });
+
+app.use('/', routes);
 
 // load swagger documentation
 swaggerDocument.servers[0].url = `http://localhost:${PORT}`;
