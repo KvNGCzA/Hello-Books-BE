@@ -9,8 +9,18 @@ module.exports = (sequelize, DataTypes) => {
     avatarUrl: DataTypes.STRING,
     verified: DataTypes.BOOLEAN
   }, {});
-  Users.associate = function(models) {
-    // associations can be defined here
+
+  Users.associate = (models) => {
+    Users.hasMany(models.Followers, {
+      foreignKey: 'userId',
+      onDelete: 'CASCADE'
+    });
+
+    Users.hasMany(models.Followers, {
+      foreignKey: 'followerId',
+      onDelete: 'CASCADE'
+    });
+
     Users.hasMany(models.Favourites, {
       foreignKey: 'userId',
       onDelete: 'CASCADE'
