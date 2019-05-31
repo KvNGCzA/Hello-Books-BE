@@ -18,6 +18,11 @@ export default (sequelize, DataTypes) => {
     Book.hasMany(models.Fine, {
       foreignKey: 'bookId',
       onDelete: 'CASCADE'
+    })
+
+    Book.hasMany(models.LendingHistory, {
+      foreignKey: 'bookId',
+      onDelete: 'CASCADE'
     });
   };
   return Book;
