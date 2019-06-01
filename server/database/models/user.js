@@ -1,7 +1,5 @@
-/* eslint-disable */
-'use strict';
-module.exports = (sequelize, DataTypes) => {
-  const Users = sequelize.define('Users', {
+export default (sequelize, DataTypes) => {
+  const User = sequelize.define('User', {
     firstName: DataTypes.STRING,
     lastName: DataTypes.STRING,
     email: DataTypes.STRING,
@@ -10,21 +8,21 @@ module.exports = (sequelize, DataTypes) => {
     verified: DataTypes.BOOLEAN
   }, {});
 
-  Users.associate = (models) => {
-    Users.hasMany(models.Followers, {
+  User.associate = (models) => {
+    User.hasMany(models.Follower, {
       foreignKey: 'userId',
       onDelete: 'CASCADE'
     });
 
-    Users.hasMany(models.Followers, {
+    User.hasMany(models.Follower, {
       foreignKey: 'followerId',
       onDelete: 'CASCADE'
     });
 
-    Users.hasMany(models.Favourites, {
+    User.hasMany(models.Favourite, {
       foreignKey: 'userId',
       onDelete: 'CASCADE'
     });
   };
-  return Users;
+  return User;
 };

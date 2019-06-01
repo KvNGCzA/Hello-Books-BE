@@ -1,7 +1,5 @@
-/* eslint-disable */
-'use strict';
-module.exports = (sequelize, DataTypes) => {
-  const Books = sequelize.define('Books', {
+export default (sequelize, DataTypes) => {
+  const Book = sequelize.define('Book', {
     id: DataTypes.INTEGER,
     title: DataTypes.STRING,
     description: DataTypes.TEXT,
@@ -10,12 +8,12 @@ module.exports = (sequelize, DataTypes) => {
     yearPublished: DataTypes.INTEGER,
     stock: DataTypes.INTEGER
   }, {});
-  Books.associate = function(models) {
-    // associations can be defined here
-    Books.belongsTo(models.Author, {
+
+  Book.associate = (models) => {
+    Book.belongsTo(models.Author, {
       foreignKey: 'authorId',
       onDelete: 'CASCADE'
     });
   };
-  return Books;
+  return Book;
 };
