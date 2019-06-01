@@ -8,7 +8,6 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'authorId',
       onDelete: 'CASCADE'
     });
-
     Author.hasMany(models.Favourite, {
       foreignKey: 'authorId',
       onDelete: 'CASCADE'

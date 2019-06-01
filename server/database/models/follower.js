@@ -1,4 +1,5 @@
-export default (sequelize, DataTypes) => {
+/* eslint-disable */
+module.exports = (sequelize, DataTypes) => {
   const Follower = sequelize.define('Follower', {
     id: DataTypes.INTEGER,
     userId: DataTypes.INTEGER,
