@@ -1,11 +1,16 @@
 import createToken from './createToken';
 import responseMessage from './responseMessage';
-import getUser from './identification';
 import sendMail from './sendMail';
+import findUser from './findUser';
+import * as sanitizers from './customSanitizers';
+
+const { capitaliseFirstLetter, makeLowerCase } = sanitizers;
 
 export default {
   createToken,
   responseMessage,
-  getUser,
-  sendMail
+  findUser,
+  sendMail,
+  capitaliseFirstLetter,
+  makeLowerCase,
 };

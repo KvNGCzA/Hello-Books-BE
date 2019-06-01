@@ -1,3 +1,4 @@
+import '@babel/polyfill';
 import express, { json, urlencoded } from 'express';
 import { config } from 'dotenv';
 import logger from 'morgan';
@@ -23,7 +24,7 @@ app.get('/', (request, response) => {
   response.status(200).send('Hello Books');
 });
 
-app.use('/', routes);
+app.use('/api/v1', routes);
 
 // load swagger documentation
 swaggerDocument.servers[0].url = `http://localhost:${PORT}`;
