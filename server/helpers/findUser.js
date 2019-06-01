@@ -3,7 +3,7 @@ import responseMessage from './responseMessage';
 
 const { User } = models;
 
-const getUser = async (param, response) => {
+const findUser = async (param, response) => {
   try {
     const field = (/\D/g.test(param)) ? { email: param } : { id: param };
     const user = await User.findOne({ where: field });
@@ -13,4 +13,4 @@ const getUser = async (param, response) => {
   }
 };
 
-export default getUser;
+export default findUser;

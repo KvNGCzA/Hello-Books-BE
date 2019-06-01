@@ -7,7 +7,7 @@
     "build": "babel ./server -d dist",
     "start": "node dist/index.js",
     "start:dev": "nodemon --exec babel-node server/index.js",
-    "heroku-postbuild": "npm run build",
+    "heroku-postbuild": "npm run db:rollback && npm run build",
     "test": "npm run db:roll && npm run db:seed && nyc mocha --recursive test --timeout 10000 -r esm --exit && npm run db:back",
     "db:rollback": "npm run db:back && npm run db:roll && npm run db:seed",
     "db:roll": "sequelize db:migrate",
@@ -19,6 +19,7 @@
   "author": "KvNGCzA <akanmuoluwadamilare@yahoo.com>",
   "license": "MIT",
   "dependencies": {
+    "@babel/polyfill": "^7.4.4",
     "@sendgrid/mail": "^6.4.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
