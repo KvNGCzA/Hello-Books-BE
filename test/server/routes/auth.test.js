@@ -109,5 +109,98 @@ describe('AUTH', () => {
         });
     });
   });
-});
 
+  describe('User logs in', () => {
+    it('returns a status 200 if user supplies the valid email and password', (done) => {
+      const body = {
+        email: 'jamiefoxx@gmail.com',
+        password: 'jamiefoxx'
+      };
+      chai.request(server)
+        .post('/api/v1/auth/login')
+        .send(body)
+        .end((err, response) => {
+          expect(response).to.have.status(200);
+          expect(response).to.be.an('object');
+          expect(response.body).to.include.all.keys('status', 'user', 'token');
+          expect(response.body.status).to.be.equal('success');
+          expect(response.body.user).to.include.all.keys('id', 'firstName', 'lastName', 'email');
+          expect(response.body.user.id).to.be.a('Number');
+          expect(response.body.user.firstName).to.be.a('String');
+          expect(response.body.user.lastName).to.be.a('String');
+          expect(response.body.user.email).to.be.a('String');
+          done();
+        });
+    });
+    it('should return validation errors for required input fields not supplied in request', (done) => {
+      chai.request(server)
+        .post('/api/v1/auth/login')
+        .send(missingInput)
+        .end((error, response) => {
+          expect(response).to.have.status(400);
+          expect(response.body).to.haveOwnProperty('errors');
+          expect(response.body.errors.body).to.have.keys('email', 'password');
+          expect(response.body.errors.body.email).to.equal('email is missing');
+          expect(response.body.errors.body.password).to.equal('password is missing');
+          done();
+        });
+    });
+    it('should return validation errors for blank input fields in the request', (done) => {
+      chai.request(server)
+        .post('/api/v1/auth/login')
+        .send(blankInput)
+        .end((error, response) => {
+          expect(response).to.have.status(400);
+          expect(response.body).to.haveOwnProperty('errors');
+          expect(response.body.errors.body).to.have.keys('email', 'password');
+          expect(response.body.errors.body.email).to.equal('email cannot be blank');
+          expect(response.body.errors.body.password).to.equal('password cannot be blank');
+          done();
+        });
+    });
+    it('should return validation errors for input fields that are not the required length', (done) => {
+      chai.request(server)
+        .post('/api/v1/auth/login')
+        .send(wrongLengthInput)
+        .end((error, response) => {
+          expect(response).to.have.status(400);
+          expect(response.body).to.haveOwnProperty('errors');
+          expect(response.body.errors.body).to.have.keys('password');
+          expect(response.body.errors.body.password).to.equal('password must be at least 6 characters');
+          done();
+        });
+    });
+    it('should return a status 401 if user is not in the database', (done) => {
+      const body = {
+        email: 'jamiefoxx@gmail.com',
+        password: 'password',
+      };
+      chai.request(server)
+        .post('/api/v1/auth/login')
+        .send(body)
+        .end((err, response) => {
+          expect(response).to.have.status(401);
+          expect(response).to.be.a('object');
+          expect(response.body).to.have.all.keys('status', 'message');
+          expect(response.body.message).to.be.a('String');
+          done();
+        });
+    });
+    it('should return a status 401 if user inputs wrong password', (done) => {
+      const body = {
+        email: 'todaytest@email.com',
+        password: 'password1',
+      };
+      chai.request(server)
+        .post('/api/v1/auth/login')
+        .send(body)
+        .end((err, response) => {
+          expect(response).to.have.status(401);
+          expect(response).to.be.a('object');
+          expect(response.body).to.have.all.keys('status', 'message');
+          expect(response.body.message).to.be.a('String');
+          done();
+        });
+    });
+  });
+});

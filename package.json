@@ -8,6 +8,7 @@
     "start": "node dist/index.js",
     "start:dev": "nodemon --exec babel-node server/index.js",
     "heroku-postbuild": "npm run db:rollback && npm run build",
+    "debug": "nodemon --exec babel-node server/index.js --inspect",
     "test": "npm run db:roll && npm run db:seed && nyc mocha --recursive test --timeout 10000 -r esm --exit && npm run db:back",
     "db:rollback": "npm run db:back && npm run db:roll && npm run db:seed",
     "db:roll": "sequelize db:migrate",

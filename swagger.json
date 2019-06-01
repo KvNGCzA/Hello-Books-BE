@@ -49,6 +49,41 @@
           }
         }
       }
+    },
+
+    "/login": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Logs in an already existing user",
+        "description": "",
+        "operationId": "signupUser",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [{
+          "in": "body",
+          "name": "body",
+          "description": "Login parameter",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/loginParams"
+          }
+        }],
+        "responses": {
+          "201": {
+            "description": "Signin Successful"
+
+          },
+          "403": {
+            "description": "Username or password is incorrect"
+          }
+        }
+      }
     }
   },
   "components" : {
@@ -89,7 +124,26 @@
             "type": "boolean",
             "example": "true"
           }
-        }      }
+        }  
+      },
+      "loginParams": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "johndoe@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "password"
+          }
+        }
+      }
     }
   }
 }
