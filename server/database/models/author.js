@@ -1,17 +1,15 @@
-/* eslint-disable */
-'use strict';
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const Author = sequelize.define('Author', {
     id: DataTypes.INTEGER,
     fullname: DataTypes.STRING
   }, {});
-  Author.associate = function(models) {
-    // associations can be defined here
-    Author.hasMany(models.Books, {
+  Author.associate = (models) => {
+    Author.hasMany(models.Book, {
       foreignKey: 'authorId',
       onDelete: 'CASCADE'
     });
-    Author.hasMany(models.Favourites, {
+
+    Author.hasMany(models.Favourite, {
       foreignKey: 'authorId',
       onDelete: 'CASCADE'
     });
