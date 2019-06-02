@@ -2,7 +2,6 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Fine = sequelize.define('Fine', {
-    id: DataTypes.INTEGER,
     userId: DataTypes.INTEGER,
     bookId: DataTypes.INTEGER,
     price: DataTypes.INTEGER,

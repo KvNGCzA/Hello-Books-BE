@@ -1,6 +1,5 @@
 export default (sequelize, DataTypes) => {
   const Favourite = sequelize.define('Favourite', {
-    id: DataTypes.INTEGER,
     userId: DataTypes.INTEGER,
     authorId: DataTypes.INTEGER
   }, {});

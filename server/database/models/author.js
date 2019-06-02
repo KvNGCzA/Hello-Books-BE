@@ -1,6 +1,5 @@
 export default (sequelize, DataTypes) => {
   const Author = sequelize.define('Author', {
-    id: DataTypes.INTEGER,
     fullname: DataTypes.STRING
   }, {});
   Author.associate = (models) => {
