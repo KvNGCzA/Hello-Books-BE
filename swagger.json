@@ -10,15 +10,19 @@
     "description" : "SwaggerHub API Auto Mocking"
   } ],
   "tags" : [ {
-    "name" : "Users",
-    "description" : "Users API Endpoints"
+    "name" : "Auth",
+    "description" : "Authorize users"
+  },
+  {
+    "name": "Admin",
+    "description": "Admin can add an author"
   } ],
   "paths" : {
     
-    "/signup" : {
+    "/api/v1/auth/signup" : {
       "post" : {
         "tags": [
-          "Users"
+          "Auth"
         ],
         "summary": "Registers a new user in the app",
         "description": "",
@@ -36,16 +40,65 @@
             "description": "User object that needs to be registered",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/users"
+              "$ref": "#/components/schemas/signup"
             }
           }
         ],
         "responses" : {
           "201" : {
-            "description" : "Sign up Successful"
+            "description" : "sign up successful"
             
           }, "400" : {
-            "description" : "User already exist"
+            "description" : "user already exist"
+          }, "500" : {
+            "description" : "server error"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/author" : {
+      "post" : {
+        "tags" : [ "Admin" ],
+        "summary" : "Admin can add an author",
+        "operationId" : "author",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "authorName"
+                ],
+                "properties": {
+                  "authorName": {
+                    "type": "string",
+                    "minLength": 4
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "author successfully added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/admin"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "author could not be added"
+          },
+          "409": {
+            "description": "author already exists"
+          },
+          "500": {
+            "description": "server error"
           }
         }
       }
@@ -88,41 +141,39 @@
   },
   "components" : {
     "schemas" : {
-      "users" : {
+      "signup" : {
         "type" : "object",
         "required": [
           "firstName",
           "lastName",
           "email",
-          "password",
-          "avatarUrl",
-          "verified"
+          "password"
         ],
         "properties": {
           "firstName": {
             "type": "string",
+            "minLength": 4,
             "example": "John"
           },
           "lastName": {
             "type": "string",
+            "minLength": 4,
             "example": "Doe"
           },
           "email": {
             "type": "string",
+            "minLength": 4,
             "format": "email",
             "example": "johndoe@gmail.com"
           },
           "password": {
             "type": "string",
+            "minLength": 4,
             "example": "password"
           },
           "avatarUrl": {
-            "type": "string",
+            "type": "string",         
             "example": "https://gravatar.com/avatar/aed61baf1e9256ed7d70e2cbbfcba9aa?s=400&d=robohash&r=x"
-          },
-          "verified": {
-            "type": "boolean",
-            "example": "true"
           }
         }  
       },
@@ -141,6 +192,15 @@
           "password": {
             "type": "string",
             "example": "password"
+          }
+        },
+        "admin": {
+          "type": "object",
+          "properties": {
+            "authorName": {
+              "type": "string",
+              "minLength": 4
+            }
           }
         }
       }
