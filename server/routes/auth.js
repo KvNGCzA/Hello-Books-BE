@@ -1,15 +1,13 @@
 import express from 'express';
-import UserController from '../controllers/userController';
 import UserValidator from '../middlewares/UserValidator';
-import AuthController from '../controllers/AuthController';
+import UserController from '../controllers/UserController';
 
 const auth = express.Router();
-
-const { createUser } = UserController;
-const { login } = AuthController;
+const BASE_URL = '/auth';
+const { createUser, login } = UserController;
 const { signUpValidation, loginValidation } = UserValidator;
 
-auth.post('/signup', signUpValidation(), createUser);
-auth.post('/login', loginValidation(), login);
+auth.post(`${BASE_URL}/signup`, signUpValidation(), createUser);
+auth.post(`${BASE_URL}/login`, loginValidation(), login);
 
 export default auth;

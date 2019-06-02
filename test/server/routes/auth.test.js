@@ -19,7 +19,7 @@ const BASE_URL = '/api/v1/auth';
 describe('AUTH', () => {
 // Test Signing up a user
   describe('User signup', () => {
-    it('It Should create user with right signup credentials', (done) => {
+    it('It Should create user with valid signup credentials', (done) => {
       chai.request(server)
         .post(`${BASE_URL}/signup`)
         .send(User)

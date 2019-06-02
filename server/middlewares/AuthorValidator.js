@@ -13,7 +13,7 @@ export default class AuthorValidator {
   */
   static addAuthorValidation() {
     return [
-      UserValidator.checkName('fullname'),
+      UserValidator.checkName('authorName'),
       checkForErrors,
     ];
   }

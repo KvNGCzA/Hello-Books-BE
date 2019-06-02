@@ -2,15 +2,50 @@ import bcrypt from 'bcryptjs';
 import models from '../database/models';
 import helpers from '../helpers';
 
-
 const { responseMessage, createToken } = helpers;
 const { User } = models;
+
 /**
-/**
- * Auth controller class
+ * User controller class
  * @class
  */
-class AuthController {
+export default class UserController {
+  /**
+   * Create a new user
+   * @name createUser
+   * @param {object} request
+   * @param {object} response
+   * @returns {json} json
+   * @memberof UserController
+   */
+  static async createUser(request, response) {
+    const {
+      firstName, lastName, email, password, avatarUrl
+    } = request.body;
+    try {
+      const existingUser = await User.findOne({ where: { email } });
+      if (existingUser) return responseMessage(response, 409, { message: 'user already exist' });
+      const newUser = await User.create({
+        firstName,
+        lastName,
+        email,
+        password: bcrypt.hashSync(password, 10),
+        avatarUrl
+      });
+      if (newUser) {
+        const { id } = newUser.dataValues;
+        const token = createToken({ id }, '24h');
+        delete newUser.dataValues.password;
+        return responseMessage(response, 201, {
+          status: 'success', message: 'sign up successful', user: newUser.dataValues, token
+        });
+      }
+    } catch (error) {
+      /* istanbul ignore next-line */
+      return responseMessage(response, 500, { message: error.message });
+    }
+  }
+
   /**
    * Method for handling signin route(POST api/v1/auth/signin)
    * @param {object} request - the request object
@@ -39,5 +74,3 @@ class AuthController {
     }
   }
 }
-
-export default AuthController;

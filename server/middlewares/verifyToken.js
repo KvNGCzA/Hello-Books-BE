@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import helpers from '../helpers/index';
+import helpers from '../helpers';
 
 dotenv.config();
 
@@ -22,6 +22,6 @@ export default (request, response, next) => {
       }
     });
   } else {
-    responseMessage(response, 401, { message: 'No token provided'});
+    responseMessage(response, 401, { message: 'no token provided' });
   }
 };

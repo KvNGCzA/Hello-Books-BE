@@ -9,7 +9,7 @@ const findUser = async (param, response) => {
     const user = await User.findOne({ where: field });
     return user;
   } catch (error) {
-    responseMessage(response, 500, { message: 'Error occured' });
+    responseMessage(response, 500, { message: error.message });
   }
 };
 
