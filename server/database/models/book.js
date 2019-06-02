@@ -1,6 +1,5 @@
 export default (sequelize, DataTypes) => {
   const Book = sequelize.define('Book', {
-    id: DataTypes.INTEGER,
     title: DataTypes.STRING,
     description: DataTypes.TEXT,
     isbn: DataTypes.INTEGER,

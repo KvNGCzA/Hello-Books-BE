@@ -1,6 +1,5 @@
 export default (sequelize, DataTypes) => {
   const Follower = sequelize.define('Follower', {
-    id: DataTypes.INTEGER,
     userId: DataTypes.INTEGER,
     followerId: DataTypes.INTEGER
   }, {});
