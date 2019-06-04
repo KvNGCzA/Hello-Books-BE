@@ -15,9 +15,10 @@ const {
 chai.use(chaiHttp);
 
 const BASE_URL = '/api/v1/auth';
+let token = '';
 
 describe('AUTH', () => {
-// Test Signing up a user
+  // Test Signing up a user
   describe('User signup', () => {
     it('It Should create user with valid signup credentials', (done) => {
       chai.request(server)
@@ -28,6 +29,7 @@ describe('AUTH', () => {
           expect(response.body).to.be.an('object');
           expect(response.body.message).to.equal('sign up successful');
           expect(response.body).to.have.property('token');
+          token = response.body.token;
           done();
         });
     });
@@ -202,5 +204,30 @@ describe('AUTH', () => {
           done();
         });
     });
+
+    it('It Should verify user email address', (done) => {
+      chai.request(server)
+        .get(`${BASE_URL}/verify?token=${token}`)
+        .send(User)
+        .end((error, response) => {
+          expect(response).to.have.status(200);
+          expect(response.body).to.be.an('object');
+          expect(response.body.message).to.equal('verification successful');
+          done();
+        });
+    });
+
+    it('It Should fail to verify user email address', (done) => {
+      chai.request(server)
+        .get(`${BASE_URL}/verify?token=${token}`)
+        .send(User)
+        .end((error, response) => {
+          expect(response).to.have.status(409);
+          expect(response.body).to.be.an('object');
+          expect(response.body.message).to.equal('user has already been verified');
+          done();
+        });
+    });
+
   });
 });
