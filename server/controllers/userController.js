@@ -2,8 +2,9 @@ import bcrypt from 'bcryptjs';
 import models from '../database/models';
 import helpers from '../helpers';
 
-const { responseMessage, createToken } = helpers;
+const { responseMessage, createToken, sendMail } = helpers;
 const { User } = models;
+
 /**
  * Create a new user 
  * @name createUser
@@ -12,6 +13,7 @@ const { User } = models;
  * @param {Object} response
  * @returns {JSON Object}
  */
+
 class UserController {
   static async createUser(request, response) {
     const { firstName, lastName, email, password, avatarUrl } = request.body
