@@ -26,12 +26,12 @@ class AuthController {
       if (!user || !verifyPassword) {
         return responseMessage(response, 401, { message: 'username or password is incorrect' });
       }
-      const { id } = user;
+      const { id, dataValues } = user;
       const token = createToken({ id });
-      delete user.password;
+      delete dataValues.password;
       return responseMessage(response, 200, {
         status: 'success',
-        user,
+        user: { ...dataValues },
         token
       });
     } catch (error) {
