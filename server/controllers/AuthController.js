@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import models from '../database/models';
 import helpers from '../helpers';
 
-const { responseMessage, createToken } = helpers;
+const { responseMessage, createToken, sendMail, signupMessage } = helpers;
 const { User } = models;
 
 /**
@@ -20,20 +20,18 @@ export default class AuthController {
    */
   static async createUser(request, response) {
     const {
-      firstName, lastName, email, password, avatarUrl
-    } = request.body;
+      firstName, lastName, email, password, avatarUrl } = request.body;
     try {
       const existingUser = await User.findOne({ where: { email } });
       if (existingUser) return responseMessage(response, 409, { message: 'user already exist' });
-      const newUser = await User.create({  firstName, lastName, email, password: bcrypt.hashSync(password, 10), avatarUrl
-      });
+      const newUser = await User.create({ firstName, lastName, email, password: bcrypt.hashSync(password, 10), avatarUrl });
       if (newUser) {
         const { id } = newUser.dataValues;
         const token = createToken({ id }, '24h');
         delete newUser.dataValues.password;
-        return responseMessage(response, 201, {
-          status: 'success', message: 'sign up successful', user: newUser.dataValues, token
-        });
+        const message = signupMessage(firstName, token);
+        await sendMail(process.env.ADMIN_MAIL, email, message);
+        return responseMessage(response, 201, { status: 'success', message: 'sign up successful', user: newUser.dataValues, token });
       }
     } catch (error) {
       /* istanbul ignore next-line */

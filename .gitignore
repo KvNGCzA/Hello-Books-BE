@@ -39,6 +39,9 @@ lcov.info
 
 .env
 
+# bash.exe stackdump
+bash.exe.stackdump
+
 dist
 sendgrid.env
 .nyc_output
