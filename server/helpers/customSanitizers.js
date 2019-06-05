@@ -1,13 +1,4 @@
-export const capitaliseFirstLetter = (value) => {
-  if (value !== '') {
-    const smallLetter = value.toLowerCase();
-    const restLetters = smallLetter.slice(1);
-    return `${smallLetter[0].toUpperCase()}${restLetters}`;
-  }
-  return value;
-};
-
-export const makeLowerCase = (value) => {
+export default (value) => {
   if (value !== '') {
     return value.toLowerCase();
   }

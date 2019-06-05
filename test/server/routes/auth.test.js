@@ -1,16 +1,25 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import server from '../../../server/index';
-import * as inputData from './testData';
+import * as userData from './__mocks__/userData';
 
 const { expect } = chai;
 const {
   User,
+  validInput,
+  validInput1,
+  validInput2,
+  validInput3,
   missingInput,
   blankInput,
   invalidInput,
+  invalidInput1,
+  invalidInput2,
+  invalidInput3,
+  invalidInput4,
+  invalidInput5,
   wrongLengthInput,
-} = inputData;
+} = userData;
 
 chai.use(chaiHttp);
 
@@ -46,7 +55,64 @@ describe('AUTH', () => {
     });
   });
 
-  describe('Validations', () => {
+  describe('User Validations', () => {
+    it('should pass the validation even with two names in firstName or lastName field', (done) => {
+      chai.request(server)
+        .post(`${BASE_URL}/signup`)
+        .send(validInput)
+        .end((error, response) => {
+          expect(response).to.have.status(201);
+          expect(response.body).to.be.an('object');
+          expect(response.body.status).to.equal('success');
+          expect(response.body.message).to.equal('sign up successful');
+          expect(response.body).to.have.property('token');
+          done();
+        });
+    });
+
+    it('should pass the validation even with compound names in firstName or lastName field', (done) => {
+      chai.request(server)
+        .post(`${BASE_URL}/signup`)
+        .send(validInput1)
+        .end((error, response) => {
+          expect(response).to.have.status(201);
+          expect(response.body).to.be.an('object');
+          expect(response.body.status).to.equal('success');
+          expect(response.body.message).to.equal('sign up successful');
+          expect(response.body).to.have.property('token');
+          done();
+        });
+    });
+
+    it('should pass the validation even with two compound names in the firstName or lastName field', (done) => {
+      chai.request(server)
+        .post(`${BASE_URL}/signup`)
+        .send(validInput2)
+        .end((error, response) => {
+          expect(response).to.have.status(201);
+          expect(response.body).to.be.an('object');
+          expect(response.body.status).to.equal('success');
+          expect(response.body.message).to.equal('sign up successful');
+          expect(response.body).to.have.property('token');
+          done();
+        });
+    });
+
+    it('should pass the validation even with names that contain apostrophes in the firstName and lastName field', (done) => {
+      chai.request(server)
+        .post(`${BASE_URL}/signup`)
+        .send(validInput3)
+        .end((error, response) => {
+          expect(response).to.have.status(201);
+          expect(response.body).to.be.an('object');
+          expect(response.body.status).to.equal('success');
+          expect(response.body.message).to.equal('sign up successful');
+          expect(response.body).to.have.property('token');
+          done();
+        });
+    });
+
+
     it('should return validation errors for required input fields not supplied in request', (done) => {
       chai.request(server)
         .post(`${BASE_URL}/signup`)
@@ -54,6 +120,7 @@ describe('AUTH', () => {
         .end((error, response) => {
           expect(response).to.have.status(400);
           expect(response.body).to.haveOwnProperty('errors');
+          expect(response.body.status).to.equal('failure');
           expect(response.body.errors.body).to.have.keys('firstName', 'lastName', 'email', 'password');
           expect(response.body.errors.body.firstName).to.equal('firstName is missing');
           expect(response.body.errors.body.lastName).to.equal('lastName is missing');
@@ -70,6 +137,7 @@ describe('AUTH', () => {
         .end((error, response) => {
           expect(response).to.have.status(400);
           expect(response.body).to.haveOwnProperty('errors');
+          expect(response.body.status).to.equal('failure');
           expect(response.body.errors.body).to.have.keys('firstName', 'lastName', 'email', 'password', 'avatarUrl');
           expect(response.body.errors.body.firstName).to.equal('firstName cannot be blank');
           expect(response.body.errors.body.lastName).to.equal('lastName cannot be blank');
@@ -80,17 +148,109 @@ describe('AUTH', () => {
         });
     });
 
-    it('should return validation errors for invalid input fields in the request', (done) => {
+    it('should return validation errors for invalid input fields in the request - case1', (done) => {
       chai.request(server)
         .post(`${BASE_URL}/signup`)
         .send(invalidInput)
         .end((error, response) => {
           expect(response).to.have.status(400);
           expect(response.body).to.haveOwnProperty('errors');
-          expect(response.body.errors.body).to.have.keys('firstName', 'lastName', 'email', 'avatarUrl');
-          expect(response.body.errors.body.firstName).to.equal('firstName can only contain alphabets');
-          expect(response.body.errors.body.lastName).to.equal('lastName can only contain alphabets');
+          expect(response.body.status).to.equal('failure');
+          expect(response.body.errors.body).to.have.keys('firstName', 'lastName', 'email', 'password', 'avatarUrl');
+          expect(response.body.errors.body.firstName).to.equal('invalid input for firstName');
+          expect(response.body.errors.body.lastName).to.equal('invalid input for lastName');
           expect(response.body.errors.body.email).to.equal('email is not valid');
+          expect(response.body.errors.body.password).to.equal('password cannot contain whitespace');
+          expect(response.body.errors.body.avatarUrl).to.equal('avatarUrl must be a valid URL string');
+          done();
+        });
+    });
+
+    it('should return validation errors for invalid input fields in the request - case2', (done) => {
+      chai.request(server)
+        .post(`${BASE_URL}/signup`)
+        .send(invalidInput1)
+        .end((error, response) => {
+          expect(response).to.have.status(400);
+          expect(response.body).to.haveOwnProperty('errors');
+          expect(response.body.status).to.equal('failure');
+          expect(response.body.errors.body).to.have.keys('firstName', 'lastName', 'email', 'password', 'avatarUrl');
+          expect(response.body.errors.body.firstName).to.equal('invalid input for firstName');
+          expect(response.body.errors.body.lastName).to.equal('invalid input for lastName');
+          expect(response.body.errors.body.email).to.equal('email is not valid');
+          expect(response.body.errors.body.password).to.equal('password cannot contain whitespace');
+          expect(response.body.errors.body.avatarUrl).to.equal('avatarUrl must be a valid URL string');
+          done();
+        });
+    });
+
+    it('should return validation errors for invalid input fields in the request - case3', (done) => {
+      chai.request(server)
+        .post(`${BASE_URL}/signup`)
+        .send(invalidInput2)
+        .end((error, response) => {
+          expect(response).to.have.status(400);
+          expect(response.body).to.haveOwnProperty('errors');
+          expect(response.body.status).to.equal('failure');
+          expect(response.body.errors.body).to.have.keys('firstName', 'lastName', 'email', 'password', 'avatarUrl');
+          expect(response.body.errors.body.firstName).to.equal('invalid input for firstName');
+          expect(response.body.errors.body.lastName).to.equal('invalid input for lastName');
+          expect(response.body.errors.body.email).to.equal('email is not valid');
+          expect(response.body.errors.body.password).to.equal('password cannot contain whitespace');
+          expect(response.body.errors.body.avatarUrl).to.equal('avatarUrl must be a valid URL string');
+          done();
+        });
+    });
+
+    it('should return validation errors for invalid input fields in the request - case4', (done) => {
+      chai.request(server)
+        .post(`${BASE_URL}/signup`)
+        .send(invalidInput3)
+        .end((error, response) => {
+          expect(response).to.have.status(400);
+          expect(response.body).to.haveOwnProperty('errors');
+          expect(response.body.status).to.equal('failure');
+          expect(response.body.errors.body).to.have.keys('firstName', 'lastName', 'email', 'password', 'avatarUrl');
+          expect(response.body.errors.body.firstName).to.equal('invalid input for firstName');
+          expect(response.body.errors.body.lastName).to.equal('invalid input for lastName');
+          expect(response.body.errors.body.email).to.equal('email is not valid');
+          expect(response.body.errors.body.password).to.equal('password cannot contain whitespace');
+          expect(response.body.errors.body.avatarUrl).to.equal('avatarUrl must be a valid URL string');
+          done();
+        });
+    });
+
+    it('should return validation errors for invalid input fields in the request - case5', (done) => {
+      chai.request(server)
+        .post(`${BASE_URL}/signup`)
+        .send(invalidInput4)
+        .end((error, response) => {
+          expect(response).to.have.status(400);
+          expect(response.body).to.haveOwnProperty('errors');
+          expect(response.body.status).to.equal('failure');
+          expect(response.body.errors.body).to.have.keys('firstName', 'lastName', 'email', 'password', 'avatarUrl');
+          expect(response.body.errors.body.firstName).to.equal('invalid input for firstName');
+          expect(response.body.errors.body.lastName).to.equal('invalid input for lastName');
+          expect(response.body.errors.body.email).to.equal('email is not valid');
+          expect(response.body.errors.body.password).to.equal('password cannot contain whitespace');
+          expect(response.body.errors.body.avatarUrl).to.equal('avatarUrl must be a valid URL string');
+          done();
+        });
+    });
+
+    it('should return validation errors for invalid input fields in the request - case6', (done) => {
+      chai.request(server)
+        .post(`${BASE_URL}/signup`)
+        .send(invalidInput5)
+        .end((error, response) => {
+          expect(response).to.have.status(400);
+          expect(response.body).to.haveOwnProperty('errors');
+          expect(response.body.status).to.equal('failure');
+          expect(response.body.errors.body).to.have.keys('firstName', 'lastName', 'email', 'password', 'avatarUrl');
+          expect(response.body.errors.body.firstName).to.equal('invalid input for firstName');
+          expect(response.body.errors.body.lastName).to.equal('invalid input for lastName');
+          expect(response.body.errors.body.email).to.equal('email is not valid');
+          expect(response.body.errors.body.password).to.equal('password cannot contain whitespace');
           expect(response.body.errors.body.avatarUrl).to.equal('avatarUrl must be a valid URL string');
           done();
         });
@@ -103,6 +263,7 @@ describe('AUTH', () => {
         .end((error, response) => {
           expect(response).to.have.status(400);
           expect(response.body).to.haveOwnProperty('errors');
+          expect(response.body.status).to.equal('failure');
           expect(response.body.errors.body).to.have.keys('firstName', 'lastName', 'password');
           expect(response.body.errors.body.firstName).to.equal('firstName must be at least 2 characters, and maximum 20');
           expect(response.body.errors.body.lastName).to.equal('lastName must be at least 2 characters, and maximum 20');
