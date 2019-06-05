@@ -2,8 +2,8 @@ import sendgridMail from '@sendgrid/mail';
 
 /* FORMAT FOR MESSAGE
 const message = {
-       text: '',
-    html: '<strong>html version</strong>'
+    text: 'hello books',
+    html: '<strong>html version</strong>',
     }
 */
 
@@ -13,9 +13,9 @@ const sendMail = (senderMail, recieverMail, message) => {
     to: recieverMail,
     from: senderMail,
     subject: 'Hello-Books',
-    ...message,
+    ...message
   };
-  sendgridMail.send(msg);
+  return sendgridMail.send(msg);
 };
 
 export default sendMail;

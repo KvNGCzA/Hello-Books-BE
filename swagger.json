@@ -1,26 +1,47 @@
 {
-  "openapi" : "3.0.0",
+  "swagger" : "2.0",
   "info" : {
-    "title" : "Hello Books",
-    "description" : "Hello Books is a system that allows efficient, cost-effective management of library operations.",
-    "version" : "1.0.0"
+    "description" : "Hello Books is a system that allows efficient, cost-effective management of library operations",
+    "version" : "1.0.0",
+    "title" : "Hello Books API",
+    "termsOfService" : "http://swagger.io/terms/",
+    "contact" : {
+      "email" : "clasiqaas@gmail.com"
+    },
+    "license" : {
+      "name" : "MIT",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
   },
-  "servers" : [ {
-    "url" : "https://virtserver.swaggerhub.com/henryade/helloBooks/1.0.0",
-    "description" : "SwaggerHub API Auto Mocking"
-  } ],
+  "host" : "hello-books-staging.herokuapp.com",
+  "basePath" : "/api/v1",
   "tags" : [ {
-    "name" : "Auth",
-    "description" : "Authorize users"
-  },
-  {
-    "name": "Admin",
-    "description": "Admin can add an author"
-  } ],
-  "paths" : {
-    
-    "/api/v1/auth/signup" : {
-      "post" : {
+      "name": "Auth",
+      "description": "Authorize users"
+    },
+    {
+      "name": "SuperAdmin",
+      "description": "Super admin of the library"
+    },
+    {
+      "name": "Admin",
+      "description": "Admin can add an author"
+    },
+    {
+      "name": "FavouriteAuthor",
+      "description": "User can favourite or unfavourite an author"
+    },
+    {
+      "name" : "FavoriteBook",
+      "description" : "User can favourite/unfavorite a book"
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/auth/signup": {
+      "post": {
         "tags": [
           "Auth"
         ],
@@ -33,85 +54,36 @@
         "produces": [
           "application/json"
         ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "description": "User object that needs to be registered",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/signup"
-            }
+        "parameters": [{
+          "in": "body",
+          "name": "body",
+          "description": "User object that needs to be registered",
+          "required": true,
+          "schema": {
+            "$ref": "#/definitions/signup"
           }
-        ],
+        } ],
         "responses" : {
           "201" : {
             "description" : "sign up successful"
-            
-          }, "400" : {
+          },
+          "400" : {
             "description" : "user already exist"
-          }, "500" : {
+          },
+          "500" : {
             "description" : "server error"
           }
         }
       }
     },
-    "/api/v1/admin/author" : {
-      "post" : {
-        "tags" : [ "Admin" ],
-        "summary" : "Admin can add an author",
-        "operationId" : "author",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "authorName"
-                ],
-                "properties": {
-                  "authorName": {
-                    "type": "string",
-                    "minLength": 4
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "author successfully added",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/admin"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "author could not be added"
-          },
-          "409": {
-            "description": "author already exists"
-          },
-          "500": {
-            "description": "server error"
-          }
-        }
-      }
-    },
-
-    "/login": {
+    "/auth/login": {
       "post": {
         "tags": [
-          "Users"
+          "Auth"
         ],
         "summary": "Logs in an already existing user",
-        "description": "",
-        "operationId": "signupUser",
+        "description": "Logs in an already existing user",
+        "operationId": "signinUser",
         "consumes": [
           "application/json"
         ],
@@ -124,84 +96,683 @@
           "description": "Login parameter",
           "required": true,
           "schema": {
-            "$ref": "#/components/schemas/loginParams"
+            "$ref": "#/definitions/loginParams"
           }
         }],
         "responses": {
           "201": {
             "description": "Signin Successful"
-
           },
           "403": {
             "description": "Username or password is incorrect"
           }
         }
       }
-    }
-  },
-  "components" : {
-    "schemas" : {
-      "signup" : {
-        "type" : "object",
-        "required": [
-          "firstName",
-          "lastName",
-          "email",
-          "password"
+    },
+    "/admin/user": {
+      "post": {
+        "tags": [
+          "Superadmin"
         ],
-        "properties": {
-          "firstName": {
-            "type": "string",
-            "minLength": 4,
-            "example": "John"
-          },
-          "lastName": {
-            "type": "string",
-            "minLength": 4,
-            "example": "Doe"
-          },
-          "email": {
-            "type": "string",
-            "minLength": 4,
-            "format": "email",
-            "example": "johndoe@gmail.com"
-          },
-          "password": {
-            "type": "string",
-            "minLength": 4,
-            "example": "password"
-          },
-          "avatarUrl": {
-            "type": "string",         
-            "example": "https://gravatar.com/avatar/aed61baf1e9256ed7d70e2cbbfcba9aa?s=400&d=robohash&r=x"
-          }
-        }  
-      },
-      "loginParams": {
-        "type": "object",
-        "required": [
-          "email",
-          "password"
+        "summary": "Creates a new user",
+        "description": "Superadmin creates a new user",
+        "operationId": "createNewUser",
+        "consumes": [
+          "application/json"
         ],
-        "properties": {
-          "email": {
-            "type": "string",
-            "format": "email",
-            "example": "johndoe@gmail.com"
-          },
-          "password": {
-            "type": "string",
-            "example": "password"
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [{
+          "in": "body",
+          "name": "body",
+          "description": "Create new user",
+          "required": true,
+          "schema": {
+            "$ref": "#/definitions/createUserParams"
           }
-        },
-        "admin": {
-          "type": "object",
-          "properties": {
-            "authorName": {
-              "type": "string",
-              "minLength": 4
+        }],
+        "responses": {
+          "201": {
+            "description": "User successfully created"
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "401": {
+            "description": "invalid token",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "403": {
+            "description": "unauthorized user",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/error"
             }
           }
+        },
+        "security": [{
+          "Authorization": []
+        }]
+      }
+    },
+    "/admin/user/{userId}": {
+      "patch": {
+        "tags": [
+          "Superadmin"
+        ],
+        "summary": "Activates or deactivates a user",
+        "description": "Superadmin can activate or deactivate an account",
+        "operationId": "activate_deactivateUser",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [{
+            "in": "body",
+            "name": "body",
+            "description": "Create new user",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/acti_deactParams"
+            }
+          },
+          {
+            "in": "path",
+            "name": "userId",
+            "description": "The user id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User successfully activated or deactivated"
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "401": {
+            "description": "invalid token",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "403": {
+            "description": "unauthorized user",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        },
+        "security": [{
+          "Authorization": []
+        }]
+      }
+    },
+    "/favourites": {
+      "post": {
+        "tags": [
+          "FavouriteAuthor"
+        ],
+        "summary": "Favourite author",
+        "description": "User can favourite an author",
+        "operationId": "favouriteAuthor",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [{
+          "in": "body",
+          "name": "body",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "authorId": {
+                "type": "integer"
+              }
+            }
+          },
+          "required": true
+        }],
+        "responses": {
+          "201": {
+            "description": "Author successfully favourited"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Invalid, expired or missing token"
+          },
+          "403": {
+            "description": "Forbidden Access"
+          },
+          "404": {
+            "description": "Entity not found"
+          },
+          "409": {
+            "description": "Already existing author"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        },
+        "security": [{
+          "Authorization": []
+        }]
+      },
+      "delete": {
+        "tags": [
+          "FavouriteAuthor"
+        ],
+        "summary": "Unfavourite author",
+        "description": "User can unfavourite an author",
+        "operationId": "unfavouriteAuthor",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [{
+          "in": "body",
+          "name": "body",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "authorId": {
+                "type": "integer"
+              }
+            }
+          },
+          "required": true
+        }],
+        "responses": {
+          "200": {
+            "description": "Author successfully unfavourited"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Invalid, expired or missing token"
+          },
+          "403": {
+            "description": "Forbidden Access"
+          },
+          "404": {
+            "description": "Entity not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        },
+        "security": [{
+          "Authorization": []
+        }]
+      }
+    },
+    "/auth/passwordreset": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Enables a user to request a password reset",
+        "operationId": "passwordReset",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "registered user email ",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserMail"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "password reset link sent",
+            "schema": {
+              "$ref": "#/definitions/PasswordResetSucess"
+            }
+          },
+          "400": {
+            "description": "password reset failed",
+            "schema": {
+              "$ref": "#/definitions/PasswordResetFail"
+            }
+          }
+        }
+      }
+    },
+    "/auth/passwordresetVerify": {
+      "patch": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Enables a user to request a password reset",
+        "operationId": "passwordResetVerify",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "password reset link sent",
+            "schema": {
+              "$ref": "#/definitions/PasswordResetSucess"
+            }
+          },
+          "401": {
+            "description": "password reset failed",
+            "schema": {
+              "$ref": "#/definitions/PasswordResetSucess"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ]
+      }
+    },
+    "/favorites/book/{bookId}" : {
+      "post" : {
+        "tags" : [ "FavoriteBook" ],
+        "summary" : "User can favorite a book",
+        "operationId" : "favoriteBook",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "bookId",
+          "in" : "path",
+          "description" : "book id to be favorited",
+          "required" : true,
+          "type" : "integer"
+        }, {
+          "name" : "authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "favorited successfully",
+            "schema" : {
+              "$ref" : "#/definitions/favoriteBook"
+            }
+          },
+          "400" : {
+            "description" : "missing/invalid field",
+            "schema" : {
+              "$ref" : "#/definitions/error"
+            }
+          },
+          "401" : {
+            "description" : "invalid token",
+            "schema" : {
+              "$ref" : "#/definitions/error"
+            }
+          },
+          "403" : {
+            "description" : "unauthorized user",
+            "schema" : {
+              "$ref" : "#/definitions/error"
+            }
+          },
+          "404" : {
+            "description" : "book not found",
+            "schema" : {
+              "$ref" : "#/definitions/error"
+            }
+          },
+          "409" : {
+            "description" : "book already in your favourites",
+            "schema" : {
+              "$ref" : "#/definitions/error"
+            }
+          },
+          "500" : {
+            "description" : "internal server error",
+            "schema" : {
+              "$ref" : "#/definitions/error"
+            }
+          }
+        },
+        "security" : [ {
+          "Authorization" : [ ]
+        } ]
+      },
+      "delete" : {
+        "tags" : [ "FavoriteBook" ],
+        "summary" : "User can unfavorite a book",
+        "operationId" : "unfavoriteBook",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "bookId",
+          "in" : "path",
+          "description" : "book id to be unfavorited",
+          "required" : true,
+          "type" : "integer"
+        }, {
+          "name" : "authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "unfavorited successfully",
+            "schema" : {
+              "$ref" : "#/definitions/unfavoriteBook"
+            }
+          },
+          "400" : {
+            "description" : "missing/invalid field",
+            "schema" : {
+              "$ref" : "#/definitions/error"
+            }
+          },
+          "401" : {
+            "description" : "invalid token",
+            "schema" : {
+              "$ref" : "#/definitions/error"
+            }
+          },
+          "403" : {
+            "description" : "unauthorized user",
+            "schema" : {
+              "$ref" : "#/definitions/error"
+            }
+          },
+          "404" : {
+            "description" : "book not found",
+            "schema" : {
+              "$ref" : "#/definitions/error"
+            }
+          },
+          "409" : {
+            "description" : "book already in your favourites",
+            "schema" : {
+              "$ref" : "#/definitions/error"
+            }
+          },
+          "500" : {
+            "description" : "internal server error",
+            "schema" : {
+              "$ref" : "#/definitions/error"
+            }
+          }
+        },
+        "security" : [ {
+          "Authorization" : [ ]
+        } ]
+      }
+    }
+  },
+  "securityDefinitions": {
+    "Authorization": {
+      "type": "apiKey",
+      "name": "authorization",
+      "in": "header"
+    }
+  },
+  "definitions": {
+    "signup": {
+      "type": "object",
+      "required": [
+        "email",
+        "firstName",
+        "lastName",
+        "password"
+      ],
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "example": "John",
+          "minLength": 4
+        },
+        "lastName": {
+          "type": "string",
+          "example": "Doe",
+          "minLength": 4
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "example": "johndoe@gmail.com",
+          "minLength": 4
+        },
+        "password": {
+          "type": "string",
+          "example": "password",
+          "minLength": 4
+        },
+        "avatarUrl": {
+          "type": "string",
+          "example": "https://gravatar.com/avatar/aed61baf1e9256ed7d70e2cbbfcba9aa?s=400&d=robohash&r=x"
+        }
+      }
+    },
+    "loginParams": {
+      "type": "object",
+      "required": [
+        "email",
+        "password"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "example": "kylian@gmail.com"
+        },
+        "password": {
+          "type": "string",
+          "example": "kylianMbappe"
+        }
+      }
+    },
+    "UserMail": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "PasswordResetSucess": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "PasswordResetFail": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "errors": {
+          "$ref": "#/definitions/PasswordResetFail_errors"
+        }
+      }
+    },
+    "PasswordResetFail_errors_body": {
+      "properties": {
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "PasswordResetFail_errors": {
+      "properties": {
+        "body": {
+          "$ref": "#/definitions/PasswordResetFail_errors_body"
+        }
+      }
+    },
+    "error": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "example": "failure"
+        },
+        "error": {
+          "type": "string",
+          "example": "error message"
+        }
+      }
+    },
+    "createUserParams": {
+      "type": "object",
+      "required": [
+        "email",
+        "firstName",
+        "lastName",
+        "role"
+      ],
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "example": "John",
+          "minLength": 4
+        },
+        "lastName": {
+          "type": "string",
+          "example": "Doe",
+          "minLength": 4
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "example": "johndoe@gmail.com",
+          "minLength": 4
+        },
+        "role": {
+          "type": "string",
+          "example": "patron"
+        }
+      }
+    },
+    "acti_deactParams": {
+      "type": "object",
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "example": "inactive"
+        }
+      }
+    },    
+    "unfavoriteBook" : {
+      "type" : "object",
+      "properties" : {
+        "status" : {
+          "type" : "string",
+          "example" : "success"
+        },
+        "message" : {
+          "type" : "string",
+          "example" : "unfavorited successfully"
+        }
+      }
+    },
+    "favoriteBook" : {
+      "type" : "object",
+      "properties" : {
+        "status" : {
+          "type" : "string",
+          "example" : "success"
+        },
+        "message" : {
+          "type" : "string",
+          "example" : "favorited successfully"
+        },
+        "book" : {
+          "$ref" : "#/definitions/favoriteBook_book"
+        }
+      }
+    },
+    "favoriteBook_book" : {
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "example" : 1
+        },
+        "title" : {
+          "type" : "string",
+          "example" : "What to expect"
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "What to expect when you are expecting"
+        },
+        "isbn" : {
+          "type" : "integer",
+          "example" : 9783161484100
+        },
+        "price" : {
+          "type" : "integer",
+          "example" : 400
+        },
+        "yearPublished" : {
+          "type" : "integer",
+          "example" : 2019
+        },
+        "authors" : {
+          "type" : "string",
+          "example" : "Joe simons"
         }
       }
     }
