@@ -3,7 +3,7 @@ import helpers from '../helpers';
 import checkForErrors from './checkForErrors';
 
 const { check } = expressValidator;
-const { capitaliseFirstLetter, makeLowerCase } = helpers;
+const { makeLowerCase } = helpers;
 
 /**
  * @class UserValidator
@@ -31,9 +31,9 @@ export default class UserValidator {
   */
   static checkEmail() {
     return UserValidator.genericCheck('email')
+      .trim()
       .isEmail()
       .withMessage('email is not valid')
-      .blacklist(' ')
       .customSanitizer(value => makeLowerCase(value));
   }
 
@@ -45,12 +45,18 @@ export default class UserValidator {
   */
   static checkName(name) {
     return UserValidator.genericCheck(`${name}`)
-      .isAlpha()
-      .withMessage(`${name} can only contain alphabets`)
+      .trim()
       .isLength({ min: 2, max: 20 })
       .withMessage(`${name} must be at least 2 characters, and maximum 20`)
-      .blacklist(' ')
-      .customSanitizer(value => capitaliseFirstLetter(value));
+      .not()
+      .matches(/^[A-Za-z]+[-]{1}[A-Za-z]+([-]{1}[A-Za-z]+)+$/, 'g')
+      .withMessage(`invalid input for ${name}`)
+      .not()
+      .matches(/^[A-Za-z]+[']+[A-Za-z]+[']+[A-Za-z]+$/, 'g')
+      .withMessage(`invalid input for ${name}`)
+      .matches(/^[A-Za-z]+(['-]?[A-Za-z]+)?([ -]?[A-Za-z]+)?(['-]?[A-Za-z]+)?$/, 'g')
+      .withMessage(`invalid input for ${name}`)
+      .customSanitizer(value => makeLowerCase(value));
   }
 
   /**
@@ -62,7 +68,9 @@ export default class UserValidator {
     return UserValidator.genericCheck('password')
       .isLength({ min: 6, max: 20 })
       .withMessage('password must be at least 6 characters')
-      .blacklist(' ');
+      .not()
+      .matches(/\s/, 'g')
+      .withMessage('password cannot contain whitespace');
   }
 
   /**
@@ -73,12 +81,12 @@ export default class UserValidator {
   static checkAvatarUrl() {
     return check('avatarUrl')
       .optional()
+      .trim()
       .not()
       .isEmpty({ ignore_whitespace: true })
       .withMessage('avatarUrl cannot be blank')
       .isURL()
-      .withMessage('avatarUrl must be a valid URL string')
-      .blacklist(' ');
+      .withMessage('avatarUrl must be a valid URL string');
   }
 
   /**

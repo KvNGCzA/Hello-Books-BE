@@ -7,10 +7,10 @@ const BASE_URL = '/admin';
 const { AuthorValidator } = middlewares;
 // const { verifyToken, authorizeUser, AuthorValidator } = middlewares;
 const { addAuthor } = AuthorController;
-const { addAuthorValidation } = AuthorValidator;
+const { authorValidation } = AuthorValidator;
 // const authorizeAdmin = authorizeUser(['admin']);
 
-admin.post(`${BASE_URL}/author`, addAuthorValidation(), addAuthor);
-// admin.post(`${BASE_URL}/author`, addAuthorValidation(), verifyToken, authorizeAdmin, addAuthor);
+admin.post(`${BASE_URL}/author`, authorValidation(), addAuthor);
+// admin.post(`${BASE_URL}/author`, authorValidation(), verifyToken, authorizeAdmin, addAuthor);
 
 export default admin;
