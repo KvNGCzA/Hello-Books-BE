@@ -26,7 +26,8 @@ class UserController {
       if (newUser) {
         const { id } = newUser.dataValues
         const token = createToken({ id }, '24h');
-        return responseMessage(response, 201, { status: 'success', message: 'sign up successful', token });
+        delete newUser.dataValues.password;
+        return responseMessage(response, 201, { status: 'success', message: 'sign up successful', user: newUser.dataValues, token });
       }
     } catch (error) {
       return responseMessage(response, 500, { message: error.message });
