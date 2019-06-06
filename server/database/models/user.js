@@ -5,7 +5,8 @@ export default (sequelize, DataTypes) => {
     email: DataTypes.STRING,
     password: DataTypes.STRING,
     avatarUrl: DataTypes.STRING,
-    verified: DataTypes.BOOLEAN
+    verified: DataTypes.BOOLEAN,
+    status: DataTypes.STRING
   }, {});
 
   User.associate = (models) => {

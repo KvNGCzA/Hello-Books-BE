@@ -350,6 +350,22 @@ describe('AUTH', () => {
           done();
         });
     });
+    it('should return a status 401 if user is inactive', (done) => {
+      const body = {
+        email: 'inactiveuser@email.com',
+        password: 'password',
+      };
+      chai.request(server)
+        .post('/api/v1/auth/login')
+        .send(body)
+        .end((err, response) => {
+          expect(response).to.have.status(401);
+          expect(response).to.be.a('object');
+          expect(response.body).to.have.all.keys('status', 'message');
+          expect(response.body.message).to.be.a('String');
+          done();
+        });
+    });
     it('should return a status 401 if user inputs wrong password', (done) => {
       const body = {
         email: 'todaytest@email.com',

@@ -3,9 +3,11 @@ import models from '../database/models';
 import helpers from '../helpers';
 
 const {
-  responseMessage, createToken, sendMail, signupMessage
+  responseMessage, createToken, sendMail, signupMessage, createUserRole,
+  createUserMessage,
 } = helpers;
 const { User, UserRole } = models;
+const defaultPassword = process.env.PASSWORD || 'setpassword';
 
 /**
  * Auth controller class
@@ -22,25 +24,35 @@ export default class AuthController {
    */
   static async createUser(request, response) {
     const {
-      firstName, lastName, email, password, avatarUrl
+      firstName, lastName, email, password, role, avatarUrl
     } = request.body;
+    let newUserFromAdmin;
     try {
+      if (!password) {
+        newUserFromAdmin = true;
+      }
       const existingUser = await User.findOne({ where: { email } });
       if (existingUser) return responseMessage(response, 409, { message: 'user already exist' });
       const newUser = await User.create({
-        firstName, lastName, email, password: bcrypt.hashSync(password, 10), avatarUrl
+        firstName, lastName, email, password: bcrypt.hashSync(password || defaultPassword, 10), avatarUrl
       });
-      if (newUser) {
-        const { id } = newUser.dataValues;
-        const token = createToken({ id }, '24h');
-        await UserRole.create({ userId: id });
-        delete newUser.dataValues.password;
-        const message = signupMessage(firstName, token);
+      const { id, dataValues } = newUser;
+      const token = createToken({ id }, '24h');
+      delete dataValues.password;
+      if (newUserFromAdmin) {
+        await createUserRole(response, id, role);
+        const message = createUserMessage(dataValues, role);
         await sendMail(process.env.ADMIN_MAIL, email, message);
         return responseMessage(response, 201, {
-          status: 'success', message: 'sign up successful', user: newUser.dataValues, token
+          status: 'success', message: 'user successfully created', user: { ...dataValues }
         });
       }
+      await UserRole.create({ userId: id });
+      const message = signupMessage(firstName, token);
+      await sendMail(process.env.ADMIN_MAIL, email, message);
+      return responseMessage(response, 201, {
+        status: 'success', message: 'sign up successful', user: { ...dataValues }, token
+      });
     } catch (error) {
       /* istanbul ignore next-line */
       return responseMessage(response, 500, { message: error.message });
@@ -63,6 +75,11 @@ export default class AuthController {
         return responseMessage(response, 401, { message: 'username or password is incorrect' });
       }
       const { id, dataValues } = user;
+      if (dataValues.status === 'inactive') {
+        return responseMessage(response, 401, {
+          message: 'Your account is deactivated, please contact the admin for more information'
+        });
+      }
       const token = createToken({ id });
       delete dataValues.password;
       return responseMessage(response, 200, {
