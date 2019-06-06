@@ -9,17 +9,17 @@ export const User = {
 export const admin = {
   email: 'eden@gmail.com',
   password: 'edenHazard',
-}
+};
 
 export const notVerified = {
   email: 'jamiefoxx@gmail.com',
   password: 'jamiefoxx',
-}
+};
 
 export const notAdmin = {
   email: 'kylian@gmail.com',
   password: 'kylianMbappe',
-}
+};
 
 export const validInput = {
   firstName: 'Shaquille O\'neal',
