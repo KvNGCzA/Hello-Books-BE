@@ -5,7 +5,9 @@ import testData from './__mocks__';
 
 const { authorData, userData: { admin, notVerified, notAdmin } } = testData;
 
-const BASE_URL = '/api/v1/admin';
+const API_VERSION = '/api/v1';
+const BASE_URL = `${API_VERSION}/admin`;
+const loginUrl = `${API_VERSION}/auth/login`;
 const {
   invalidAuthor, invalidAuthor1, invalidAuthor2, blankAuthor,
   validAuthor, validAuthor1, validAuthor2, missingAuthorInput,
@@ -21,11 +23,11 @@ describe('ADMIN ROUTES', () => {
   let authorUrlForNonAdmin;
   before((done) => {
     chai.request(app)
-      .post('/api/v1/auth/login')
+      .post(loginUrl)
       .send(admin)
       .end((error, response) => {
         adminToken = response.body.token;
-        authorUrlForAdmin = `${BASE_URL}/author?token=${adminToken}`
+        authorUrlForAdmin = `${BASE_URL}/author?token=${adminToken}`;
         done();
       });
   });
@@ -33,7 +35,7 @@ describe('ADMIN ROUTES', () => {
   let unverifiedUserToken;
   before((done) => {
     chai.request(app)
-      .post('/api/v1/auth/login')
+      .post(loginUrl)
       .send(notVerified)
       .end((error, response) => {
         unverifiedUserToken = response.body.token;
@@ -45,7 +47,7 @@ describe('ADMIN ROUTES', () => {
   let nonAdminToken;
   before((done) => {
     chai.request(app)
-      .post('/api/v1/auth/login')
+      .post(loginUrl)
       .send(notAdmin)
       .end((error, response) => {
         nonAdminToken = response.body.token;
@@ -94,7 +96,7 @@ describe('ADMIN ROUTES', () => {
     it('should reject an unverified user\'s access', (done) => {
       chai.request(app)
         .post(authorUrlForUnverified)
-        .send({authorName: 'Caramen Zach'})
+        .send({ authorName: 'Caramen Zach' })
         .end((error, response) => {
           expect(response.body).to.be.an('object');
           expect(response).to.have.status(403);
@@ -103,12 +105,12 @@ describe('ADMIN ROUTES', () => {
           expect(response.body.message).to.equal('please verify your account to perform this action');
           done();
         });
-    })
+    });
 
     it('should reject a non-admin user\'s access', (done) => {
       chai.request(app)
         .post(authorUrlForNonAdmin)
-        .send({authorName: 'Dirk Kuyt'})
+        .send({ authorName: 'Dirk Kuyt' })
         .end((error, response) => {
           expect(response.body).to.be.an('object');
           expect(response).to.have.status(403);
@@ -117,7 +119,7 @@ describe('ADMIN ROUTES', () => {
           expect(response.body.message).to.equal('unauthorized user');
           done();
         });
-    })
+    });
   });
 
   describe('Author Validations', () => {
