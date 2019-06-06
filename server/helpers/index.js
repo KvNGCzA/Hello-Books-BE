@@ -5,8 +5,9 @@ import findUser from './findUser';
 import makeLowerCase from './customSanitizers';
 import * as messages from './messages';
 import enforceVerification from './enforceVerification';
+import createUserRole from './createUserRole';
 
-const { signupMessage, siginMessage } = messages;
+const { signupMessage, createUserMessage } = messages;
 export default {
   createToken,
   responseMessage,
@@ -14,6 +15,7 @@ export default {
   sendMail,
   makeLowerCase,
   signupMessage,
-  siginMessage,
   enforceVerification,
+  createUserMessage,
+  createUserRole
 };

@@ -12,6 +12,12 @@ module.exports = {
         description: 'A full supporter of the library',
         createdAt: new Date(),
         updatedAt: new Date()
+    }, {
+        id: 1002,
+        roleName: 'superadmin',
+        description: 'Super administrator of the library',
+        createdAt: new Date(),
+        updatedAt: new Date()
     }], {}),
     down: (queryInterface, Sequelize) => queryInterface.bulkDelete('Roles', null, {})
 };

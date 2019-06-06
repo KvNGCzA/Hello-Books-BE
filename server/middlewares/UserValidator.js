@@ -90,6 +90,30 @@ export default class UserValidator {
   }
 
   /**
+   * Role validator
+   * @returns {function} call to a Check API middleware
+   * @memberof Validation
+   */
+  static checkRole() {
+    return UserValidator.genericCheck('role');
+  }
+
+  /**
+   * Role validator
+   * @returns {function} call to a Check API middleware
+   * @memberof Validation
+   */
+  static checkStatus() {
+    return UserValidator.genericCheck('status')
+      .custom((value) => {
+        if (value !== 'active' && value !== 'inactive') {
+          return Promise.reject(new Error('status can either be active or inactive'));
+        }
+        return Promise.resolve(true);
+      });
+  }
+
+  /**
   * Signup validation
   * @returns {array} an array of Check API middlewares
   * @memberof Validation
@@ -115,6 +139,33 @@ export default class UserValidator {
       UserValidator.checkEmail(),
       UserValidator.checkPassword(),
       checkForErrors,
+    ];
+  }
+
+  /**
+   * CreateUser validation
+   * @returns {array} an array of Check API middlewares
+   * @memberof Validation
+   */
+  static createUserValidation() {
+    return [
+      UserValidator.checkEmail(),
+      UserValidator.checkName('firstName'),
+      UserValidator.checkName('lastName'),
+      UserValidator.checkRole(),
+      checkForErrors,
+    ];
+  }
+
+  /**
+   * DeleteUser validation
+   * @returns {array} an array of Check API middlewares
+   * @memberof Validation
+   */
+  static changeStatusValidation() {
+    return [
+      UserValidator.checkStatus(),
+      checkForErrors
     ];
   }
 }

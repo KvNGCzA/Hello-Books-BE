@@ -61,6 +61,8 @@ export const blankInput = {
   email: '',
   password: '',
   avatarUrl: '',
+  role: '',
+  status: '',
 };
 
 export const invalidInput = {
