@@ -4,6 +4,7 @@ import sendMail from './sendMail';
 import findUser from './findUser';
 import makeLowerCase from './customSanitizers';
 import * as messages from './messages';
+import enforceVerification from './enforceVerification';
 
 const { signupMessage, siginMessage } = messages;
 export default {
@@ -14,4 +15,5 @@ export default {
   makeLowerCase,
   signupMessage,
   siginMessage,
+  enforceVerification,
 };

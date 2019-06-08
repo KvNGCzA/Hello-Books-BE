@@ -19,7 +19,16 @@ module.exports = {
       email: 'eden@gmail.com',
       password: bcrypt.hashSync('edenHazard', 10),
       avatarUrl: '',
-      verified: false,
+      verified: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }, {
+      firstName: 'Kylian',
+      lastName: 'Mbappe',
+      email: 'kylian@gmail.com',
+      password: bcrypt.hashSync('kylianMbappe', 10),
+      avatarUrl: '',
+      verified: true,
       createdAt: new Date(),
       updatedAt: new Date()
     }], {});
