@@ -17,11 +17,11 @@ export default class AuthorValidator {
   static checkAuthorName() {
     return UserValidator.genericCheck('authorName')
       .trim()
-      .isLength({ min: 2, max: 30 })
-      .withMessage('authorName must be at least 2 characters, and maximum 30')
       .not()
       .matches(/^[A-Za-z]+[-]{1}[A-Za-z]+([-]{1}[A-Za-z]+)+$/, 'g')
       .withMessage('invalid input for authorName')
+      .isLength({ min: 2, max: 30 })
+      .withMessage('authorName must be at least 2 characters, and maximum 30')
       .matches(/^[A-Za-z]+(['-]?[A-Za-z]+)?([ -]{1}[A-Za-z]+(['-]?[A-Za-z]+)?)?([ -]{1}[A-Za-z]+(['-]?[A-Za-z]+)?)?$/, 'g')
       .withMessage('invalid input for authorName')
       .customSanitizer(value => makeLowerCase(value));

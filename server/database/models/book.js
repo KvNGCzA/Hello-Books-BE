@@ -2,7 +2,7 @@ export default (sequelize, DataTypes) => {
   const Book = sequelize.define('Book', {
     title: DataTypes.STRING,
     description: DataTypes.TEXT,
-    isbn: DataTypes.INTEGER,
+    isbn: DataTypes.TEXT,
     price: DataTypes.INTEGER,
     yearPublished: DataTypes.INTEGER,
     stock: DataTypes.INTEGER

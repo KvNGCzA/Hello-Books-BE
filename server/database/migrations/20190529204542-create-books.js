@@ -14,21 +14,27 @@ module.exports = {
         allowNull: false
       },
       description: {
+        allowNull: false,
         type: Sequelize.TEXT
       },
       isbn: {
-        type: Sequelize.INTEGER
+        allowNull: false,
+        type: Sequelize.TEXT
       },
       price: {
+        allowNull: false,
         type: Sequelize.INTEGER
       },
       yearPublished: {
+        allowNull: false,
         type: Sequelize.INTEGER
       },
       stock: {
+        allowNull: false,
         type: Sequelize.INTEGER
       },
       authorId: {
+        allowNull: false,
         type: Sequelize.INTEGER,
         onDelete: 'CASCADE',
         references: {
