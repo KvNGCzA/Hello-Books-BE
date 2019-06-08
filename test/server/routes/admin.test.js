@@ -1,7 +1,9 @@
 import chaiHttp from 'chai-http';
 import chai, { expect } from 'chai';
 import app from '../../../server';
-import * as authorData from './__mocks__/authorData';
+import testData from './__mocks__';
+
+const { authorData, userData: { admin, notVerified, notAdmin } } = testData;
 
 const BASE_URL = '/api/v1/admin';
 const {
@@ -13,14 +15,52 @@ const {
 chai.use(chaiHttp);
 
 describe('ADMIN ROUTES', () => {
-  const authorUrl = `${BASE_URL}/author`;
+  let adminToken;
+  let authorUrlForAdmin;
+  let authorUrlForUnverified;
+  let authorUrlForNonAdmin;
+  before((done) => {
+    chai.request(app)
+      .post('/api/v1/auth/login')
+      .send(admin)
+      .end((error, response) => {
+        adminToken = response.body.token;
+        authorUrlForAdmin = `${BASE_URL}/author?token=${adminToken}`
+        done();
+      });
+  });
+
+  let unverifiedUserToken;
+  before((done) => {
+    chai.request(app)
+      .post('/api/v1/auth/login')
+      .send(notVerified)
+      .end((error, response) => {
+        unverifiedUserToken = response.body.token;
+        authorUrlForUnverified = `${BASE_URL}/author?token=${unverifiedUserToken}`;
+        done();
+      });
+  });
+
+  let nonAdminToken;
+  before((done) => {
+    chai.request(app)
+      .post('/api/v1/auth/login')
+      .send(notAdmin)
+      .end((error, response) => {
+        nonAdminToken = response.body.token;
+        authorUrlForNonAdmin = `${BASE_URL}/author?token=${nonAdminToken}`;
+        done();
+      });
+  });
+
   describe('Author\'s Controller', () => {
     /**
        * Test the POST /author endpoint
        */
     it('should be able to add an author when all the parameters are given', (done) => {
       chai.request(app)
-        .post(authorUrl)
+        .post(authorUrlForAdmin)
         .send({
           authorName: 'Barack Obama'
         })
@@ -36,7 +76,7 @@ describe('ADMIN ROUTES', () => {
 
     it('should not be able to add an author that already exists', (done) => {
       chai.request(app)
-        .post(authorUrl)
+        .post(authorUrlForAdmin)
         .send({
           authorName: 'barack obama'
         })
@@ -49,12 +89,41 @@ describe('ADMIN ROUTES', () => {
           done();
         });
     });
+
+    // Test for enforceVerification helper in the verifyToken middleware
+    it('should reject an unverified user\'s access', (done) => {
+      chai.request(app)
+        .post(authorUrlForUnverified)
+        .send({authorName: 'Caramen Zach'})
+        .end((error, response) => {
+          expect(response.body).to.be.an('object');
+          expect(response).to.have.status(403);
+          expect(response.body.status).to.equal('failure');
+          expect(response.body.message).to.be.a('string');
+          expect(response.body.message).to.equal('please verify your account to perform this action');
+          done();
+        });
+    })
+
+    it('should reject a non-admin user\'s access', (done) => {
+      chai.request(app)
+        .post(authorUrlForNonAdmin)
+        .send({authorName: 'Dirk Kuyt'})
+        .end((error, response) => {
+          expect(response.body).to.be.an('object');
+          expect(response).to.have.status(403);
+          expect(response.body.status).to.equal('failure');
+          expect(response.body.message).to.be.a('string');
+          expect(response.body.message).to.equal('unauthorized user');
+          done();
+        });
+    })
   });
 
   describe('Author Validations', () => {
     it('should pass the validation even with three names in authorName field', (done) => {
       chai.request(app)
-        .post(authorUrl)
+        .post(authorUrlForAdmin)
         .send(validAuthor)
         .end((error, response) => {
           expect(response).to.have.status(201);
@@ -68,7 +137,7 @@ describe('ADMIN ROUTES', () => {
 
     it('should pass the validation even with a compound name in authorName field', (done) => {
       chai.request(app)
-        .post(authorUrl)
+        .post(authorUrlForAdmin)
         .send(validAuthor1)
         .end((error, response) => {
           expect(response).to.have.status(201);
@@ -82,7 +151,7 @@ describe('ADMIN ROUTES', () => {
 
     it('should pass the validation even with names with apostrophes and compound names in authorName field', (done) => {
       chai.request(app)
-        .post(authorUrl)
+        .post(authorUrlForAdmin)
         .send(validAuthor2)
         .end((error, response) => {
           expect(response).to.have.status(201);
@@ -96,7 +165,7 @@ describe('ADMIN ROUTES', () => {
 
     it('should return validation errors for required authorName field is not supplied in request', (done) => {
       chai.request(app)
-        .post(authorUrl)
+        .post(authorUrlForAdmin)
         .send(missingAuthorInput)
         .end((error, response) => {
           expect(response).to.have.status(400);
@@ -110,7 +179,7 @@ describe('ADMIN ROUTES', () => {
 
     it('should return validation errors for blank authorName field in the request', (done) => {
       chai.request(app)
-        .post(authorUrl)
+        .post(authorUrlForAdmin)
         .send(blankAuthor)
         .end((error, response) => {
           expect(response).to.have.status(400);
@@ -124,7 +193,7 @@ describe('ADMIN ROUTES', () => {
 
     it('should return validation errors for invalid input authorName in the request - case1', (done) => {
       chai.request(app)
-        .post(authorUrl)
+        .post(authorUrlForAdmin)
         .send(invalidAuthor)
         .end((error, response) => {
           expect(response).to.have.status(400);
@@ -138,7 +207,7 @@ describe('ADMIN ROUTES', () => {
 
     it('should return validation errors for invalid input authorName in the request - case2', (done) => {
       chai.request(app)
-        .post(authorUrl)
+        .post(authorUrlForAdmin)
         .send(invalidAuthor1)
         .end((error, response) => {
           expect(response).to.have.status(400);
@@ -152,7 +221,7 @@ describe('ADMIN ROUTES', () => {
 
     it('should return validation errors for invalid input authorName in the request - case3', (done) => {
       chai.request(app)
-        .post(authorUrl)
+        .post(authorUrlForAdmin)
         .send(invalidAuthor2)
         .end((error, response) => {
           expect(response).to.have.status(400);
@@ -166,7 +235,7 @@ describe('ADMIN ROUTES', () => {
 
     it('should return validation error for authorName input that is not the required length', (done) => {
       chai.request(app)
-        .post(authorUrl)
+        .post(authorUrlForAdmin)
         .send(wrongLengthAuthor1)
         .end((error, response) => {
           expect(response).to.have.status(400);
@@ -180,7 +249,7 @@ describe('ADMIN ROUTES', () => {
 
     it('should return validation error for authorName input that is not the required length - case 2', (done) => {
       chai.request(app)
-        .post(authorUrl)
+        .post(authorUrlForAdmin)
         .send(wrongLengthAuthor2)
         .end((error, response) => {
           expect(response).to.have.status(400);

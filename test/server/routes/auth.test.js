@@ -1,8 +1,9 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import server from '../../../server/index';
-import * as userData from './__mocks__/userData';
+import testData from './__mocks__';
 
+const { userData } = testData;
 const { expect } = chai;
 const {
   User,
