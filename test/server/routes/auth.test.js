@@ -407,5 +407,49 @@ describe('AUTH', () => {
         });
     });
 
+    it('It should  reset password with a valid mail successfully', (done) => {
+      chai.request(server)
+        .post(`${BASE_URL}/passwordreset`)
+        .send(User)
+        .end((error, response) => {
+          expect(response).to.have.status(200);
+          expect(response.body).to.be.an('object');
+          expect(response.body.message).to.equal('you will recieve a link in your mail shortly to proceed');
+          done();
+        });
+    });
+
+    it('It should fail to reset password with an invalid mail', (done) => {
+      const body = {
+        email: 'nonexistingmail',
+      };
+      chai.request(server)
+        .post(`${BASE_URL}/passwordreset`)
+        .send(body)
+        .end((error, response) => {
+          expect(response).to.have.status(400);
+          expect(response.body).to.be.an('object');
+          expect(response.body.errors.body).to.have.keys('email');
+          expect(response.body.errors.body.email).to.equal('email is not valid');
+          done();
+        });
+    });
+
+    it('It should reset password with a correct token successfully', (done) => {
+      const body = {
+        password: 'adekorede',
+      };
+      chai.request(server)
+        .patch(`${BASE_URL}/passwordresetVerify?token=${token}`)
+        .send(body)
+        .end((error, response) => {
+          expect(response).to.have.status(200);
+          expect(response.body).to.be.an('object');
+          expect(response.body.status).to.equal('success');
+          expect(response.body.message).to.equal('password changed successfully');
+          done();
+        });
+    });
+
   });
 });

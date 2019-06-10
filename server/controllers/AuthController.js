@@ -3,7 +3,8 @@ import models from '../database/models';
 import helpers from '../helpers';
 
 const {
-  responseMessage, createToken, sendMail, signupMessage, setupNewUser
+  responseMessage, createToken, sendMail,
+  signupMessage, setupNewUser, resetpasswordMessage, findUser
 } = helpers;
 const { User, UserRole } = models;
 const defaultPassword = process.env.PASSWORD || 'setpassword';
@@ -57,8 +58,8 @@ export default class AuthController {
   /**
    * Method for handling signin route(POST api/v1/auth/signin)
    * @param {object} request - the request object
-   * @param {object} response  - the response object
-   * @return { object }  - the response object
+   * @param {object} response  - object
+   * @return { json }  - the response json
    */
   static async login(request, response) {
     const { email, password } = request.body;
@@ -102,6 +103,53 @@ export default class AuthController {
       }
       await User.update({ verified: true }, { where: { email } });
       return responseMessage(response, 200, { status: 'success', message: 'verification successful' });
+    } catch (error) {
+      /* istanbul ignore next-line */
+      return responseMessage(response, 500, { message: error.message });
+    }
+  }
+
+  /**
+ *
+ *
+ * @static
+ * @param {object} request
+ * @param {object} response
+ * @returns {json} - json
+ * @memberof AuthController
+ */
+  static async resetpasswordEmail(request, response) {
+    const { email } = request.body;
+    try {
+      const user = await findUser(email, response);
+      if (user) {
+        const { id, firstName } = user;
+        const token = createToken({ id }, '2h');
+        const message = resetpasswordMessage(firstName, token);
+        await sendMail(process.env.ADMIN_MAIL, email, message);
+        return responseMessage(response, 200, { status: 'success', message: 'you will recieve a link in your mail shortly to proceed' });
+      }
+    } catch (error) {
+      /* istanbul ignore next-line */
+      return responseMessage(response, 500, { message: error.message });
+    }
+  }
+
+  /**
+ *
+ *
+ * @static
+ * @param {object} request
+ * @param {object} response
+ * @returns {json} - json
+ * @memberof AuthController
+ */
+  static async resetPassword(request, response) {
+    try {
+      const { id } = request.userData; parseInt(id, 10);
+      const password = bcrypt.hashSync(request.body.password, 10);
+      await User.update({ password }, { where: { id } });
+      return responseMessage(response, 200, { status: 'success', message: 'password changed successfully' });
     } catch (error) {
       /* istanbul ignore next-line */
       return responseMessage(response, 500, { message: error.message });
