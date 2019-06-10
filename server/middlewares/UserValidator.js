@@ -158,6 +158,20 @@ export default class UserValidator {
   }
 
   /**
+   *
+   *
+   * @static
+   * @returns {array} of Check API middlewares
+   * @memberof UserValidator
+   */
+  static EmailValidation() {
+    return [
+      UserValidator.checkEmail(),
+      checkForErrors,
+    ];
+  }
+
+  /**
    * DeleteUser validation
    * @returns {array} an array of Check API middlewares
    * @memberof Validation
@@ -166,6 +180,20 @@ export default class UserValidator {
     return [
       UserValidator.checkStatus(),
       checkForErrors
+    ];
+  }
+
+  /**
+   *
+   *
+   * @static
+   * @returns {array} an array of check API middleware
+   * @memberof UserValidator
+   */
+  static PasswordValidation() {
+    return [
+      UserValidator.checkPassword(),
+      checkForErrors,
     ];
   }
 }

@@ -8,7 +8,7 @@ import enforceVerification from './enforceVerification';
 import createUserRole from './createUserRole';
 import setupNewUser from './setupNewUser';
 
-const { signupMessage, createUserMessage } = messages;
+const { signupMessage, createUserMessage, resetpasswordMessage } = messages;
 export default {
   createToken,
   responseMessage,
@@ -20,4 +20,5 @@ export default {
   createUserMessage,
   createUserRole,
   setupNewUser,
+  resetpasswordMessage,
 };

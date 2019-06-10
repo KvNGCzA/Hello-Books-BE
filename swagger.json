@@ -336,6 +336,88 @@
         }]
       }
     },
+    "/auth/passwordreset": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Enables a user to request a password reset",
+        "operationId": "passwordReset",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "registered user email ",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserMail"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "password reset link sent",
+            "schema": {
+              "$ref": "#/definitions/PasswordResetSucess"
+            }
+          },
+          "400": {
+            "description": "password reset failed",
+            "schema": {
+              "$ref": "#/definitions/PasswordResetFail"
+            }
+          }
+        }
+      }
+    },
+    "/auth/passwordresetVerify": {
+      "patch": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Enables a user to request a password reset",
+        "operationId": "passwordResetVerify",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "password reset link sent",
+            "schema": {
+              "$ref": "#/definitions/PasswordResetSucess"
+            }
+          },
+          "401": {
+            "description": "password reset failed",
+            "schema": {
+              "$ref": "#/definitions/PasswordResetSucess"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ]
+      }
+    },
     "/favorites/book/{bookId}" : {
       "post" : {
         "tags" : [ "FavoriteBook" ],
@@ -530,6 +612,50 @@
         "password": {
           "type": "string",
           "example": "kylianMbappe"
+        }
+      }
+    },
+    "UserMail": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "PasswordResetSucess": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "PasswordResetFail": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "errors": {
+          "$ref": "#/definitions/PasswordResetFail_errors"
+        }
+      }
+    },
+    "PasswordResetFail_errors_body": {
+      "properties": {
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "PasswordResetFail_errors": {
+      "properties": {
+        "body": {
+          "$ref": "#/definitions/PasswordResetFail_errors_body"
         }
       }
     },
