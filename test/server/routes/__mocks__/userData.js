@@ -6,6 +6,11 @@ export const User = {
   avatarUrl: 'https://gravatar.com/avatar/aed61baf1e9256ed7d70e2cbbfcba9aa?s=400&d=robohash&r=x',
 };
 
+export const existingUser = {
+  email: 'kylian@gmail.com',
+  password: 'kylianMbappe',
+};
+
 export const admin = {
   email: 'eden@gmail.com',
   password: 'edenHazard',

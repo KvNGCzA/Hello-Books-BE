@@ -7,7 +7,8 @@ module.exports = {
     database: process.env.DATABASE_DEV,
     host: process.env.DATABASE_HOST,
     port: process.env.DATABASE_PORT,
-    dialect: 'postgres'
+    dialect: 'postgres',
+    logging: false,
   },
   test: {
     username: process.env.DATABASE_USERNAME,
