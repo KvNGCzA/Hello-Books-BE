@@ -28,6 +28,18 @@ export default class AuthorValidator {
   }
 
   /**
+  * AuthorId validator
+  * @returns {function} call to a Check API middleware
+  * @memberof Validation
+  */
+  static checkAuthorId() {
+    return UserValidator.genericCheck('authorId')
+      .trim()
+      .isInt({ gt: 0, allow_leading_zeroes: false })
+      .withMessage('authorId must be an integer, greater than 0 and must not contain leading zeros');
+  }
+
+  /**
   * addAuthor validator
   * @returns {array} an array of Check API middleware
   * @memberof Validation
@@ -35,6 +47,18 @@ export default class AuthorValidator {
   static authorValidation() {
     return [
       AuthorValidator.checkAuthorName(),
+      checkForErrors,
+    ];
+  }
+
+  /**
+  * favAuthor validator
+  * @returns {array} an array of a Check API middleware and error handler
+  * @memberof Validation
+  */
+  static favAuthorValidation() {
+    return [
+      AuthorValidator.checkAuthorId(),
       checkForErrors,
     ];
   }

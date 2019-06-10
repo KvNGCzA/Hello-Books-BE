@@ -1,18 +1,18 @@
 export default (sequelize, DataTypes) => {
-  const Favourite = sequelize.define('Favourite', {
+  const FavouriteAuthor = sequelize.define('FavouriteAuthor', {
     userId: DataTypes.INTEGER,
     authorId: DataTypes.INTEGER
   }, {});
-  Favourite.associate = (models) => {
-    Favourite.belongsTo(models.User, {
+  FavouriteAuthor.associate = (models) => {
+    FavouriteAuthor.belongsTo(models.User, {
       foreignKey: 'userId',
       onDelete: 'CASCADE'
     });
 
-    Favourite.belongsTo(models.Author, {
+    FavouriteAuthor.belongsTo(models.Author, {
       foreignKey: 'authorId',
       onDelete: 'CASCADE'
     });
   };
-  return Favourite;
+  return FavouriteAuthor;
 };

@@ -26,6 +26,14 @@
     {
       "name": "SuperAdmin",
       "description": "Super admin of the library"
+    },
+    {
+      "name": "Admin",
+      "description": "Admin can add an author"
+    },
+    {
+      "name": "Favourite",
+      "description": "User can favourite or unfavourite an author"
     }
   ],
   "schemes": [
@@ -216,6 +224,111 @@
             "schema": {
               "$ref": "#/definitions/error"
             }
+          }
+        },
+        "security": [{
+          "Authorization": []
+        }]
+      }
+    },
+    "/favourites": {
+      "post": {
+        "tags": [
+          "Favourite"
+        ],
+        "summary": "Favourite author",
+        "description": "User can favourite an author",
+        "operationId": "favouriteAuthor",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [{
+          "in": "body",
+          "name": "body",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "authorId": {
+                "type": "integer"
+              }
+            }
+          },
+          "required": true
+        }],
+        "responses": {
+          "201": {
+            "description": "Author successfully favourited"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Invalid, expired or missing token"
+          },
+          "403": {
+            "description": "Forbidden Access"
+          },
+          "404": {
+            "description": "Entity not found"
+          },
+          "409": {
+            "description": "Already existing author"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        },
+        "security": [{
+          "Authorization": []
+        }]
+      },
+      "delete": {
+        "tags": [
+          "Favourite"
+        ],
+        "summary": "Unfavourite author",
+        "description": "User can unfavourite an author",
+        "operationId": "unfavouriteAuthor",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [{
+          "in": "body",
+          "name": "body",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "authorId": {
+                "type": "integer"
+              }
+            }
+          },
+          "required": true
+        }],
+        "responses": {
+          "200": {
+            "description": "Author successfully unfavourited"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Invalid, expired or missing token"
+          },
+          "403": {
+            "description": "Forbidden Access"
+          },
+          "404": {
+            "description": "Entity not found"
+          },
+          "500": {
+            "description": "Server error"
           }
         },
         "security": [{
