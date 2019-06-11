@@ -6,6 +6,7 @@ import makeLowerCase from './customSanitizers';
 import * as messages from './messages';
 import enforceVerification from './enforceVerification';
 import createUserRole from './createUserRole';
+import setupNewUser from './setupNewUser';
 
 const { signupMessage, createUserMessage } = messages;
 export default {
@@ -17,5 +18,6 @@ export default {
   signupMessage,
   enforceVerification,
   createUserMessage,
-  createUserRole
+  createUserRole,
+  setupNewUser
 };

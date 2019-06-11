@@ -3,8 +3,7 @@ import models from '../database/models';
 import helpers from '../helpers';
 
 const {
-  responseMessage, createToken, sendMail, signupMessage, createUserRole,
-  createUserMessage,
+  responseMessage, createToken, sendMail, signupMessage, setupNewUser
 } = helpers;
 const { User, UserRole } = models;
 const defaultPassword = process.env.PASSWORD || 'setpassword';
@@ -40,12 +39,7 @@ export default class AuthController {
       const token = createToken({ id }, '24h');
       delete dataValues.password;
       if (newUserFromAdmin) {
-        await createUserRole(response, id, role);
-        const message = createUserMessage(dataValues, role);
-        await sendMail(process.env.ADMIN_MAIL, email, message);
-        return responseMessage(response, 201, {
-          status: 'success', message: 'user successfully created', user: { ...dataValues }
-        });
+        return setupNewUser(response, dataValues, role, token);
       }
       await UserRole.create({ userId: id });
       const message = signupMessage(firstName, token);
