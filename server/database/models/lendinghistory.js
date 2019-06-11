@@ -1,7 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const LendingHistory = sequelize.define('LendingHistory', {
-    duration: DataTypes.STRING,
+    duration: DataTypes.INTEGER,
     status: DataTypes.STRING
   }, {});
   LendingHistory.associate = (models) => {

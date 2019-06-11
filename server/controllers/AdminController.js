@@ -1,11 +1,11 @@
-import bcrypt from 'bcryptjs';
+// import bcrypt from 'bcryptjs';
 import models from '../database/models';
 import helpers from '../helpers';
 
 const {
-  responseMessage, findUser
+  responseMessage, findUser, getPatrons,
 } = helpers;
-const { User } = models;
+const { LendingHistory, User } = models;
 
 /**
  * Admin controller class
@@ -13,13 +13,13 @@ const { User } = models;
  */
 class AdminController {
   /**
-   * Create a new user
-   * @name createUser
+   * @name createUser,findPatrons
    * @param {object} request
    * @param {object} response
    * @returns {json} json
    * @memberof AdminController
    */
+
   static async changeUserStatus(request, response) {
     const { id } = request.params;
     const { status } = request.body;
@@ -36,6 +36,36 @@ class AdminController {
       /* istanbul ignore next-line */
       return responseMessage(response, 500, { message: error.message });
     }
+  },
+
+  static async findPatrons(request, response) {
+    let filter = {};
+    const { status } = request.query;
+    try {
+      if (status) {
+        filter = {
+          where: {
+            status
+          }
+        };
+      }
+      const getAllLendingHistory = await LendingHistory.findAll(filter);
+      const userId = getPatrons(getAllLendingHistory);
+      const patron = await User.findAll({ raw: true, where: { id: userId } });
+      if (!status) {
+        if (patron.length === 0) {
+          return responseMessage(response, 404, { status: 'no data found', message: 'no patron found', data: {} });
+        }
+        const newPatron = patron.filter(user => delete
+        user.password);
+        return responseMessage(response, 200, { status: 'success', message: 'patron found', data: newPatron });
+      }
+      return responseMessage(response, 200, { status: 'success', message: 'patron found', data: { ...getAllLendingHistory } });
+    }
+    catch (error) {
+      return responseMessage(response, 500, { message: error.message });
+    }
   }
-}
+};
+
 export default AdminController;

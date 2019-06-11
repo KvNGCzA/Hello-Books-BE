@@ -26,6 +26,9 @@ describe('ADMIN ROUTES', () => {
   let authorUrlForAdmin;
   let authorUrlForUnverified;
   let authorUrlForNonAdmin;
+  let patronsUrlForAdmin;
+  let patronsUrlByStatusForAdmin;
+
   before((done) => {
     chai.request(app)
       .post(loginUrl)
@@ -33,6 +36,27 @@ describe('ADMIN ROUTES', () => {
       .end((error, response) => {
         adminToken = response.body.token;
         authorUrlForAdmin = `${BASE_URL}/author?token=${adminToken}`;
+        done();
+      });
+  });
+
+  before((done) => {
+    chai.request(app)
+      .post(loginUrl)
+      .send(admin)
+      .end((error, response) => {
+        adminToken = response.body.token;
+        patronsUrlForAdmin = `${BASE_URL}/patrons?token=${adminToken}`;
+        done();
+      });
+  });
+  before((done) => {
+    chai.request(app)
+      .post(loginUrl)
+      .send(admin)
+      .end((error, response) => {
+        adminToken = response.body.token;
+        patronsUrlByStatusForAdmin = `${BASE_URL}/patrons?status=returned&&token=${adminToken}`;
         done();
       });
   });
@@ -264,6 +288,30 @@ describe('ADMIN ROUTES', () => {
           expect(response.body.status).to.equal('failure');
           expect(response.body.errors.body).to.have.key('authorName');
           expect(response.body.errors.body.authorName).to.equal('authorName must be at least 2 characters, and maximum 30');
+          done();
+        });
+    });
+  });
+  describe('Admin can find user', () => {
+    it('should return patrons that broke the rules', (done) => {
+      chai.request(app)
+        .get(patronsUrlForAdmin)
+        .end((error, response) => {
+          expect(response).to.have.status(200);
+          expect(response.body.status).to.equal('success');
+          expect(response.body).to.have.property('data');
+          expect(response.body.message).to.equal('patron found');
+          done();
+        });
+    });
+    it('should return patrons with status borrowed or returned', (done) => {
+      chai.request(app)
+        .get(patronsUrlByStatusForAdmin)
+        .end((error, response) => {
+          expect(response).to.have.status(200);
+          expect(response.body.status).to.equal('success');
+          expect(response.body).to.have.property('data');
+          expect(response.body.message).to.equal('patron found');
           done();
         });
     });
