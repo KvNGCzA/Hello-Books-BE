@@ -6,7 +6,8 @@ const getPatrons = (data) => {
     if (history.duration < numOfDays) {
       temporary.push(history.userId);
     }
-});
+  });
   return temporary;
 };
+
 export default getPatrons;
