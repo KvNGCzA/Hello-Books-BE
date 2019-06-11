@@ -13,17 +13,12 @@ export default (sequelize, DataTypes) => {
       onDelete: 'CASCADE'
     });
 
-    Book.hasMany(models.Fine, {
-      foreignKey: 'bookId',
-      onDelete: 'CASCADE'
-    });
-
     Book.hasMany(models.LendingHistory, {
       foreignKey: 'bookId',
       onDelete: 'CASCADE'
     });
 
-    Book.hasMany(models.FavoriteBook, {
+    Book.hasMany(models.FavouriteBook, {
       foreignKey: 'bookId',
       onDelete: 'CASCADE'
     });

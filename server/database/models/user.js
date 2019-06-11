@@ -6,20 +6,11 @@ export default (sequelize, DataTypes) => {
     password: DataTypes.STRING,
     avatarUrl: DataTypes.STRING,
     verified: DataTypes.BOOLEAN,
-    status: DataTypes.STRING
+    status: DataTypes.STRING,
+    paymentStatus: DataTypes.BOOLEAN
   }, {});
 
   User.associate = (models) => {
-    User.hasMany(models.Follower, {
-      foreignKey: 'userId',
-      onDelete: 'CASCADE'
-    });
-
-    User.hasMany(models.Follower, {
-      foreignKey: 'followerId',
-      onDelete: 'CASCADE'
-    });
-
     User.hasMany(models.FavouriteAuthor, {
       foreignKey: 'userId',
       onDelete: 'CASCADE'
@@ -30,17 +21,12 @@ export default (sequelize, DataTypes) => {
       onDelete: 'CASCADE'
     });
 
-    User.hasMany(models.Fine, {
-      foreignKey: 'userId',
-      onDelete: 'CASCADE'
-    });
-
     User.hasMany(models.LendingHistory, {
       foreignKey: 'userId',
       onDelete: 'CASCADE'
     });
 
-    User.hasMany(models.FavoriteBook, {
+    User.hasMany(models.FavouriteBook, {
       foreignKey: 'userId',
       onDelete: 'CASCADE'
     });

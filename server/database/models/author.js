@@ -1,6 +1,6 @@
 export default (sequelize, DataTypes) => {
   const Author = sequelize.define('Author', {
-    fullname: DataTypes.STRING
+    authorName: DataTypes.STRING
   }, {});
   Author.associate = (models) => {
     Author.hasMany(models.BookAuthor, {

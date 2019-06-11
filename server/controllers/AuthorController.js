@@ -17,11 +17,11 @@ export default class AuthorController {
    */
   static async addAuthor(request, response) {
     try {
-      const { authorName } = request.body;
-      const fullname = makeLowerCase(authorName);
-      const existingAuthor = await Author.findOne({ where: { fullname } });
+      let { authorName } = request.body;
+      authorName = makeLowerCase(authorName);
+      const existingAuthor = await Author.findOne({ where: { authorName } });
       if (existingAuthor) return responseMessage(response, 409, { message: 'author already exists' });
-      const newAuthor = await Author.create({ fullname });
+      const newAuthor = await Author.create({ authorName });
       const { dataValues } = newAuthor;
       return responseMessage(response, 201, { status: 'success', message: 'author successfully added', data: { ...dataValues } });
     } catch (error) {
@@ -44,9 +44,9 @@ export default class AuthorController {
       const existingAuthor = authors.find(author => author.id === +authorId);
       if (!existingAuthor) { return responseMessage(response, 404, { message: 'author not found' }); }
       const sameAuthor = authors
-        .find(author => author.fullname === authorName && author.id === +authorId);
+        .find(author => author.authorName === authorName && author.id === +authorId);
       if (sameAuthor) { return responseMessage(response, 409, { message: 'author name is the same' }); }
-      const authorUpdate = await Author.update({ fullname: authorName }, {
+      const authorUpdate = await Author.update({ authorName }, {
         where: { id: authorId },
         returning: true,
         raw: true

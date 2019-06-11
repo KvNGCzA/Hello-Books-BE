@@ -149,7 +149,21 @@ export default class UserValidator {
   }
 
   /**
+   * Generic Number validator
+   * @param {string} item
+   * @returns {function} call to a check API middleware
+   * @memberof Validation
+   */
+  static checkNumber(item) {
+    return UserValidator.genericCheck(item)
+      .trim()
+      .isInt({ min: 1 })
+      .withMessage(`${item} value must be at least 1 and an integer`);
+  }
+
+  /**
    * Role validator
+   * @param {integer} item
    * @returns {function} call to a Check API middleware
    * @memberof Validation
    */

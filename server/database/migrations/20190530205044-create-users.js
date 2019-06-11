@@ -39,6 +39,11 @@ module.exports = {
         type: Sequelize.STRING,
         defaultValue: 'active'
       },
+      paymentStatus: {
+        allowNull: false,
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

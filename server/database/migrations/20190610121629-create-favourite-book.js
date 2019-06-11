@@ -1,7 +1,7 @@
 /* eslint-disable */
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('FavoriteBooks', {
+    return queryInterface.createTable('FavouriteBooks', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -37,6 +37,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('FavoriteBooks');
+    return queryInterface.dropTable('FavouriteBooks');
   }
 };

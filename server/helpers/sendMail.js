@@ -7,12 +7,13 @@ const message = {
     }
 */
 
-const sendMail = (senderMail, recieverMail, message) => {
+const sendMail = (senderMail, receiverMail, message) => {
   sendgridMail.setApiKey(process.env.SENDGRID_API_KEY);
   const msg = {
-    to: recieverMail,
+    to: receiverMail,
     from: senderMail,
-    subject: 'Hello-Books',
+    subject: 'Welcome to Hello Books',
+    text: 'Hello Books',
     ...message
   };
   return sendgridMail.send(msg);

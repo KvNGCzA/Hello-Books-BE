@@ -1,154 +1,214 @@
-import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
-import server from '../../../server';
+import chai, { expect } from 'chai';
+import app from '../../../server';
 import testData from './__mocks__';
 
-const {
-  userData: {
-    newBook, nonExistingBook, InvalidBook, InvalidBook1, InvalidBook2,
-    patronLogin,
-    patronSignup, patronProfile
-  }
-} = testData;
-
 const API_VERSION = '/api/v1';
-const BASE_URL = `${API_VERSION}/favorites/book/`;
+const borrowUrl = `${API_VERSION}/borrow`;
 const loginUrl = `${API_VERSION}/auth/login`;
 const UPDATE_URL = '/api/v1/user/update';
 
-let patronToken;
+const {
+  userData: {
+    notAdmin, notAdmin2, patronLogin, patronSignup, patronProfile
+  },
+  bookData: {
+    newBookToBorrow, newBookToBorrow2, nonExistingBookToBorrow, InvalidBookToBorrow,
+    InvalidBookToBorrow1, InvalidBookToBorrow2, InvalidBookToBorrow3
+  }
+} = testData;
 
 chai.use(chaiHttp);
 
-before((done) => {
-  chai.request(server)
-    .post(loginUrl)
-    .send(patronLogin)
-    .end((error, response) => {
-      patronToken = response.body.token;
-      done();
+let patronToken;
+
+describe('PATRON ROUTES', () => {
+  let patronToken2;
+  before((done) => {
+    chai.request(app)
+      .post(loginUrl)
+      .send(notAdmin)
+      .end((error, response) => {
+        patronToken = response.body.token;
+        done();
+      });
+  });
+
+  before((done) => {
+    chai.request(app)
+      .post(loginUrl)
+      .send(notAdmin2)
+      .end((error, response) => {
+        patronToken2 = response.body.token;
+        done();
+      });
+  });
+
+  describe('User\'s Controller', () => {
+    /**
+       * Test the POST /borrow endpoint
+       */
+    it('should be able to borrow a book when all the required parameters are given', (done) => {
+      chai.request(app)
+        .post(borrowUrl)
+        .set('Authorization', patronToken)
+        .send(newBookToBorrow)
+
+        .end((error, response) => {
+          expect(response.body).to.be.an('object');
+          expect(response).to.have.status(201);
+          expect(response.body.status).to.equal('success');
+          expect(response.body.message).to.be.a('string');
+          done();
+        });
     });
-});
 
-describe('Favorite Book Test', () => {
-  it('should favorite book if the book is in the database', (done) => {
-    chai.request(server)
-      .post(`${BASE_URL}${newBook.id}`)
-      .query({ token: patronToken })
-      .end((error, response) => {
-        expect(response).to.have.status(201);
-        expect(response.body.message).to.be.a('string');
-        expect(response.body.message).to.equal('favorited successfully');
-        expect(response.body.book).to.be.a('object');
-        expect(response.body.book).to.have.property('authors');
-        expect(response.body.book).to.have.property('description');
-        expect(response.body.book.id).to.equal(newBook.id);
-        done();
-      });
-  });
+    it('should be able to borrow another book when all the required parameters are given', (done) => {
+      chai.request(app)
+        .post(borrowUrl)
+        .set('Authorization', patronToken)
+        .send(newBookToBorrow2)
 
-  it('should not favorite book if the book is already a favorite and also in the database', (done) => {
-    chai.request(server)
-      .post(`${BASE_URL}${newBook.id}`)
-      .query({ token: patronToken })
-      .end((error, response) => {
-        expect(response).to.have.status(409);
-        expect(response.body.message).to.be.a('string');
-        expect(response.body.message).to.equal('this book is already in your favourites');
-        done();
-      });
-  });
+        .end((error, response) => {
+          expect(response.body).to.be.an('object');
+          expect(response).to.have.status(201);
+          expect(response.body.status).to.equal('success');
+          expect(response.body.message).to.be.a('string');
+          done();
+        });
+    });
 
-  it('should not favorite book if the book is not the database', (done) => {
-    chai.request(server)
-      .post(`${BASE_URL}${nonExistingBook.id}`)
-      .query({ token: patronToken })
-      .end((error, response) => {
-        expect(response).to.have.status(404);
-        expect(response.body.message).to.be.a('string');
-        expect(response.body.message).to.equal('book not found');
-        done();
-      });
-  });
+    it('should be able to borrow a book when the book is already borrowed and the session has expired', (done) => {
+      chai.request(app)
+        .post(borrowUrl)
+        .set('Authorization', patronToken)
+        .send(newBookToBorrow2)
 
-  it('should not favorite book if the book id is of wrong format', (done) => {
-    chai.request(server)
-      .post(`${BASE_URL}${InvalidBook.id}`)
-      .query({ token: patronToken })
-      .end((error, response) => {
-        expect(response).to.have.status(400);
-        expect(response.body.errors).to.be.a('object');
-        expect(response.body.errors.params.bookId).to.equal('bookId value must be at least 1 and an integer');
-        done();
-      });
-  });
+        .end((error, response) => {
+          expect(response.body).to.be.an('object');
+          expect(response).to.have.status(201);
+          expect(response.body.status).to.equal('success');
+          expect(response.body.message).to.be.a('string');
+          done();
+        });
+    });
 
-  it('should not favorite book if the book id is of wrong format', (done) => {
-    chai.request(server)
-      .post(`${BASE_URL}${InvalidBook1.id}`)
-      .query({ token: patronToken })
-      .end((error, response) => {
-        expect(response).to.have.status(400);
-        expect(response.body.errors).to.be.a('object');
-        expect(response.body.errors.params.bookId).to.equal('bookId value must be at least 1 and an integer');
-        done();
-      });
-  });
+    it('should not be able to borrow a book when the book is already borrowed and the session has not expired', (done) => {
+      chai.request(app)
+        .post(borrowUrl)
+        .set('Authorization', patronToken)
+        .send(newBookToBorrow)
 
-  it('should not favorite book if the book id is of wrong format', (done) => {
-    chai.request(server)
-      .post(`${BASE_URL}${InvalidBook2.id}`)
-      .query({ token: patronToken })
-      .end((error, response) => {
-        expect(response).to.have.status(400);
-        expect(response.body.errors).to.be.a('object');
-        expect(response.body.errors.params.bookId).to.equal('bookId value must be at least 1 and an integer');
-        done();
-      });
-  });
-});
+        .end((error, response) => {
+          expect(response.body).to.be.an('object');
+          expect(response).to.have.status(409);
+          expect(response.body.status).to.equal('failure');
+          expect(response.body.message).to.be.a('string');
+          expect(response.body.message).to.equal('book already borrowed');
+          done();
+        });
+    });
 
+    it('should not be able to borrow a book when the book does not exist', (done) => {
+      chai.request(app)
+        .post(borrowUrl)
+        .set('Authorization', patronToken)
+        .send(nonExistingBookToBorrow)
 
-describe('Unfavorite Book Test', () => {
-  it('should unfavorite book if the book is already a favorite and also in the database', (done) => {
-    chai.request(server)
-      .delete(`${BASE_URL}${newBook.id}`)
-      .query({ token: patronToken })
-      .end((error, response) => {
-        expect(response).to.have.status(200);
-        expect(response.body.message).to.be.a('string');
-        expect(response.body.message).to.equal('unfavorited successfully');
-        done();
-      });
-  });
+        .end((error, response) => {
+          expect(response.body).to.be.an('object');
+          expect(response).to.have.status(404);
+          expect(response.body.status).to.equal('failure');
+          done();
+        });
+    });
 
-  it('should not unfavorite book if the book is already removed from the favorites and also in the database', (done) => {
-    chai.request(server)
-      .delete(`${BASE_URL}${newBook.id}`)
-      .query({ token: patronToken })
-      .end((error, response) => {
-        expect(response).to.have.status(404);
-        expect(response.body.message).to.be.a('string');
-        expect(response.body.message).to.equal('this book is not in your favourites');
-        done();
-      });
-  });
+    it('should not be able to borrow a book when no token provided', (done) => {
+      chai.request(app)
+        .post(borrowUrl)
+        .send(nonExistingBookToBorrow)
+        .end((error, response) => {
+          expect(response.body).to.be.an('object');
+          expect(response).to.have.status(401);
+          expect(response.body.status).to.equal('failure');
+          done();
+        });
+    });
 
-  it('should not favorite book if the book is not the database', (done) => {
-    chai.request(server)
-      .delete(`${BASE_URL}${nonExistingBook.id}`)
-      .query({ token: patronToken })
-      .end((error, response) => {
-        expect(response).to.have.status(404);
-        expect(response.body.message).to.be.a('string');
-        expect(response.body.message).to.equal('book not found');
-        done();
-      });
+    it('should not be able to borrow a book when user has insufficient funds', (done) => {
+      chai.request(app)
+        .post(borrowUrl)
+        .set('Authorization', patronToken2)
+        .send(newBookToBorrow)
+
+        .end((error, response) => {
+          expect(response.body).to.be.an('object');
+          expect(response).to.have.status(402);
+          expect(response.body.status).to.equal('failure');
+          done();
+        });
+    });
+
+    it('should not be able to borrow a book when the book id is invalid - case 1', (done) => {
+      chai.request(app)
+        .post(borrowUrl)
+        .set('Authorization', patronToken)
+        .send(InvalidBookToBorrow)
+
+        .end((error, response) => {
+          expect(response.body).to.be.an('object');
+          expect(response).to.have.status(400);
+          expect(response.body.status).to.equal('failure');
+          done();
+        });
+    });
+
+    it('should not be able to borrow a book when the book id is invalid - case 2', (done) => {
+      chai.request(app)
+        .post(borrowUrl)
+        .set('Authorization', patronToken)
+        .send(InvalidBookToBorrow1)
+
+        .end((error, response) => {
+          expect(response.body).to.be.an('object');
+          expect(response).to.have.status(400);
+          expect(response.body.status).to.equal('failure');
+          done();
+        });
+    });
+
+    it('should not be able to borrow a book when the book id is invalid - case 3', (done) => {
+      chai.request(app)
+        .post(borrowUrl)
+        .set('Authorization', patronToken)
+        .send(InvalidBookToBorrow2)
+
+        .end((error, response) => {
+          expect(response.body).to.be.an('object');
+          expect(response).to.have.status(400);
+          expect(response.body.status).to.equal('failure');
+          done();
+        });
+    });
+
+    it('should not be able to borrow a book when the book id is invalid - case 4', (done) => {
+      chai.request(app)
+        .post(borrowUrl)
+        .set('Authorization', patronToken)
+        .send(InvalidBookToBorrow3)
+
+        .end((error, response) => {
+          expect(response.body).to.be.an('object');
+          expect(response).to.have.status(400);
+          expect(response.body.status).to.equal('failure');
+          done();
+        });
+    });
   });
 });
 describe('Update user profile', () => {
   it('should update a user profile', (done) => {
-    chai.request(server)
+    chai.request(app)
       .patch(`${UPDATE_URL}`)
       .query({ token: patronToken })
       .send(patronProfile)
@@ -156,12 +216,13 @@ describe('Update user profile', () => {
         expect(response).to.have.status(200);
         expect(response.body).to.be.an('object');
         expect(response.body.status).to.equal('success');
-        expect(response.body.message).to.equal('update successful');
+        expect(response.body.message).to.equal('profile update successful');
         done();
       });
   });
+
   it('should not update a user profile if the email already exist in the database', (done) => {
-    chai.request(server)
+    chai.request(app)
       .patch(`${UPDATE_URL}`)
       .query({ token: patronToken })
       .send(patronSignup)
@@ -173,8 +234,9 @@ describe('Update user profile', () => {
         done();
       });
   });
+
   it('should not update a user profile if password is a parameter', (done) => {
-    chai.request(server)
+    chai.request(app)
       .patch(`${UPDATE_URL}`)
       .query({ token: patronToken })
       .send(patronLogin)
@@ -185,8 +247,9 @@ describe('Update user profile', () => {
         done();
       });
   });
+
   it('should not update a user profile if request body is empty', (done) => {
-    chai.request(server)
+    chai.request(app)
       .patch(`${UPDATE_URL}`)
       .query({ token: patronToken })
       .send({})
@@ -198,7 +261,7 @@ describe('Update user profile', () => {
       });
   });
   it('should not update a user profile if token is empty', (done) => {
-    chai.request(server)
+    chai.request(app)
       .patch(`${UPDATE_URL}`)
       .query({})
       .send({})

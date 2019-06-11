@@ -1,11 +1,18 @@
 import models from '../database/models';
 import helpers from '../helpers';
 
-const {
-  Author, FavouriteAuthor, FavoriteBook, Book, BookAuthor, User
-} = models;
+const { SERVICE_CHARGE } = process.env;
 
-const { responseMessage } = helpers;
+const {
+  Author,
+  FavouriteAuthor,
+  FavouriteBook,
+  LendingHistory,
+  User
+} = models;
+const {
+  responseMessage, findBook, findLendingHistory
+} = helpers;
 
 
 /**
@@ -29,10 +36,8 @@ export default class UserController {
       const alreadyFavourite = await FavouriteAuthor.findOne({ where: { userId: id, authorId } });
       if (alreadyFavourite) return responseMessage(response, 409, { message: 'author is already among your favourites' });
       const newFavourite = await FavouriteAuthor.create({ userId: id, authorId });
-      if (newFavourite) {
-        const { dataValues } = newFavourite;
-        responseMessage(response, 201, { status: 'success', message: 'author successfully added to favourites', data: { ...dataValues, author: author.fullname } });
-      }
+      const { dataValues } = newFavourite;
+      responseMessage(response, 201, { status: 'success', message: 'author successfully added to favourites', data: { ...dataValues } });
     } catch (error) {
       /* istanbul ignore next */
       responseMessage(response, 500, { message: error.message });
@@ -40,47 +45,26 @@ export default class UserController {
   }
 
   /**
-   * @description check if book is in database
-   * @param {object} request express request object
-   * @param {object} response express response object
-   * @returns {array} favoritebook, book and param object in an array
-   * @memberof UserController
-   */
-  static async findBook(request, response) {
-    const { id } = request.userData;
-    const { bookId } = request.params;
-    const favoritebook = await FavoriteBook.findOne({ where: { userId: id, bookId } });
-    const book = await Book.findOne({
-      where: { id: bookId },
-      include: [{
-        model: BookAuthor,
-        include: [{
-          model: Author
-        }]
-      }]
-    });
-    if (!book) return responseMessage(response, 404, { message: 'book not found' });
-    return [favoritebook, { userId: id, bookId: parseInt(bookId, 10) }, book];
-  }
-
-  /**
-   * @description user can favorite a book
+   * @description user can favourite a book
    * @param {object} request express request object
    * @param {object} response express response object
    * @returns {json} json
    * @memberof UserController
    */
-  static async favoriteBook(request, response) {
+  static async favouriteBook(request, response) {
     try {
-      const [favoritebook, param, book] = await UserController.findBook(request, response);
-      if (favoritebook) return responseMessage(response, 409, { message: 'this book is already in your favourites' });
+      const { id } = request.userData;
+      const { bookId } = request.params;
+      const book = await findBook(bookId, response);
+      const existingFavourite = await FavouriteBook.findOne({ where: { userId: id, bookId } });
+      if (existingFavourite) return responseMessage(response, 409, { message: 'this book is already in your favourites' });
       const { dataValues, BookAuthors } = book;
-      const listOfAuthors = Array.from(BookAuthors).map(x => x.Author.fullname);
+      const listOfAuthors = Array.from(BookAuthors).map(x => x.Author.authorName);
       delete dataValues.BookAuthors;
-      await FavoriteBook.create(param);
+      await FavouriteBook.create({ userId: id, bookId });
       return responseMessage(response, 201, {
         status: 'success',
-        message: 'favorited successfully',
+        message: 'favourited successfully',
         book: { ...dataValues, authors: listOfAuthors.join(', ') }
       });
     } catch (error) {
@@ -104,8 +88,8 @@ export default class UserController {
       if (!author) return responseMessage(response, 404, { message: 'an author with the given id does not exists' });
       const alreadyFavourite = await FavouriteAuthor.findOne({ where: { userId: id, authorId } });
       if (!alreadyFavourite) return responseMessage(response, 404, { message: 'author is not among your favourites' });
-      const deleted = await FavouriteAuthor.destroy({ where: { userId: id, authorId } });
-      if (deleted) responseMessage(response, 200, { status: 'success', message: 'author successfully removed from favourites' });
+      await FavouriteAuthor.destroy({ where: { userId: id, authorId } });
+      responseMessage(response, 200, { status: 'success', message: 'author successfully removed from favourites' });
     } catch (error) {
       /* istanbul ignore next */
       responseMessage(response, 500, { message: error.message });
@@ -113,20 +97,23 @@ export default class UserController {
   }
 
   /**
-   * @description user can unfavorite a book
+   * @description user can unfavourite a book
    * @param {object} request express request object
    * @param {object} response express response object
    * @returns {json} json
    * @memberof UserController
    */
-  static async unfavoriteBook(request, response) {
+  static async unfavouriteBook(request, response) {
     try {
-      const [favoritebook, param] = await UserController.findBook(request, response);
-      if (!favoritebook) return responseMessage(response, 404, { message: 'this book is not in your favourites' });
-      await FavoriteBook.destroy({ where: param });
+      const { id } = request.userData;
+      const { bookId } = request.params;
+      await findBook(bookId, response);
+      const existingFavourite = await FavouriteBook.findOne({ where: { userId: id, bookId } });
+      if (!existingFavourite) return responseMessage(response, 404, { message: 'this book is not in your favourites' });
+      await FavouriteBook.destroy({ where: { userId: id, bookId } });
       return responseMessage(response, 200, {
         status: 'success',
-        message: 'unfavorited successfully',
+        message: 'unfavourited successfully',
       });
     } catch (error) {
       /* istanbul ignore next-line */
@@ -155,10 +142,45 @@ export default class UserController {
       await User.update({
         ...body
       }, { where: { id } });
-      return responseMessage(response, 200, { status: 'success', message: 'update successful' });
+      return responseMessage(response, 200, { status: 'success', message: 'profile update successful' });
     } catch (error) {
       /* istanbul ignore next */
       responseMessage(response, 500, { message: error.message });
+    }
+  }
+
+  /**
+   * @description allows users to borrow a book
+   * @param {object} request express request object
+   * @param {object} response express response object
+   * @returns {json} json
+   * @memberof UserController
+   */
+  static async borrowBook(request, response) {
+    try {
+      const { id, paymentStatus } = request.userData;
+      const { bookId } = request.body;
+      if (!paymentStatus) return responseMessage(response, 402, { message: 'insufficient funds to borrow book' });
+      const existingBook = await findBook(bookId, response);
+      const { dataValues, BookAuthors: [BookAuthor] } = existingBook;
+      const { authorName } = BookAuthor.dataValues.Author;
+      delete dataValues.BookAuthors;
+      const [borrowedBook, bookDuration] = await findLendingHistory(id, bookId, response);
+      if (borrowedBook && bookDuration === '') return responseMessage(response, 409, { message: 'book already borrowed' });
+      const borrowingBook = await LendingHistory.create({
+        bookId, userId: id, charge: SERVICE_CHARGE
+      });
+      const { charge, duration } = borrowingBook;
+      return responseMessage(response, 201, {
+        status: 'success',
+        message: 'book successfully borrowed',
+        data: {
+          ...dataValues, author: authorName, charge, duration
+        }
+      });
+    } catch (error) {
+      /* istanbul ignore next-line */
+      return responseMessage(response, 500, { message: error.message });
     }
   }
 }

@@ -28,21 +28,17 @@ export default class AuthController {
     } = request.body;
     let newUserFromAdmin;
     try {
-      if (!password) {
-        newUserFromAdmin = true;
-      }
+      if (!password) newUserFromAdmin = true;
       const existingUser = await User.findOne({ where: { email } });
       if (existingUser) return responseMessage(response, 409, { message: 'user already exist' });
-      const Password = bcrypt.hashSync(password || defaultPassword, 10);
+      const userPassword = bcrypt.hashSync(password || defaultPassword, 10);
       const newUser = await User.create({
-        firstName, lastName, email, password: Password, avatarUrl
+        firstName, lastName, email, password: userPassword, avatarUrl
       });
       const { id, dataValues } = newUser;
       const token = createToken({ id }, '24h');
       delete dataValues.password;
-      if (newUserFromAdmin) {
-        return setupNewUser(response, dataValues, roleId, token);
-      }
+      if (newUserFromAdmin) return setupNewUser(response, dataValues, roleId, token);
       await UserRole.create({ userId: id });
       const message = signupMessage(firstName, token);
       await sendMail(process.env.ADMIN_MAIL, email, message);
@@ -56,7 +52,7 @@ export default class AuthController {
   }
 
   /**
-   * Method for handling signin route(POST api/v1/auth/signin)
+   * Method for handling signin route(POST api/v1/auth/login)
    * @param {object} request - the request object
    * @param {object} response  - object
    * @return { json }  - the response json
@@ -122,13 +118,11 @@ export default class AuthController {
     const { email } = request.body;
     try {
       const user = await findUser(email, response);
-      if (user) {
-        const { id, firstName } = user;
-        const token = createToken({ id }, '2h');
-        const message = resetpasswordMessage(firstName, token);
-        await sendMail(process.env.ADMIN_MAIL, email, message);
-        return responseMessage(response, 200, { status: 'success', message: 'you will recieve a link in your mail shortly to proceed' });
-      }
+      const { id, firstName } = user;
+      const token = createToken({ id }, '2h');
+      const message = resetpasswordMessage(firstName, token);
+      await sendMail(process.env.ADMIN_MAIL, email, message);
+      return responseMessage(response, 200, { status: 'success', message: 'you will receive a link in your mail shortly to proceed' });
     } catch (error) {
       /* istanbul ignore next-line */
       return responseMessage(response, 500, { message: error.message });
@@ -146,7 +140,7 @@ export default class AuthController {
  */
   static async resetPassword(request, response) {
     try {
-      const { id } = request.userData; parseInt(id, 10);
+      const { id } = request.userData;
       const password = bcrypt.hashSync(request.body.password, 10);
       await User.update({ password }, { where: { id } });
       return responseMessage(response, 200, { status: 'success', message: 'password changed successfully' });

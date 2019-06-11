@@ -9,13 +9,11 @@ const findUser = async (param, response) => {
     const user = await User.findOne({
       where: field, include: [{ model: UserRole, include: [{ model: Role }] }]
     });
-    if (!user) {
-      return responseMessage(response, 404, { message: 'user does not exist' });
-    }
+    if (!user) return responseMessage(response, 404, { message: 'user does not exist' });
     return user;
   } catch (error) {
     /* istanbul ignore next-line */
-    responseMessage(response, 500, { message: error.message });
+    return responseMessage(response, 500, { message: error.message });
   }
 };
 

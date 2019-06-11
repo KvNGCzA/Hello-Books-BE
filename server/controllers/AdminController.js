@@ -1,6 +1,5 @@
-import bcrypt from 'bcryptjs';
-import models from '../database/models';
 import helpers from '../helpers';
+import models from '../database/models';
 
 const {
   responseMessage, findUser
@@ -13,8 +12,8 @@ const { User } = models;
  */
 class AdminController {
   /**
-   * Create a new user
-   * @name createUser
+   * change User Status
+   * @name changeUserStatus
    * @param {object} request
    * @param {object} response
    * @returns {json} json

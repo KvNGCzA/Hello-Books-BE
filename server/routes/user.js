@@ -1,35 +1,42 @@
 import express from 'express';
-import UserController from '../controllers/UserController';
 import middlewares from '../middlewares';
+import UserController from '../controllers/UserController';
 import BookController from '../controllers/BookController';
 
 const {
-  favouriteAuthor, unfavouriteAuthor, favoriteBook, unfavoriteBook, editProfile
+  editProfile, favouriteAuthor, unfavouriteAuthor, favouriteBook, unfavouriteBook, borrowBook
 } = UserController;
 const { fetchBooks } = BookController;
 const {
   verifyToken, authorizeUser, AuthorValidator: { favAuthorValidation },
-  BookValidator: { FavoriteBookValidation, FetchBookValidation },
-  UserValidator: { profileValidation }
+  BookValidator: { FavouriteBookValidation, FetchBookValidation },
+  UserValidator: { profileValidation },
+  BorrowValidator: { BorrowValidation }
 } = middlewares;
 const user = express.Router();
-const FAVOURITES_BASE_URL = '/favourites/author/:authorId';
-const BOOKS_BASE_URL = '/books';
-// Update User Profile
-const UPDATE_BASE_URL = '/user/update';
-// Favorite Author
-user.post(`${FAVOURITES_BASE_URL}`, verifyToken, authorizeUser(['patron']), favAuthorValidation(), favouriteAuthor);
-// Unfavorite Author
-user.delete(`${FAVOURITES_BASE_URL}`, verifyToken, authorizeUser(['patron']), favAuthorValidation(), unfavouriteAuthor);
-// Fetch Books
-user.get(`${BOOKS_BASE_URL}`, FetchBookValidation(), fetchBooks);
+const BASE_URL = '/user';
+const BOOKS_URL = '/books';
+const FAVOURITE_URL = '/favourite';
 
-// Update Profile
-user.patch(`${UPDATE_BASE_URL}`, verifyToken, authorizeUser(['patron', 'superadmin', 'admin']), profileValidation(), editProfile);
+// Route to fetch books
+user.get(`${BOOKS_URL}`, FetchBookValidation(), fetchBooks);
 
-// Favorite Book
-user.post('/favorites/book/:bookId', verifyToken, authorizeUser(['patron']), FavoriteBookValidation(), favoriteBook);
-// Unfavorite Book
-user.delete('/favorites/book/:bookId', verifyToken, authorizeUser(['patron']), FavoriteBookValidation(), unfavoriteBook);
+// Route to favourite an author
+user.post(`${FAVOURITE_URL}/author/:authorId`, verifyToken, authorizeUser(['patron']), favAuthorValidation(), favouriteAuthor);
+
+// Route to unfavourite an author
+user.delete(`${FAVOURITE_URL}/author/:authorId`, verifyToken, authorizeUser(['patron']), favAuthorValidation(), unfavouriteAuthor);
+
+// Route to favourite book
+user.post(`${FAVOURITE_URL}/book/:bookId`, verifyToken, authorizeUser(['patron']), FavouriteBookValidation(), favouriteBook);
+
+// Route to unfavorite book
+user.delete(`${FAVOURITE_URL}/book/:bookId`, verifyToken, authorizeUser(['patron']), FavouriteBookValidation(), unfavouriteBook);
+
+// Route to update profile
+user.patch(`${BASE_URL}/update`, verifyToken, authorizeUser(['patron', 'superadmin', 'admin']), profileValidation(), editProfile);
+
+// Route to borrow a book
+user.post('/borrow', verifyToken, authorizeUser(['patron']), BorrowValidation(), borrowBook);
 
 export default user;
