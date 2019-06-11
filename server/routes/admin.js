@@ -11,14 +11,14 @@ const { verifyToken, authorizeUser, AuthorValidator } = middlewares;
 const { addAuthor } = AuthorController;
 const { changeUserStatus } = AdminController;
 const { authorValidation } = AuthorValidator;
-const authorizeAdmin = authorizeUser(['admin']);
 
-admin.post(`${BASE_URL}/author`, verifyToken, authorizeAdmin, authorValidation(), addAuthor);
-// admin.post(`${BASE_URL}/author`, authorValidation(), verifyToken, authorizeAdmin, addAuthor);
 const { createUser } = AuthController;
 const { createUserValidation, changeStatusValidation } = UserValidator;
-
+// route to add author
+admin.post(`${BASE_URL}/author`, verifyToken, authorizeUser(['superadmin', 'admin']), authorValidation(), addAuthor);
+// route for superadmin to create new users
 admin.post('/admin/user', verifyToken, authorizeUser(['superadmin']), createUserValidation(), createUser);
+// route for superadmin to activate or deactivate a user
 admin.patch('/admin/user/:id', verifyToken, authorizeUser(['superadmin']), changeStatusValidation(), changeUserStatus);
 
 export default admin;

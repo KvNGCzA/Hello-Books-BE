@@ -29,6 +29,7 @@ class AdminController {
       if (status === dataValues.status) {
         return responseMessage(response, 400, { message: `user is already ${status}` });
       }
+      await User.update({ status }, { where: { id } });
       return responseMessage(response, 200, {
         status: 'success', message: `user successfully ${status === 'active' ? 'activated' : 'deactivated'}`
       });

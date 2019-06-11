@@ -308,6 +308,30 @@ describe('Admin creates new user', () => {
         done();
       });
   });
+  it('returns a status 201 if user supplies valid credentials', (done) => {
+    const body = {
+      firstName: 'New',
+      lastName: 'Admin',
+      email: 'newadmin@email.com',
+      role: 'admin'
+    };
+    chai.request(app)
+      .post('/api/v1/admin/user')
+      .send(body)
+      .set('Authorization', usertoken)
+      .end((err, response) => {
+        expect(response).to.have.status(201);
+        expect(response).to.be.an('object');
+        expect(response.body).to.include.all.keys('status', 'user');
+        expect(response.body.status).to.be.equal('success');
+        expect(response.body.user).to.include.all.keys('id', 'firstName', 'lastName', 'email');
+        expect(response.body.user.id).to.be.a('Number');
+        expect(response.body.user.firstName).to.be.a('String');
+        expect(response.body.user.lastName).to.be.a('String');
+        expect(response.body.user.email).to.be.a('String');
+        done();
+      });
+  });
   it('returns a status 404 if role does not exit', (done) => {
     const body = {
       firstName: 'Sunday',
@@ -428,7 +452,7 @@ describe('Admin can deactivate or activate a user', () => {
       status: 'inactive'
     };
     chai.request(app)
-      .patch('/api/v1/admin/user/8908')
+      .patch('/api/v1/admin/user/6')
       .send(body)
       .set('Authorization', usertoken)
       .end((err, response) => {
@@ -445,7 +469,7 @@ describe('Admin can deactivate or activate a user', () => {
       status: 'active'
     };
     chai.request(app)
-      .patch('/api/v1/admin/user/76785')
+      .patch('/api/v1/admin/user/2')
       .send(body)
       .set('Authorization', usertoken)
       .end((err, response) => {
@@ -461,7 +485,7 @@ describe('Admin can deactivate or activate a user', () => {
       status: 'active'
     };
     chai.request(app)
-      .patch('/api/v1/admin/user/1008')
+      .patch('/api/v1/admin/user/7')
       .send(body)
       .set('Authorization', usertoken)
       .end((err, response) => {
@@ -478,7 +502,7 @@ describe('Admin can deactivate or activate a user', () => {
       status: 'inactive'
     };
     chai.request(app)
-      .patch('/api/v1/admin/user/1118')
+      .patch('/api/v1/admin/user/8')
       .send(body)
       .set('Authorization', usertoken)
       .end((err, response) => {

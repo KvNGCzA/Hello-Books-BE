@@ -1,26 +1,39 @@
 {
-  "openapi" : "3.0.0",
-  "info" : {
-    "title" : "Hello Books",
-    "description" : "Hello Books is a system that allows efficient, cost-effective management of library operations.",
-    "version" : "1.0.0"
+  "swagger": "2.0",
+  "info": {
+    "description": "Hello Books is a system that allows efficient, cost-effective management of library operations",
+    "version": "1.0.0",
+    "title": "Hello Books API",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "email": "clasiqaas@gmail.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
   },
-  "servers" : [ {
-    "url" : "https://virtserver.swaggerhub.com/henryade/helloBooks/1.0.0",
-    "description" : "SwaggerHub API Auto Mocking"
-  } ],
-  "tags" : [ {
-    "name" : "Auth",
-    "description" : "Authorize users"
-  },
-  {
-    "name": "Admin",
-    "description": "Admin can add an author"
-  } ],
-  "paths" : {
-    
-    "/api/v1/auth/signup" : {
-      "post" : {
+  "servers": [{
+    "url": "https://virtserver.swaggerhub.com/henryade/helloBooks/1.0.0",
+    "description": "SwaggerHub API Auto Mocking"
+  }],
+  "host": "virtserver.swaggerhub.com",
+  "basePath": "/henryade/HelloBooks2.0/1.0.0",
+  "tags": [{
+      "name": "Auth",
+      "description": "Authorize users"
+    },
+    {
+      "name": "SuperAdmin",
+      "description": "Super admin of the library"
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/auth/signup": {
+      "post": {
         "tags": [
           "Auth"
         ],
@@ -33,69 +46,21 @@
         "produces": [
           "application/json"
         ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "description": "User object that needs to be registered",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/signup"
-            }
-          }
-        ],
-        "responses" : {
-          "201" : {
-            "description" : "sign up successful"
-            
-          }, "400" : {
-            "description" : "user already exist"
-          }, "500" : {
-            "description" : "server error"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/author" : {
-      "post" : {
-        "tags" : [ "Admin" ],
-        "summary" : "Admin can add an author",
-        "operationId" : "author",
-        "requestBody": {
+        "parameters": [{
+          "in": "body",
+          "name": "body",
+          "description": "User object that needs to be registered",
           "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "authorName"
-                ],
-                "properties": {
-                  "authorName": {
-                    "type": "string",
-                    "minLength": 4
-                  }
-                }
-              }
-            }
+          "schema": {
+            "$ref": "#/definitions/signup"
           }
-        },
+        }],
         "responses": {
           "201": {
-            "description": "author successfully added",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/admin"
-                }
-              }
-            }
+            "description": "sign up successful"
           },
           "400": {
-            "description": "author could not be added"
-          },
-          "409": {
-            "description": "author already exists"
+            "description": "user already exist"
           },
           "500": {
             "description": "server error"
@@ -103,15 +68,14 @@
         }
       }
     },
-
-    "/login": {
+    "/auth/login": {
       "post": {
         "tags": [
-          "Users"
+          "User"
         ],
         "summary": "Logs in an already existing user",
-        "description": "",
-        "operationId": "signupUser",
+        "description": "Logs in an already existing user",
+        "operationId": "signinUser",
         "consumes": [
           "application/json"
         ],
@@ -124,84 +88,257 @@
           "description": "Login parameter",
           "required": true,
           "schema": {
-            "$ref": "#/components/schemas/loginParams"
+            "$ref": "#/definitions/loginParams"
           }
         }],
         "responses": {
           "201": {
             "description": "Signin Successful"
-
           },
           "403": {
             "description": "Username or password is incorrect"
           }
         }
       }
-    }
-  },
-  "components" : {
-    "schemas" : {
-      "signup" : {
-        "type" : "object",
-        "required": [
-          "firstName",
-          "lastName",
-          "email",
-          "password"
+    },
+    "/admin/user": {
+      "post": {
+        "tags": [
+          "Superadmin"
         ],
-        "properties": {
-          "firstName": {
-            "type": "string",
-            "minLength": 4,
-            "example": "John"
-          },
-          "lastName": {
-            "type": "string",
-            "minLength": 4,
-            "example": "Doe"
-          },
-          "email": {
-            "type": "string",
-            "minLength": 4,
-            "format": "email",
-            "example": "johndoe@gmail.com"
-          },
-          "password": {
-            "type": "string",
-            "minLength": 4,
-            "example": "password"
-          },
-          "avatarUrl": {
-            "type": "string",         
-            "example": "https://gravatar.com/avatar/aed61baf1e9256ed7d70e2cbbfcba9aa?s=400&d=robohash&r=x"
-          }
-        }  
-      },
-      "loginParams": {
-        "type": "object",
-        "required": [
-          "email",
-          "password"
+        "summary": "Creates a new user",
+        "description": "Superadmin creates a new user",
+        "operationId": "createNewUser",
+        "consumes": [
+          "application/json"
         ],
-        "properties": {
-          "email": {
-            "type": "string",
-            "format": "email",
-            "example": "johndoe@gmail.com"
-          },
-          "password": {
-            "type": "string",
-            "example": "password"
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [{
+          "in": "body",
+          "name": "body",
+          "description": "Create new user",
+          "required": true,
+          "schema": {
+            "$ref": "#/definitions/createUserParams"
           }
-        },
-        "admin": {
-          "type": "object",
-          "properties": {
-            "authorName": {
-              "type": "string",
-              "minLength": 4
+        }],
+        "responses": {
+          "201": {
+            "description": "User successfully created"
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "401": {
+            "description": "invalid token",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "403": {
+            "description": "unauthorized user",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/error"
             }
           }
+        },
+        "security": [{
+          "Authorization": []
+        }]
+      }
+    },
+    "/admin/user/{userId}": {
+      "patch": {
+        "tags": [
+          "Superadmin"
+        ],
+        "summary": "Activates or deactivates a user",
+        "description": "Superadmin can activate or deactivate an account",
+        "operationId": "activate_deactivateUser",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [{
+            "in": "body",
+            "name": "body",
+            "description": "Create new user",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/acti_deactParams"
+            }
+          },
+          {
+            "in": "path",
+            "name": "userId",
+            "description": "The user id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User successfully activated or deactivated"
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "401": {
+            "description": "invalid token",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "403": {
+            "description": "unauthorized user",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        },
+        "security": [{
+          "Authorization": []
+        }]
+      }
+    }
+  },
+  "securityDefinitions": {
+    "Authorization": {
+      "type": "apiKey",
+      "name": "authorization",
+      "in": "header"
+    }
+  },
+  "definitions": {
+    "signup": {
+      "type": "object",
+      "required": [
+        "email",
+        "firstName",
+        "lastName",
+        "password"
+      ],
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "example": "John",
+          "minLength": 4
+        },
+        "lastName": {
+          "type": "string",
+          "example": "Doe",
+          "minLength": 4
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "example": "johndoe@gmail.com",
+          "minLength": 4
+        },
+        "password": {
+          "type": "string",
+          "example": "password",
+          "minLength": 4
+        },
+        "avatarUrl": {
+          "type": "string",
+          "example": "https://gravatar.com/avatar/aed61baf1e9256ed7d70e2cbbfcba9aa?s=400&d=robohash&r=x"
+        }
+      }
+    },
+    "loginParams": {
+      "type": "object",
+      "required": [
+        "email",
+        "password"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "example": "kylian@gmail.com"
+        },
+        "password": {
+          "type": "string",
+          "example": "kylianMbappe"
+        }
+      }
+    },
+    "error": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "example": "failure"
+        },
+        "error": {
+          "type": "string",
+          "example": "error message"
+        }
+      }
+    },
+    "createUserParams": {
+      "type": "object",
+      "required": [
+        "email",
+        "firstName",
+        "lastName",
+        "role"
+      ],
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "example": "John",
+          "minLength": 4
+        },
+        "lastName": {
+          "type": "string",
+          "example": "Doe",
+          "minLength": 4
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "example": "johndoe@gmail.com",
+          "minLength": 4
+        },
+        "role": {
+          "type": "string",
+          "example": "patron"
+        }
+      }
+    },
+    "acti_deactParams": {
+      "type": "object",
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "example": "inactive"
         }
       }
     }

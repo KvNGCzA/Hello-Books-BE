@@ -1,26 +1,22 @@
 /* eslint-disable */
 module.exports = {
   up: queryInterface => queryInterface.bulkInsert('UserRoles', [{
-    id: 9890,
-    userId: 76785,
+    userId: 2,
     roleId: 2113,
     createdAt: new Date(),
     updatedAt: new Date()
   }, {
-    id: 4564,
-    userId: 2098,
+    userId: 4,
     roleId: 1002,
     createdAt: new Date(),
     updatedAt: new Date()
   }, {
-    id: 4444,
-    userId: 8998,
+    userId: 5,
     roleId: 2768,
     createdAt: new Date(),
     updatedAt: new Date()
   }, {
-    id: 4488,
-    userId: 78761,
+    userId: 3,
     roleId: 2768,
     createdAt: new Date(),
     updatedAt: new Date()
