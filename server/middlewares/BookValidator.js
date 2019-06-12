@@ -1,5 +1,6 @@
 import UserValidator from './UserValidator';
 import checkForErrors from './checkForErrors';
+import AuthorValidator from './AuthorValidator';
 
 const year = new Date().getFullYear();
 
@@ -97,6 +98,16 @@ export default class BookValidator {
   }
 
   /**
+   * Generic Number validator
+   * @param {string} item
+   * @returns {function} call to a check API middleware
+   * @memberof Validation
+   */
+  static authorName() {
+    return AuthorValidator.checkAuthorName();
+  }
+
+  /**
    * Book validator
    * @returns {array} an array of check API middleware
    * @memberof Validation
@@ -109,7 +120,7 @@ export default class BookValidator {
       BookValidator.checkPrice(),
       BookValidator.checkYearPublished(),
       BookValidator.checkNumber('stock'),
-      BookValidator.checkNumber('authorId'),
+      BookValidator.authorName(),
       checkForErrors,
     ];
   }

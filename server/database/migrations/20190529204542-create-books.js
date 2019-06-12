@@ -33,15 +33,7 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER
       },
-      authorId: {
-        allowNull: false,
-        type: Sequelize.INTEGER,
-        onDelete: 'CASCADE',
-        references: {
-          model: 'Authors',
-          key: 'id'
-        }
-      },
+
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
