@@ -10,8 +10,11 @@ const BASE_URL = '/auth';
 const { createUser, login, verifyUser } = AuthController;
 const { signUpValidation, loginValidation } = UserValidator;
 
+// Sign up route
 auth.post(`${BASE_URL}/signup`, signUpValidation(), createUser);
+// Login route
 auth.post(`${BASE_URL}/login`, loginValidation(), login);
+// Verify User route
 auth.get(`${BASE_URL}/verify`, verifyToken, verifyUser);
 
 export default auth;

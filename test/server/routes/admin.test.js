@@ -4,15 +4,22 @@ import app from '../../../server';
 import testData from './__mocks__';
 import * as userData from './__mocks__/userData';
 
-const { authorData, userData: { admin, notVerified, notAdmin } } = testData;
+const { authorData, bookData: { badBook, book }, userData: { admin, notVerified, notAdmin } } = testData;
 
 const API_VERSION = '/api/v1';
 const BASE_URL = `${API_VERSION}/admin`;
 const loginUrl = `${API_VERSION}/auth/login`;
 const {
-  invalidAuthor, invalidAuthor1, invalidAuthor2, blankAuthor,
-  validAuthor, validAuthor1, validAuthor2, missingAuthorInput,
-  wrongLengthAuthor1, wrongLengthAuthor2,
+  invalidAuthor,
+  invalidAuthor1,
+  invalidAuthor2,
+  blankAuthor,
+  validAuthor,
+  validAuthor1,
+  validAuthor2,
+  missingAuthorInput,
+  wrongLengthAuthor1,
+  wrongLengthAuthor2,
 } = authorData;
 const {
   missingInput,
@@ -26,6 +33,8 @@ describe('ADMIN ROUTES', () => {
   let authorUrlForAdmin;
   let authorUrlForUnverified;
   let authorUrlForNonAdmin;
+  let bookUrlForAdmin;
+
   before((done) => {
     chai.request(app)
       .post(loginUrl)
@@ -33,6 +42,8 @@ describe('ADMIN ROUTES', () => {
       .end((error, response) => {
         adminToken = response.body.token;
         authorUrlForAdmin = `${BASE_URL}/author?token=${adminToken}`;
+        bookUrlForAdmin = `${BASE_URL}/book?token=${adminToken}`;
+
         done();
       });
   });
@@ -63,8 +74,8 @@ describe('ADMIN ROUTES', () => {
 
   describe('Author\'s Controller', () => {
     /**
-       * Test the POST /author endpoint
-       */
+     * Test the POST /author endpoint
+     */
     it('should be able to add an author when all the parameters are given', (done) => {
       chai.request(app)
         .post(authorUrlForAdmin)
@@ -264,6 +275,53 @@ describe('ADMIN ROUTES', () => {
           expect(response.body.status).to.equal('failure');
           expect(response.body.errors.body).to.have.key('authorName');
           expect(response.body.errors.body.authorName).to.equal('authorName must be at least 2 characters, and maximum 30');
+          done();
+        });
+    });
+  });
+
+  describe('Books Controller', () => {
+    /**
+     * Test the POST /addBook endpoint
+     */
+
+    it('should be able to add a book when all the parameters are given', (done) => {
+      chai.request(app)
+        .post(bookUrlForAdmin)
+        .send(book)
+
+        .end((error, response) => {
+          expect(response.body).to.be.an('object');
+          expect(response).to.have.status(201);
+          expect(response.body.status).to.equal('success');
+          expect(response.body.message).to.be.a('string');
+          done();
+        });
+    });
+
+    it('should not be able to add a book that already exists', (done) => {
+      chai.request(app)
+        .post(bookUrlForAdmin)
+        .send(book)
+
+        .end((error, response) => {
+          expect(response.body).to.be.an('object');
+          expect(response).to.have.status(409);
+          expect(response.body.status).to.equal('failure');
+          expect(response.body.message).to.be.a('string');
+          done();
+        });
+    });
+
+    it('should not create book if authorId is invalid', (done) => {
+      chai.request(app)
+        .post(bookUrlForAdmin)
+        .send(badBook)
+
+        .end((error, response) => {
+          expect(response.body).to.be.an('object');
+          expect(response).to.have.status(400);
+          expect(response.body.status).to.equal('failure');
           done();
         });
     });

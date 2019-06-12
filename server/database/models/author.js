@@ -3,7 +3,7 @@ export default (sequelize, DataTypes) => {
     fullname: DataTypes.STRING
   }, {});
   Author.associate = (models) => {
-    Author.hasMany(models.Book, {
+    Author.hasMany(models.BookAuthor, {
       foreignKey: 'authorId',
       onDelete: 'CASCADE'
     });

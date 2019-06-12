@@ -9,15 +9,15 @@ export default (sequelize, DataTypes) => {
   }, {});
 
   Book.associate = (models) => {
-    Book.belongsTo(models.Author, {
-      foreignKey: 'authorId',
+    Book.hasMany(models.BookAuthor, {
+      foreignKey: 'bookId',
       onDelete: 'CASCADE'
     });
 
     Book.hasMany(models.Fine, {
       foreignKey: 'bookId',
       onDelete: 'CASCADE'
-    })
+    });
 
     Book.hasMany(models.LendingHistory, {
       foreignKey: 'bookId',

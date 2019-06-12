@@ -15,7 +15,7 @@ export default (request, response, next) => {
         const message = (error.name === 'TokenExpiredError') ? 'token expired' : 'invalid token';
         responseMessage(response, 401, { message });
       } else {
-        const user = await findUser(decoded.id);
+        const user = await findUser(decoded.id, response);
         if (!user) return responseMessage(response, 404, { message: 'user not found' });
         return enforceVerification(request, response, next, user);
       }
