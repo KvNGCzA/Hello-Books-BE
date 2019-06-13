@@ -17,25 +17,26 @@ class BookController {
    */
   static async addBook(request, response) {
     const {
-      title, description, isbn, price, yearPublished, stock, authorName
-    } = request.body;
+      body: {
+        title, description, isbn, price, yearPublished, authorName
+      }
+    } = request;
     try {
       const newAuthor = await Author.findOrCreate({ where: { fullname: authorName } });
       const existingBook = await Book.findOrCreate({
-        where: { title },
+        where: { isbn },
         defaults: {
           description,
-          isbn,
+          title,
           price,
-          yearPublished,
-          stock
+          yearPublished
         }
       });
       await BookAuthor.create({ authorId: newAuthor[0].id, bookId: existingBook[0].id });
       const { dataValues } = existingBook[0];
-      const message = `book successfully added${newAuthor[1] ? ' and author created' : ' and author exist'}`;
+      const message = `book successfully added${newAuthor[1] ? ' and author created' : ''}`;
       return existingBook[1]
-        ? responseMessage(response, 201, { status: 'success', message, book: { ...dataValues, author: authorName } })
+        ? responseMessage(response, 201, { status: 'success', message, book: { ...dataValues, author: newAuthor[0].id } })
         : responseMessage(response, 409, { message: 'book already exist' });
     } catch (error) {
       /* istanbul ignore next-line */

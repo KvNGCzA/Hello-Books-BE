@@ -19,5 +19,5 @@ export default {
   enforceVerification,
   createUserMessage,
   createUserRole,
-  setupNewUser
+  setupNewUser,
 };

@@ -32,8 +32,9 @@ export default class AuthController {
       }
       const existingUser = await User.findOne({ where: { email } });
       if (existingUser) return responseMessage(response, 409, { message: 'user already exist' });
+      const Password = bcrypt.hashSync(password || defaultPassword, 10);
       const newUser = await User.create({
-        firstName, lastName, email, password: bcrypt.hashSync(password || defaultPassword, 10), avatarUrl
+        firstName, lastName, email, password: Password, avatarUrl
       });
       const { id, dataValues } = newUser;
       const token = createToken({ id }, '24h');

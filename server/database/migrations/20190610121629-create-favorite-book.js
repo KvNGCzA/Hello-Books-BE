@@ -1,33 +1,30 @@
 /* eslint-disable */
-'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Books', {
+    return queryInterface.createTable('FavoriteBooks', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      title: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      description: {
+      bookId: {
         allowNull: false,
-        type: Sequelize.TEXT
+        type: Sequelize.INTEGER,
+        onDelete: 'CASCADE',
+        references: {
+          model: 'Books',
+          key: 'id'
+        }
       },
-      isbn: {
+      userId: {
         allowNull: false,
-        type: Sequelize.BIGINT
-      },
-      price: {
-        allowNull: false,
-        type: Sequelize.INTEGER
-      },
-      yearPublished: {
-        allowNull: false,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        onDelete: 'CASCADE',
+        references: {
+          model: 'Users',
+          key: 'id'
+        }
       },
       createdAt: {
         allowNull: false,
@@ -40,6 +37,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Books');
+    return queryInterface.dropTable('FavoriteBooks');
   }
 };

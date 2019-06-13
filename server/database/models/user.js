@@ -29,11 +29,18 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'userId',
       onDelete: 'CASCADE'
     });
+
     User.hasMany(models.Fine, {
       foreignKey: 'userId',
       onDelete: 'CASCADE'
     });
+
     User.hasMany(models.LendingHistory, {
+      foreignKey: 'userId',
+      onDelete: 'CASCADE'
+    });
+
+    User.hasMany(models.FavoriteBook, {
       foreignKey: 'userId',
       onDelete: 'CASCADE'
     });

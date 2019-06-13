@@ -3,8 +3,7 @@
 const bcrypt = require('bcryptjs');
 
 module.exports = {
-  up: (queryInterface, Sequelize) => {
-    return queryInterface.bulkInsert('Users', [{
+  up: queryInterface => queryInterface.bulkInsert('Users', [{
       firstName: 'Jamie',
       lastName: 'Foxx',
       email: 'jamiefoxx@gmail.com',
@@ -84,10 +83,17 @@ module.exports = {
       status: 'inactive',
       createdAt: new Date(),
       updatedAt: new Date()
-    }], {});
-  },
+    }, {
+      firstName: 'John',
+      lastName: 'Simons',
+      email: 'johnsimons@gmail.com.ng',
+      password: bcrypt.hashSync('g4g5j6lkl4k9', 10),
+      avatarUrl: 'https://banner2.kisspng.com/20180408/tvw/kisspng-user-computer-icons-gravatar-blog-happy-woman-5aca6d03e6c3f5.6041125615232156199452.jpg',
+      verified: true,
+      status: 'active',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }], {}),
 
-  down: (queryInterface, Sequelize) => {
-    return queryInterface.bulkDelete('Users', null, {});
-  }
+  down: queryInterface => queryInterface.bulkDelete('Users', null, {})
 };

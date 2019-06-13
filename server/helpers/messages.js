@@ -16,25 +16,11 @@ const createUserMessage = (user, role, token) => {
     text: 'Hello Books',
     html: `  <div style="background-color:#7AA9EF; color:#fff; padding:20px"> <span style="text-align: left; margin-right: 10px">HB</span>
              <span style= "text-align:center">Welcome to hello books ${user.firstName.toUpperCase()}</span></div>
-             <div style="margin-top:30px" >  You have been added as a/an ${role}. Your login details are email: ${user.email}
-             password: ${process.env.Password || 'setPassword'}.</div>
+             <div style="margin-top:30px" >  You have been added as ${role === 'admin' ? 'an' : 'a'} ${role}. Your login details are email: ${user.email}
+             password: ${process.env.PASSWORD || 'setPassword'}.</div>
              <div> Click on this link to confirm your email <a href=https://hello-books-staging.herokuapp.com/api/v1/auth/verify?token=${token}> LINK </a></div >
              <div>
                  <p>Login to change your password immediately
-             </div>
-     `,
-  };
-  return message;
-};
-const createAdminMessage = (user, role) => {
-  const message = {
-    text: 'Hello Books',
-    html: `  <div style="background-color:#7AA9EF; color:#fff; padding:20px"> <span style="text-align: left; margin-right: 10px">HB</span>
-             <span style= "text-align:center">Welcome to hello books ${user.firstName.toUpperCase()}</span></div>
-             <div style="margin-top:30px" >  You have been added as an ${role}. Your login details are email: ${user.email}
-             password: ${process.env.Password || 'setPassword'}.</div>
-             <div>
-                 <p>Loginto change your password immediately
              </div>
      `,
   };
@@ -44,5 +30,4 @@ const createAdminMessage = (user, role) => {
 export {
   signupMessage,
   createUserMessage,
-  createAdminMessage
 };

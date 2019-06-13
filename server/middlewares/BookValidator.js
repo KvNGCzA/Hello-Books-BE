@@ -54,7 +54,9 @@ export default class BookValidator {
     return UserValidator.genericCheck('isbn')
       .trim()
       .isISBN()
-      .withMessage('isbn is not valid');
+      .withMessage('isbn is not valid')
+      .isInt({ min: 1000000000, max: 9999999999999 })
+      .withMessage('input only numbers of a valid isbn');
   }
 
   /**
@@ -119,8 +121,19 @@ export default class BookValidator {
       BookValidator.checkIsbn(),
       BookValidator.checkPrice(),
       BookValidator.checkYearPublished(),
-      BookValidator.checkNumber('stock'),
       BookValidator.authorName(),
+      checkForErrors,
+    ];
+  }
+
+  /**
+   * Favorite Book validator
+   * @returns {array} an array of check API middleware
+   * @memberof Validation
+   */
+  static FavoriteBookValidation() {
+    return [
+      BookValidator.checkNumber('bookId'),
       checkForErrors,
     ];
   }
