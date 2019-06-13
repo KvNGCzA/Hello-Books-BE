@@ -1,25 +1,21 @@
 {
-  "swagger": "2.0",
-  "info": {
-    "description": "Hello Books is a system that allows efficient, cost-effective management of library operations",
-    "version": "1.0.0",
-    "title": "Hello Books API",
-    "termsOfService": "http://swagger.io/terms/",
-    "contact": {
-      "email": "clasiqaas@gmail.com"
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "Hello Books is a system that allows efficient, cost-effective management of library operations",
+    "version" : "1.0.0",
+    "title" : "Hello Books API",
+    "termsOfService" : "http://swagger.io/terms/",
+    "contact" : {
+      "email" : "clasiqaas@gmail.com"
     },
-    "license": {
-      "name": "MIT",
-      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    "license" : {
+      "name" : "MIT",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
     }
   },
-  "servers": [{
-    "url": "https://virtserver.swaggerhub.com/henryade/helloBooks/1.0.0",
-    "description": "SwaggerHub API Auto Mocking"
-  }],
-  "host": "virtserver.swaggerhub.com",
-  "basePath": "/henryade/HelloBooks2.0/1.0.0",
-  "tags": [{
+  "host" : "hello-books-staging.herokuapp.com",
+  "basePath" : "/api/v1",
+  "tags" : [ {
       "name": "Auth",
       "description": "Authorize users"
     },
@@ -32,8 +28,12 @@
       "description": "Admin can add an author"
     },
     {
-      "name": "Favourite",
+      "name": "FavouriteAuthor",
       "description": "User can favourite or unfavourite an author"
+    },
+    {
+      "name" : "FavoriteBook",
+      "description" : "User can favourite/unfavorite a book"
     }
   ],
   "schemes": [
@@ -62,16 +62,16 @@
           "schema": {
             "$ref": "#/definitions/signup"
           }
-        }],
-        "responses": {
-          "201": {
-            "description": "sign up successful"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "sign up successful"
           },
-          "400": {
-            "description": "user already exist"
+          "400" : {
+            "description" : "user already exist"
           },
-          "500": {
-            "description": "server error"
+          "500" : {
+            "description" : "server error"
           }
         }
       }
@@ -79,7 +79,7 @@
     "/auth/login": {
       "post": {
         "tags": [
-          "User"
+          "Auth"
         ],
         "summary": "Logs in an already existing user",
         "description": "Logs in an already existing user",
@@ -234,7 +234,7 @@
     "/favourites": {
       "post": {
         "tags": [
-          "Favourite"
+          "FavouriteAuthor"
         ],
         "summary": "Favourite author",
         "description": "User can favourite an author",
@@ -287,7 +287,7 @@
       },
       "delete": {
         "tags": [
-          "Favourite"
+          "FavouriteAuthor"
         ],
         "summary": "Unfavourite author",
         "description": "User can unfavourite an author",
@@ -334,6 +334,140 @@
         "security": [{
           "Authorization": []
         }]
+      }
+    },
+    "/favorites/book/{bookId}" : {
+      "post" : {
+        "tags" : [ "FavoriteBook" ],
+        "summary" : "User can favorite a book",
+        "operationId" : "favoriteBook",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "bookId",
+          "in" : "path",
+          "description" : "book id to be favorited",
+          "required" : true,
+          "type" : "integer"
+        }, {
+          "name" : "authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "favorited successfully",
+            "schema" : {
+              "$ref" : "#/definitions/favoriteBook"
+            }
+          },
+          "400" : {
+            "description" : "missing/invalid field",
+            "schema" : {
+              "$ref" : "#/definitions/error"
+            }
+          },
+          "401" : {
+            "description" : "invalid token",
+            "schema" : {
+              "$ref" : "#/definitions/error"
+            }
+          },
+          "403" : {
+            "description" : "unauthorized user",
+            "schema" : {
+              "$ref" : "#/definitions/error"
+            }
+          },
+          "404" : {
+            "description" : "book not found",
+            "schema" : {
+              "$ref" : "#/definitions/error"
+            }
+          },
+          "409" : {
+            "description" : "book already in your favourites",
+            "schema" : {
+              "$ref" : "#/definitions/error"
+            }
+          },
+          "500" : {
+            "description" : "internal server error",
+            "schema" : {
+              "$ref" : "#/definitions/error"
+            }
+          }
+        },
+        "security" : [ {
+          "Authorization" : [ ]
+        } ]
+      },
+      "delete" : {
+        "tags" : [ "FavoriteBook" ],
+        "summary" : "User can unfavorite a book",
+        "operationId" : "unfavoriteBook",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "bookId",
+          "in" : "path",
+          "description" : "book id to be unfavorited",
+          "required" : true,
+          "type" : "integer"
+        }, {
+          "name" : "authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "unfavorited successfully",
+            "schema" : {
+              "$ref" : "#/definitions/unfavoriteBook"
+            }
+          },
+          "400" : {
+            "description" : "missing/invalid field",
+            "schema" : {
+              "$ref" : "#/definitions/error"
+            }
+          },
+          "401" : {
+            "description" : "invalid token",
+            "schema" : {
+              "$ref" : "#/definitions/error"
+            }
+          },
+          "403" : {
+            "description" : "unauthorized user",
+            "schema" : {
+              "$ref" : "#/definitions/error"
+            }
+          },
+          "404" : {
+            "description" : "book not found",
+            "schema" : {
+              "$ref" : "#/definitions/error"
+            }
+          },
+          "409" : {
+            "description" : "book already in your favourites",
+            "schema" : {
+              "$ref" : "#/definitions/error"
+            }
+          },
+          "500" : {
+            "description" : "internal server error",
+            "schema" : {
+              "$ref" : "#/definitions/error"
+            }
+          }
+        },
+        "security" : [ {
+          "Authorization" : [ ]
+        } ]
       }
     }
   },
@@ -452,6 +586,67 @@
         "email": {
           "type": "string",
           "example": "inactive"
+        }
+      }
+    },    
+    "unfavoriteBook" : {
+      "type" : "object",
+      "properties" : {
+        "status" : {
+          "type" : "string",
+          "example" : "success"
+        },
+        "message" : {
+          "type" : "string",
+          "example" : "unfavorited successfully"
+        }
+      }
+    },
+    "favoriteBook" : {
+      "type" : "object",
+      "properties" : {
+        "status" : {
+          "type" : "string",
+          "example" : "success"
+        },
+        "message" : {
+          "type" : "string",
+          "example" : "favorited successfully"
+        },
+        "book" : {
+          "$ref" : "#/definitions/favoriteBook_book"
+        }
+      }
+    },
+    "favoriteBook_book" : {
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "example" : 1
+        },
+        "title" : {
+          "type" : "string",
+          "example" : "What to expect"
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "What to expect when you are expecting"
+        },
+        "isbn" : {
+          "type" : "integer",
+          "example" : 9783161484100
+        },
+        "price" : {
+          "type" : "integer",
+          "example" : 400
+        },
+        "yearPublished" : {
+          "type" : "integer",
+          "example" : 2019
+        },
+        "authors" : {
+          "type" : "string",
+          "example" : "Joe simons"
         }
       }
     }

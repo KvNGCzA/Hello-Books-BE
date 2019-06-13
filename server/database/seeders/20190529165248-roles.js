@@ -1,6 +1,6 @@
 /* eslint-disable */
 module.exports = {
-    up: (queryInterface, Sequelize) => queryInterface.bulkInsert('Roles', [{
+    up: queryInterface => queryInterface.bulkInsert('Roles', [{
         id: 2113,
         roleName: 'admin',
         description: 'Administrator of the library',
@@ -19,5 +19,5 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date()
     }], {}),
-    down: (queryInterface, Sequelize) => queryInterface.bulkDelete('Roles', null, {})
+    down: queryInterface => queryInterface.bulkDelete('Roles', null, {})
 };

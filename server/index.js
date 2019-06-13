@@ -27,7 +27,8 @@ app.get('/', (request, response) => {
 app.use('/api/v1', routes);
 
 // load swagger documentation
-swaggerDocument.servers[0].url = `http://localhost:${PORT}`;
+swaggerDocument.host = `localhost:${PORT}`;
+swaggerDocument.schemes[0] = 'http';
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 app.use('*', (request, response) => {

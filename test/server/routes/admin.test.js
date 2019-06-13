@@ -4,7 +4,9 @@ import app from '../../../server';
 import testData from './__mocks__';
 import * as userData from './__mocks__/userData';
 
-const { authorData, bookData: { badBook, book }, userData: { admin, notVerified, notAdmin } } = testData;
+const {
+  authorData, bookData: { badBook, book }, userData: { admin, notVerified, notAdmin }
+} = testData;
 
 const API_VERSION = '/api/v1';
 const BASE_URL = `${API_VERSION}/admin`;

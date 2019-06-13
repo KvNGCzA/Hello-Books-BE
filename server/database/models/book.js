@@ -2,10 +2,9 @@ export default (sequelize, DataTypes) => {
   const Book = sequelize.define('Book', {
     title: DataTypes.STRING,
     description: DataTypes.TEXT,
-    isbn: DataTypes.TEXT,
+    isbn: DataTypes.BIGINT,
     price: DataTypes.INTEGER,
-    yearPublished: DataTypes.INTEGER,
-    stock: DataTypes.INTEGER
+    yearPublished: DataTypes.INTEGER
   }, {});
 
   Book.associate = (models) => {
@@ -20,6 +19,11 @@ export default (sequelize, DataTypes) => {
     });
 
     Book.hasMany(models.LendingHistory, {
+      foreignKey: 'bookId',
+      onDelete: 'CASCADE'
+    });
+
+    Book.hasMany(models.FavoriteBook, {
       foreignKey: 'bookId',
       onDelete: 'CASCADE'
     });

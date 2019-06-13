@@ -125,3 +125,28 @@ export const wrongLengthInput = {
   password: 'veryveryverylongpasswordhere',
   avatarUrl: 'https://gravatar.com/avatar/aed61baf1e9256ed7d70e2cbbfcba9aa?s=400&d=robohash&r=x',
 };
+
+export const patronLogin = {
+  email: 'johnsimons@gmail.com.ng',
+  password: 'g4g5j6lkl4k9',
+};
+
+export const newBook = {
+  id: 1,
+};
+
+export const nonExistingBook = {
+  id: 20,
+};
+
+export const InvalidBook = {
+  id: 'ee20',
+};
+
+export const InvalidBook1 = {
+  id: -1,
+};
+
+export const InvalidBook2 = {
+  id: '11***',
+};

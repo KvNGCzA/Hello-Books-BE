@@ -22,11 +22,8 @@ export default class AuthorController {
       const existingAuthor = await Author.findOne({ where: { fullname } });
       if (existingAuthor) return responseMessage(response, 409, { message: 'author already exists' });
       const newAuthor = await Author.create({ fullname });
-      if (newAuthor) {
-        const { dataValues } = newAuthor;
-        return responseMessage(response, 201, { status: 'success', message: 'author successfully added', data: { ...dataValues } });
-      }
-      return responseMessage(response, 400, { message: 'author could not be added' });
+      const { dataValues } = newAuthor;
+      return responseMessage(response, 201, { status: 'success', message: 'author successfully added', data: { ...dataValues } });
     } catch (error) {
       /* istanbul ignore next-line */
       return responseMessage(response, 500, { message: error.message });
