@@ -1,8 +1,13 @@
 import models from '../database/models';
 import helpers from '../helpers';
 
-const { responseMessage, makeLowerCase, genericBookHelpers: { filter, extractBooks } } = helpers;
-const { Book, Author, BookAuthor } = models;
+const {
+  responseMessage, getLendingHistory, makeLowerCase,
+  genericBookHelpers: { filter, extractBooks }
+} = helpers;
+const {
+  Book, Author, BookAuthor, LendingHistory
+} = models;
 
 /**
  * @class BookController
@@ -72,6 +77,41 @@ class BookController {
       });
     } catch (error) {
       /* istanbul ignore next-line */
+      return responseMessage(response, 500, { message: error.message });
+    }
+  }
+
+  /**
+ * Add a new book
+ * @name addBook
+ * @param {Object} request
+ * @param {Object} response
+ * @returns {JSON} object
+ */
+  static async getBorrowingStats(request, response) {
+    try {
+      const { userId } = request.params;
+      const { id, UserRoles: [UserRole] } = request.userData.dataValues;
+      let queryFilter = { userId: id };
+      const { roleName } = UserRole.Role.dataValues;
+      if (roleName === 'admin' || roleName === 'superadmin') queryFilter = userId ? { userId } : {};
+      const { limit, page } = request.query;
+      const { count } = await LendingHistory.findAndCountAll({ where: queryFilter });
+      if (!count) return responseMessage(response, 404, { status: 'failure', message: 'no book borrowed yet' });
+      const totalPages = Math.ceil(count / (limit || 10));
+      if ((page || 1) > totalPages) return responseMessage(response, 400, { status: 'failure', message: 'no book found on this page' });
+      const offset = (limit || 10) * ((page || 1) - 1);
+      const lendingHistory = await getLendingHistory(response, queryFilter, limit, offset);
+      const data = JSON.parse(JSON.stringify(lendingHistory));
+      data.forEach((item) => {
+        item.Book.Author = item.Book.BookAuthors[0].Author;
+        delete item.Book.BookAuthors;
+      });
+      return responseMessage(response, 200, {
+        status: 'success', count, totalPages, currentpage: page, itemsperpage: limit, data
+      });
+    } catch (error) {
+      /* istanbul ignore next */
       return responseMessage(response, 500, { message: error.message });
     }
   }

@@ -1,7 +1,7 @@
 import express from 'express';
-import middlewares from '../middlewares';
 import UserController from '../controllers/UserController';
 import BookController from '../controllers/BookController';
+import middlewares from '../middlewares';
 
 const {
   editProfile, favouriteAuthor, unfavouriteAuthor, favouriteBook, unfavouriteBook, borrowBook
@@ -13,6 +13,8 @@ const {
   UserValidator: { profileValidation },
   BorrowValidator: { BorrowValidation }
 } = middlewares;
+const { getBorrowingStats } = BookController;
+
 const user = express.Router();
 const BASE_URL = '/user';
 const BOOKS_URL = '/books';
@@ -38,5 +40,8 @@ user.patch(`${BASE_URL}/update`, verifyToken, authorizeUser(['patron', 'superadm
 
 // Route to borrow a book
 user.post('/borrow', verifyToken, authorizeUser(['patron']), BorrowValidation(), borrowBook);
+
+// route to get user book lending history
+user.get(`${BASE_URL}/lendinghistory`, verifyToken, authorizeUser(['superadmin', 'admin', 'patron']), FetchBookValidation(), getBorrowingStats);
 
 export default user;

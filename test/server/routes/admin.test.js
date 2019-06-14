@@ -5,9 +5,9 @@ import testData from './__mocks__';
 import * as userData from './__mocks__/userData';
 
 const {
-  authorData,
-  bookData: { badBook, book },
-  userData: { admin, notVerified, notAdmin }
+  authorData, bookData: { badBook, book }, userData: {
+    admin, notVerified, notAdmin, existingUser, superAdmin
+  }
 } = testData;
 
 const API_VERSION = '/api/v1';
@@ -323,164 +323,6 @@ describe('ADMIN ROUTES', () => {
         });
     });
   });
-
-  describe('Admin can deactivate or activate a user', () => {
-    let usertoken;
-    before((done) => {
-      const body = {
-        email: 'hellobooks@email.com',
-        password: 'password',
-      };
-      chai.request(app)
-        .post('/api/v1/auth/login')
-        .send(body)
-        .end((err, response) => {
-          usertoken = response.body.token;
-          done();
-        });
-    });
-    it('returns a status 200 if user is successfully deactivated if active', (done) => {
-      const body = {
-        status: 'inactive'
-      };
-      chai.request(app)
-        .patch('/api/v1/admin/user/6')
-        .send(body)
-        .set('Authorization', usertoken)
-        .end((err, response) => {
-          expect(response).to.have.status(200);
-          expect(response).to.be.an('object');
-          expect(response.body).to.include.all.keys('status', 'message');
-          expect(response.body.status).to.be.equal('success');
-          expect(response.body.message).to.be.equal('user successfully deactivated');
-          done();
-        });
-    });
-    it('returns a status 400 if user is already active', (done) => {
-      const body = {
-        status: 'active'
-      };
-      chai.request(app)
-        .patch('/api/v1/admin/user/2')
-        .send(body)
-        .set('Authorization', usertoken)
-        .end((err, response) => {
-          expect(response).to.have.status(409);
-          expect(response).to.be.a('object');
-          expect(response.body).to.have.all.keys('status', 'message');
-          expect(response.body.message).to.be.a('String');
-          done();
-        });
-    });
-    it('returns a status 200 if user is successfully activated if inactive', (done) => {
-      const body = {
-        status: 'active'
-      };
-      chai.request(app)
-        .patch('/api/v1/admin/user/7')
-        .send(body)
-        .set('Authorization', usertoken)
-        .end((err, response) => {
-          expect(response).to.have.status(200);
-          expect(response).to.be.an('object');
-          expect(response.body).to.include.all.keys('status', 'message');
-          expect(response.body.status).to.be.equal('success');
-          expect(response.body.message).to.be.equal('user successfully activated');
-          done();
-        });
-    });
-    it('returns a status 400 if user is already inactive', (done) => {
-      const body = {
-        status: 'inactive'
-      };
-      chai.request(app)
-        .patch('/api/v1/admin/user/8')
-        .send(body)
-        .set('Authorization', usertoken)
-        .end((err, response) => {
-          expect(response).to.have.status(409);
-          expect(response).to.be.a('object');
-          expect(response.body).to.have.all.keys('status', 'message');
-          expect(response.body.message).to.be.a('String');
-          done();
-        });
-    });
-    it('returns a status 404 if user does not exit', (done) => {
-      const body = {
-        status: 'inactive'
-      };
-      chai.request(app)
-        .patch('/api/v1/admin/user/116718')
-        .send(body)
-        .set('Authorization', usertoken)
-        .end((err, response) => {
-          expect(response).to.have.status(404);
-          expect(response).to.be.a('object');
-          expect(response.body).to.have.all.keys('status', 'message');
-          expect(response.body.message).to.be.a('String');
-          done();
-        });
-    });
-    it('should return validation errors for required input fields not supplied in request', (done) => {
-      chai.request(app)
-        .patch('/api/v1/admin/user/4345')
-        .send(missingInput)
-        .set('Authorization', usertoken)
-        .end((error, response) => {
-          expect(response).to.have.status(400);
-          expect(response.body).to.haveOwnProperty('errors');
-          expect(response.body.errors.body.status).to.equal('status is missing');
-          done();
-        });
-    });
-    it('should return validation errors for blank input fields in the request', (done) => {
-      chai.request(app)
-        .patch('/api/v1/admin/user/5678')
-        .send(blankInput)
-        .set('Authorization', usertoken)
-        .end((error, response) => {
-          expect(response).to.have.status(400);
-          expect(response.body).to.haveOwnProperty('errors');
-          expect(response.body.errors.body).to.have.keys('status');
-          expect(response.body.errors.body.status).to.equal('status cannot be blank');
-          done();
-        });
-    });
-    it('should return a status 401 if user does not have a valid token', (done) => {
-      chai.request(app)
-        .patch('/api/v1/admin/user/8908')
-        .set('Authorization', 'indfafadavldfafidtoddakddfendfadf')
-        .end((err, response) => {
-          expect(response).to.have.status(401);
-          expect(response).to.be.a('object');
-          expect(response.body).to.have.all.keys('status', 'message');
-          expect(response.body.message).to.be.a('String');
-          done();
-        });
-    });
-    it('should return a status 403 if user does have the permission to access the route', (done) => {
-      const body = {
-        email: 'notsuperadmin@email.com',
-        password: 'password',
-      };
-      chai.request(app)
-        .post('/api/v1/auth/login')
-        .send(body)
-        .end((err, response) => {
-          const { token } = response.body;
-          chai.request(app)
-            .patch('/api/v1/admin/user/8908')
-            .set('Authorization', token)
-            .end((err, response1) => {
-              expect(response1).to.have.status(403);
-              expect(response1).to.be.a('object');
-              expect(response1.body).to.have.all.keys('status', 'message');
-              expect(response1.body.message).to.be.a('String');
-              done();
-            });
-        });
-    });
-  });
   describe('Update And Delete Author Controller', () => {
     /**
      * Test the POST /admin/author endpoint
@@ -563,13 +405,9 @@ describe('ADMIN ROUTES', () => {
 describe('Admin creates new user', () => {
   let usertoken;
   before((done) => {
-    const body = {
-      email: 'hellobooks@email.com',
-      password: 'password',
-    };
     chai.request(app)
       .post(LOGIN_URL)
-      .send(body)
+      .send(superAdmin)
       .end((err, response) => {
         usertoken = response.body.token;
         done();
@@ -712,6 +550,257 @@ describe('Admin creates new user', () => {
         chai.request(app)
           .post(`${BASE_URL}/user`)
           .send(body2)
+          .set('Authorization', token)
+          .end((err, response1) => {
+            expect(response1).to.have.status(403);
+            expect(response1).to.be.a('object');
+            expect(response1.body).to.have.all.keys('status', 'message');
+            expect(response1.body.message).to.be.a('String');
+            done();
+          });
+      });
+  });
+});
+describe('Admin can deactivate or activate a user', () => {
+  let usertoken;
+  before((done) => {
+    chai.request(app)
+      .post('/api/v1/auth/login')
+      .send(superAdmin)
+      .end((err, response) => {
+        usertoken = response.body.token;
+        done();
+      });
+  });
+  it('returns a status 200 if user is successfully deactivated if active', (done) => {
+    const body = {
+      status: 'inactive'
+    };
+    chai.request(app)
+      .patch('/api/v1/admin/user/6')
+      .send(body)
+      .set('Authorization', usertoken)
+      .end((err, response) => {
+        expect(response).to.have.status(200);
+        expect(response).to.be.an('object');
+        expect(response.body).to.include.all.keys('status', 'message');
+        expect(response.body.status).to.be.equal('success');
+        expect(response.body.message).to.be.equal('user successfully deactivated');
+        done();
+      });
+  });
+  it('returns a status 400 if user is already active', (done) => {
+    const body = {
+      status: 'active'
+    };
+    chai.request(app)
+      .patch('/api/v1/admin/user/2')
+      .send(body)
+      .set('Authorization', usertoken)
+      .end((err, response) => {
+        expect(response).to.have.status(409);
+        expect(response).to.be.a('object');
+        expect(response.body).to.have.all.keys('status', 'message');
+        expect(response.body.message).to.be.a('String');
+        done();
+      });
+  });
+  it('returns a status 200 if user is successfully activated if inactive', (done) => {
+    const body = {
+      status: 'active'
+    };
+    chai.request(app)
+      .patch('/api/v1/admin/user/7')
+      .send(body)
+      .set('Authorization', usertoken)
+      .end((err, response) => {
+        expect(response).to.have.status(200);
+        expect(response).to.be.an('object');
+        expect(response.body).to.include.all.keys('status', 'message');
+        expect(response.body.status).to.be.equal('success');
+        expect(response.body.message).to.be.equal('user successfully activated');
+        done();
+      });
+  });
+  it('returns a status 400 if user is already inactive', (done) => {
+    const body = {
+      status: 'inactive'
+    };
+    chai.request(app)
+      .patch('/api/v1/admin/user/8')
+      .send(body)
+      .set('Authorization', usertoken)
+      .end((err, response) => {
+        expect(response).to.have.status(409);
+        expect(response).to.be.a('object');
+        expect(response.body).to.have.all.keys('status', 'message');
+        expect(response.body.message).to.be.a('String');
+        done();
+      });
+  });
+  it('returns a status 404 if user does not exit', (done) => {
+    const body = {
+      status: 'inactive'
+    };
+    chai.request(app)
+      .patch('/api/v1/admin/user/116718')
+      .send(body)
+      .set('Authorization', usertoken)
+      .end((err, response) => {
+        expect(response).to.have.status(404);
+        expect(response).to.be.a('object');
+        expect(response.body).to.have.all.keys('status', 'message');
+        expect(response.body.message).to.be.a('String');
+        done();
+      });
+  });
+  it('should return validation errors for required input fields not supplied in request', (done) => {
+    chai.request(app)
+      .patch('/api/v1/admin/user/4345')
+      .send(missingInput)
+      .set('Authorization', usertoken)
+      .end((error, response) => {
+        expect(response).to.have.status(400);
+        expect(response.body).to.haveOwnProperty('errors');
+        expect(response.body.errors.body.status).to.equal('status is missing');
+        done();
+      });
+  });
+  it('should return validation errors for blank input fields in the request', (done) => {
+    chai.request(app)
+      .patch('/api/v1/admin/user/5678')
+      .send(blankInput)
+      .set('Authorization', usertoken)
+      .end((error, response) => {
+        expect(response).to.have.status(400);
+        expect(response.body).to.haveOwnProperty('errors');
+        expect(response.body.errors.body).to.have.keys('status');
+        expect(response.body.errors.body.status).to.equal('status cannot be blank');
+        done();
+      });
+  });
+  it('should return a status 401 if user does not have a valid token', (done) => {
+    chai.request(app)
+      .patch('/api/v1/admin/user/8908')
+      .set('Authorization', 'indfafadavldfafidtoddakddfendfadf')
+      .end((err, response) => {
+        expect(response).to.have.status(401);
+        expect(response).to.be.a('object');
+        expect(response.body).to.have.all.keys('status', 'message');
+        expect(response.body.message).to.be.a('String');
+        done();
+      });
+  });
+  it('should return a status 403 if user does have the permission to access the route', (done) => {
+    const body = {
+      email: 'notsuperadmin@email.com',
+      password: 'password',
+    };
+    chai.request(app)
+      .post('/api/v1/auth/login')
+      .send(body)
+      .end((err, response) => {
+        const { token } = response.body;
+        chai.request(app)
+          .patch('/api/v1/admin/user/8908')
+          .set('Authorization', token)
+          .end((err, response1) => {
+            expect(response1).to.have.status(403);
+            expect(response1).to.be.a('object');
+            expect(response1.body).to.have.all.keys('status', 'message');
+            expect(response1.body.message).to.be.a('String');
+            done();
+          });
+      });
+  });
+});
+describe('Admin or super admin gets lending history', () => {
+  let userToken;
+  before((done) => {
+    chai.request(app)
+      .post('/api/v1/auth/login')
+      .send(superAdmin)
+      .end((err, response) => {
+        userToken = response.body.token;
+        done();
+      });
+  });
+  it('returns a status 200 if the request is successful', (done) => {
+    chai.request(app)
+      .get('/api/v1/admin/lendinghistory/3')
+      .set('Authorization', userToken)
+      .end((err, response) => {
+        expect(response).to.have.status(200);
+        expect(response).to.be.an('object');
+        expect(response.body).to.include.all.keys('status', 'data');
+        expect(response.body.status).to.be.equal('success');
+        expect(response.body.data).to.be.an('array');
+        expect(response.body.data[0]).to.include.all.keys('userId', 'bookId', 'Book', 'charge');
+        expect(response.body.data[0]).to.be.an('object');
+        done();
+      });
+  });
+  it('returns a status 200 if the request is successful', (done) => {
+    chai.request(app)
+      .get('/api/v1/admin/lendinghistory/3?page=1&limit=1')
+      .set('Authorization', userToken)
+      .end((err, response) => {
+        expect(response).to.have.status(200);
+        expect(response).to.be.an('object');
+        expect(response.body).to.include.all.keys('status', 'data');
+        expect(response.body.status).to.be.equal('success');
+        expect(response.body.data).to.be.an('array');
+        expect(response.body.data[0]).to.include.all.keys('userId', 'bookId', 'Book', 'charge');
+        expect(response.body.data[0]).to.be.an('object');
+        done();
+      });
+  });
+  it('returns a status 400 if the pages is greater than the total possible pages', (done) => {
+    chai.request(app)
+      .get('/api/v1/admin/lendinghistory/3?page=10&limit=100')
+      .set('Authorization', userToken)
+      .end((err, response) => {
+        expect(response).to.have.status(400);
+        expect(response).to.be.a('object');
+        expect(response.body).to.have.all.keys('status', 'message');
+        expect(response.body.message).to.be.a('String');
+        done();
+      });
+  });
+  it('returns a status 400 if the pages or limit is less than one or not an integer', (done) => {
+    chai.request(app)
+      .get('/api/v1/admin/lendinghistory/3?page=fadf&limit=-1')
+      .set('Authorization', userToken)
+      .end((err, response) => {
+        expect(response).to.have.status(400);
+        expect(response).to.be.a('object');
+        expect(response.body).to.have.all.keys('status', 'errors');
+        expect(response.body.errors).to.be.a('object');
+        done();
+      });
+  });
+  it('should return a status 401 if user does not have a valid token', (done) => {
+    chai.request(app)
+      .get('/api/v1/admin/lendinghistory/3')
+      .set('Authorization', 'indfafadavldfafidtoddakddfendfadf')
+      .end((err, response) => {
+        expect(response).to.have.status(401);
+        expect(response).to.be.a('object');
+        expect(response.body).to.have.all.keys('status', 'message');
+        expect(response.body.message).to.be.a('String');
+        done();
+      });
+  });
+  it('should return a status 403 if user does have the permission to access the route', (done) => {
+    chai.request(app)
+      .post('/api/v1/auth/login')
+      .send(existingUser)
+      .end((err, response) => {
+        const {
+          token
+        } = response.body;
+        chai.request(app)
+          .get('/api/v1/admin/lendinghistory/3')
           .set('Authorization', token)
           .end((err, response1) => {
             expect(response1).to.have.status(403);

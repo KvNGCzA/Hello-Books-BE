@@ -5,19 +5,19 @@ import AuthController from '../controllers/AuthController';
 import AdminController from '../controllers/AdminController';
 import BookController from '../controllers/BookController';
 
-const { addBook } = BookController;
+// const { addBook } = BookController;
 const { createUser } = AuthController;
+const admin = express.Router();
+const BASE_URL = '/admin';
+const { addBook, getBorrowingStats } = BookController;
 const { changeUserStatus } = AdminController;
 const { addAuthor, deleteAuthor, updateAuthor } = AuthorController;
 const {
   verifyToken, authorizeUser, checkRole,
-  BookValidator: { BookValidation },
+  BookValidator: { BookValidation, FetchBookValidation },
   AuthorValidator: { authorValidation, favAuthorValidation },
-  UserValidator: { createUserValidation, changeStatusValidation }
+  UserValidator: { createUserValidation, changeStatusValidation, userIdValidation }
 } = middlewares;
-
-const admin = express.Router();
-const BASE_URL = '/admin';
 
 // Route to add author
 admin.post(`${BASE_URL}/author`, verifyToken, authorizeUser(['superadmin', 'admin']), authorValidation(), addAuthor);
@@ -36,5 +36,9 @@ admin.patch(`${BASE_URL}/author/:authorId`, verifyToken, authorizeUser(['superad
 
 // Route to delete author
 admin.delete(`${BASE_URL}/author/:authorId`, verifyToken, authorizeUser(['superadmin', 'admin']), favAuthorValidation(), deleteAuthor);
+
+// route to get user book lending history
+admin.get(`${BASE_URL}/lendinghistory/:userId`, verifyToken, authorizeUser(['superadmin', 'admin']),
+  FetchBookValidation(), userIdValidation(), getBorrowingStats);
 
 export default admin;

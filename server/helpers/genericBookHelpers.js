@@ -37,12 +37,12 @@ const extractBooks = (result) => {
     const {
       id, title, description, isbn, price, yearPublished, tag, createdAt
     } = entry.Book;
-    const { fullname } = entry.Author;
+    const { authorName } = entry.Author;
     const authorId = entry.Author.id;
     const newObj = {
       bookId: id,
       title,
-      author: { id: authorId, fullname },
+      author: { id: authorId, authorName },
       description,
       isbn,
       price,

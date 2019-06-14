@@ -10,6 +10,7 @@ import enforceVerification from './enforceVerification';
 import setupNewUser from './setupNewUser';
 import emptyBody from './emptyBody';
 import genericBookHelpers from './genericBookHelpers';
+import getLendingHistory from './getLendingHistory';
 
 const { signupMessage, createUserMessage, resetpasswordMessage } = messages;
 const helpers = {
@@ -27,6 +28,7 @@ const helpers = {
   resetpasswordMessage,
   emptyBody,
   genericBookHelpers,
+  getLendingHistory
 };
 
 export default helpers;
