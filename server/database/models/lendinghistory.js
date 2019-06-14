@@ -1,8 +1,8 @@
-'use strict';
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const LendingHistory = sequelize.define('LendingHistory', {
-    duration: DataTypes.STRING,
-    status: DataTypes.STRING
+    userId: DataTypes.INTEGER,
+    bookId: DataTypes.INTEGER,
+    charge: DataTypes.INTEGER
   }, {});
   LendingHistory.associate = (models) => {
     LendingHistory.belongsTo(models.User, {

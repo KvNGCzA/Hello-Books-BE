@@ -103,6 +103,16 @@ module.exports = {
       status: 'active',
       createdAt: new Date(),
       updatedAt: new Date()
+    }, {
+      firstName: 'nolending',
+      lastName: 'history',
+      email: 'nolending@gmail.com',
+      password: bcrypt.hashSync('password', 10),
+      avatarUrl: '',
+      verified: true,
+      status: 'active',
+      createdAt: new Date(),
+      updatedAt: new Date()
     }], {}),
 
   down: queryInterface => queryInterface.bulkDelete('Users', null, {})

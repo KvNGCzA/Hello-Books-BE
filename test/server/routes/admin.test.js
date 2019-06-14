@@ -649,3 +649,109 @@ describe('Admin can deactivate or activate a user', () => {
       });
   });
 });
+describe('Admin or super admin gets lending history', () => {
+  let userToken;
+  before((done) => {
+    const body = {
+      email: 'hellobooks@email.com',
+      password: 'password',
+    };
+    chai.request(app)
+      .post('/api/v1/auth/login')
+      .send(body)
+      .end((err, response) => {
+        userToken = response.body.token;
+        done();
+      });
+  });
+  it('returns a status 200 if the request is successful', (done) => {
+    chai.request(app)
+      .get('/api/v1/admin/lendinghistory')
+      .set('Authorization', userToken)
+      .end((err, response) => {
+        expect(response).to.have.status(200);
+        expect(response).to.be.an('object');
+        expect(response.body).to.include.all.keys('status', 'dataValues');
+        expect(response.body.status).to.be.equal('success');
+        expect(response.body.dataValues).to.be.an('array');
+        expect(response.body.dataValues[0]).to.include.all.keys('userId', 'bookId', 'Book', 'charge');
+        expect(response.body.dataValues[0]).to.be.an('object');
+        done();
+      });
+  });
+  it('returns a status 200 if the request is successful', (done) => {
+    chai.request(app)
+      .get('/api/v1/admin/lendinghistory?page=1&limit=1')
+      .set('Authorization', userToken)
+      .end((err, response) => {
+        expect(response).to.have.status(200);
+        expect(response).to.be.an('object');
+        expect(response.body).to.include.all.keys('status', 'dataValues');
+        expect(response.body.status).to.be.equal('success');
+        expect(response.body.dataValues).to.be.an('array');
+        expect(response.body.dataValues[0]).to.include.all.keys('userId', 'bookId', 'Book', 'charge');
+        expect(response.body.dataValues[0]).to.be.an('object');
+        done();
+      });
+  });
+  it('returns a status 400 if the pages is greater than the total possible pages', (done) => {
+    chai.request(app)
+      .get('/api/v1/admin/lendinghistory?page=10&limit=100')
+      .set('Authorization', userToken)
+      .end((err, response) => {
+        expect(response).to.have.status(400);
+        expect(response).to.be.a('object');
+        expect(response.body).to.have.all.keys('status', 'message');
+        expect(response.body.message).to.be.a('String');
+        done();
+      });
+  });
+  it('returns a status 400 if the pages or limit is less than one or not an integer', (done) => {
+    chai.request(app)
+      .get('/api/v1/admin/lendinghistory?page=fadf&limit=-1')
+      .set('Authorization', userToken)
+      .end((err, response) => {
+        expect(response).to.have.status(400);
+        expect(response).to.be.a('object');
+        expect(response.body).to.have.all.keys('status', 'errors');
+        expect(response.body.errors).to.be.a('object');
+        done();
+      });
+  });
+  it('should return a status 401 if user does not have a valid token', (done) => {
+    chai.request(app)
+      .get('/api/v1/admin/lendinghistory')
+      .set('Authorization', 'indfafadavldfafidtoddakddfendfadf')
+      .end((err, response) => {
+        expect(response).to.have.status(401);
+        expect(response).to.be.a('object');
+        expect(response.body).to.have.all.keys('status', 'message');
+        expect(response.body.message).to.be.a('String');
+        done();
+      });
+  });
+  it('should return a status 403 if user does have the permission to access the route', (done) => {
+    const body = {
+      email: 'kylian@gmail.com',
+      password: 'kylianMbappe',
+    };
+    chai.request(app)
+      .post('/api/v1/auth/login')
+      .send(body)
+      .end((err, response) => {
+        const {
+          token
+        } = response.body;
+        chai.request(app)
+          .get('/api/v1/admin/lendinghistory')
+          .set('Authorization', token)
+          .end((err, response1) => {
+            expect(response1).to.have.status(403);
+            expect(response1).to.be.a('object');
+            expect(response1.body).to.have.all.keys('status', 'message');
+            expect(response1.body.message).to.be.a('String');
+            done();
+          });
+      });
+  });
+});

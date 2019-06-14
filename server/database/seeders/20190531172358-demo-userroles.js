@@ -30,6 +30,11 @@ module.exports = {
     roleId: 2768,
     createdAt: new Date(),
     updatedAt: new Date()
+  }, {
+    userId: 11,
+    roleId: 2768,
+    createdAt: new Date(),
+    updatedAt: new Date()
   }], {}),
 
   down: queryInterface => queryInterface.bulkDelete('UserRoles', null, {})
