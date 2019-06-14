@@ -289,8 +289,8 @@ describe('ADMIN ROUTES', () => {
       chai.request(app)
         .post(bookUrlForAdmin)
         .send(book)
-
         .end((error, response) => {
+          console.log(response.body);
           expect(response.body).to.be.an('object');
           expect(response).to.have.status(201);
           expect(response.body.status).to.equal('success');
@@ -303,8 +303,8 @@ describe('ADMIN ROUTES', () => {
       chai.request(app)
         .post(bookUrlForAdmin)
         .send(book)
-
         .end((error, response) => {
+          console.log(response.body);
           expect(response.body).to.be.an('object');
           expect(response).to.have.status(409);
           expect(response.body.status).to.equal('failure');

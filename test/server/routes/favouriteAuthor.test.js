@@ -41,6 +41,7 @@ describe('FAVOURITE AUTHOR ROUTES', () => {
         .post(`${BASE_URL}?token=${userToken}`)
         .send({ authorId: 100 })
         .end((error, response) => {
+          console.log(response.body);
           expect(response).to.have.status(404);
           expect(response.body).to.be.an('object');
           expect(response.body).to.have.keys('status', 'message');
@@ -85,6 +86,7 @@ describe('FAVOURITE AUTHOR ROUTES', () => {
         .delete(`${BASE_URL}?token=${userToken}`)
         .send({ authorId: 100 })
         .end((error, response) => {
+          console.log(response.body);
           expect(response).to.have.status(404);
           expect(response.body).to.be.an('object');
           expect(response.body).to.have.keys('status', 'message');

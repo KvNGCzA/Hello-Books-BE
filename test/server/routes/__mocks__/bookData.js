@@ -1,4 +1,5 @@
 export const book = {
+  tag: 'Business',
   title: 'Rich Dad Poor Dad',
   description: 'somebody father is rich and somebody father is poor',
   isbn: '9783161484100',
@@ -9,6 +10,7 @@ export const book = {
 };
 
 export const badBook = {
+  tag: 'Business',
   title: 'Rich Dad ',
   description: 'somebody father is rich and somebody father is poor',
   isbn: '9783161484100',
