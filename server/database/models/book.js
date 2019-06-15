@@ -4,7 +4,8 @@ export default (sequelize, DataTypes) => {
     description: DataTypes.TEXT,
     isbn: DataTypes.BIGINT,
     price: DataTypes.INTEGER,
-    yearPublished: DataTypes.INTEGER
+    yearPublished: DataTypes.INTEGER,
+    tag: DataTypes.STRING
   }, {});
 
   Book.associate = (models) => {

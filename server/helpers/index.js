@@ -7,6 +7,7 @@ import * as messages from './messages';
 import enforceVerification from './enforceVerification';
 import createUserRole from './createUserRole';
 import setupNewUser from './setupNewUser';
+import genericBookHelpers from './genericBookHelpers';
 
 const { signupMessage, createUserMessage } = messages;
 export default {
@@ -20,4 +21,5 @@ export default {
   createUserMessage,
   createUserRole,
   setupNewUser,
+  genericBookHelpers
 };

@@ -104,7 +104,6 @@ describe('Favorite Book Test', () => {
   });
 });
 
-
 describe('Unfavorite Book Test', () => {
   it('should unfavorite book if the book is already a favorite and also in the database', (done) => {
     chai.request(server)
@@ -138,6 +137,110 @@ describe('Unfavorite Book Test', () => {
         expect(response).to.have.status(404);
         expect(response.body.message).to.be.a('string');
         expect(response.body.message).to.equal('book not found');
+        done();
+      });
+  });
+});
+
+describe('Search Books', () => {
+  it('should search a book based on the book title', (done) => {
+    chai.request(server)
+      .get('/api/v1/books')
+      .query({ bookTitle: 'a tale' })
+      .end((error, response) => {
+        expect(response).to.have.status(200);
+        expect(response.body).to.have.keys('status', 'message', 'data');
+        expect(response.body.status).to.equal('success');
+        expect(response.body.message).to.equal('found books');
+        expect(response.body.data).to.be.an('array');
+        expect(response.body.data.length).to.not.equal(0);
+        done();
+      });
+  });
+
+  it('should search a book based on the tag', (done) => {
+    chai.request(server)
+      .get('/api/v1/books')
+      .query({ bookTag: 'Epic' })
+      .end((error, response) => {
+        expect(response).to.have.status(200);
+        expect(response.body).to.have.keys('status', 'message', 'data');
+        expect(response.body.status).to.equal('success');
+        expect(response.body.message).to.equal('found books');
+        expect(response.body.data).to.be.an('array');
+        expect(response.body.data.length).to.not.equal(0);
+        done();
+      });
+  });
+
+  it('should search a book based on the author name', (done) => {
+    chai.request(server)
+      .get('/api/v1/books')
+      .query({ authorName: 'alex' })
+      .end((error, response) => {
+        expect(response).to.have.status(200);
+        expect(response.body).to.have.keys('status', 'message', 'data');
+        expect(response.body.status).to.equal('success');
+        expect(response.body.message).to.equal('found books');
+        expect(response.body.data).to.be.an('array');
+        expect(response.body.data.length).to.not.equal(0);
+        done();
+      });
+  });
+
+  it('should search books based on a keyword', (done) => {
+    chai.request(server)
+      .get('/api/v1/books')
+      .query({ keyword: 'in' })
+      .end((error, response) => {
+        expect(response).to.have.status(200);
+        expect(response.body).to.have.keys('status', 'message', 'data');
+        expect(response.body.status).to.equal('success');
+        expect(response.body.message).to.equal('found books');
+        expect(response.body.data).to.be.an('array');
+        expect(response.body.data.length).to.not.equal(0);
+        done();
+      });
+  });
+
+  it('should get all books in the database', (done) => {
+    chai.request(server)
+      .get('/api/v1/books')
+      .end((error, response) => {
+        expect(response).to.have.status(200);
+        expect(response.body).to.have.keys('status', 'message', 'data');
+        expect(response.body.status).to.equal('success');
+        expect(response.body.message).to.equal('found books');
+        expect(response.body.data).to.be.an('array');
+        expect(response.body.data.length).to.not.equal(0);
+        done();
+      });
+  });
+
+  it('should return a failure status if there are no related books based on the keyword', (done) => {
+    chai.request(server)
+      .get('/api/v1/books')
+      .query({ keyword: 'blahblahblahx5' })
+      .end((error, response) => {
+        expect(response).to.have.status(404);
+        expect(response.body).to.have.keys('message', 'status', 'data');
+        expect(response.body.status).to.equal('failure');
+        expect(response.body.message).to.equal('no book found based on keyword');
+        expect(response.body.data).to.be.an('array');
+        expect(response.body.data.length).to.equal(0);
+        done();
+      });
+  });
+
+  it('should return a failure status if there are no related books based any other parameters', (done) => {
+    chai.request(server)
+      .get('/api/v1/books')
+      .query({ authorName: 'blahblahblahx5' })
+      .end((error, response) => {
+        expect(response).to.have.status(404);
+        expect(response.body).to.have.keys('message', 'status');
+        expect(response.body.status).to.equal('failure');
+        expect(response.body.message).to.equal('no related book found');
         done();
       });
   });

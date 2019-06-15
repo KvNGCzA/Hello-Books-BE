@@ -11,6 +11,14 @@ module.exports = {
       fullname: 'jurgen klopp',
       createdAt: new Date(),
       updatedAt: new Date()
+    }, {
+      fullname: 'john doe',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },{
+      fullname: 'george martin',
+      createdAt: new Date(),
+      updatedAt: new Date()
     }], {});
   },
 

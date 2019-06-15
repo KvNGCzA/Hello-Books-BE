@@ -34,6 +34,10 @@
     {
       "name" : "FavoriteBook",
       "description" : "User can favourite/unfavorite a book"
+    },
+    {
+      "name" : "Book",
+      "description" : "Books in the database"
     }
   ],
   "schemes": [
@@ -468,6 +472,58 @@
         "security" : [ {
           "Authorization" : [ ]
         } ]
+      }
+    },
+    "/books": {
+      "get": {
+        "tags": [
+          "Book"
+        ],
+        "summary": "Get Books",
+        "description": "Search for a book based on custom filters",
+        "operationId": "searchBooks",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [{
+          "in": "query",
+          "name": "bookTitle",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "in": "query",
+          "name": "bookTag",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "in": "query",
+          "name": "authorName",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "in": "query",
+          "name": "keyword",
+          "schema": {
+            "type": "string"
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "Found Books"
+          },
+          "404": {
+            "description": "Books not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
       }
     }
   },

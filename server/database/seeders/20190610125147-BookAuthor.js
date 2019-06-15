@@ -3,17 +3,27 @@
 module.exports = {
   up: queryInterface => queryInterface.bulkInsert('BookAuthors', [{
     bookId: 1,
-    authorId: 1,
+    authorId: 3,
     createdAt: new Date(),
     updatedAt: new Date()
   }, {
     bookId: 2,
-    authorId: 1,
+    authorId: 3,
     createdAt: new Date(),
     updatedAt: new Date()
   }, {
-    bookId: 1,
+    bookId: 4,
+    authorId: 4,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }, {
+    bookId: 3,
     authorId: 2,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }, {
+    bookId: 5,
+    authorId: 1,
     createdAt: new Date(),
     updatedAt: new Date()
   }], {}),
