@@ -1,5 +1,5 @@
 import expressValidator from 'express-validator/check';
-import helpers from '../helpers'
+import helpers from '../helpers';
 
 const { validationResult } = expressValidator;
 const { responseMessage } = helpers;

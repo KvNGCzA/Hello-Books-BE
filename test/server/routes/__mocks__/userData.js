@@ -131,6 +131,17 @@ export const patronLogin = {
   password: 'g4g5j6lkl4k9',
 };
 
+export const patronSignup = {
+  email: 'johnsimons@gmail.com.ng',
+  firstName: 'john',
+  lastName: 'simons',
+};
+
+export const patronProfile = {
+  firstName: 'yagami',
+  lastName: 'light',
+};
+
 export const newBook = {
   id: 1,
 };

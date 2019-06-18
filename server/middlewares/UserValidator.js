@@ -3,7 +3,7 @@ import helpers from '../helpers';
 import checkForErrors from './checkForErrors';
 
 const { check } = expressValidator;
-const { makeLowerCase } = helpers;
+const { makeLowerCase, emptyBody } = helpers;
 
 /**
  * @class UserValidator
@@ -25,12 +25,40 @@ export default class UserValidator {
   }
 
   /**
+* input validator to be used by all others
+* @param {string} field
+* @returns {function} call to a Check API middleware
+* @memberof Validation
+*/
+  static inputCheck(field) {
+    return check(`${field}`)
+      .optional()
+      .trim()
+      .not()
+      .isEmpty({ ignore_whitespace: true });
+  }
+
+  /**
   * Email validator
   * @returns {function} call to a Check API middleware
   * @memberof Validation
   */
   static checkEmail() {
     return UserValidator.genericCheck('email')
+      .trim()
+      .isEmail()
+      .withMessage('email is not valid')
+      .customSanitizer(value => makeLowerCase(value));
+  }
+
+  /**
+  * Profile Email validator
+  * @returns {function} call to a Check API middleware
+  * @memberof Validation
+  */
+  static checkProfileEmail() {
+    return UserValidator.genericCheck('email')
+      .optional()
       .trim()
       .isEmail()
       .withMessage('email is not valid')
@@ -60,6 +88,29 @@ export default class UserValidator {
   }
 
   /**
+  * Profile Firstname and lastname validator
+  * @param {string} name
+  * @returns {function} call to a Check API middleware
+  * @memberof Validation
+  */
+  static checkProfileName(name) {
+    return UserValidator.genericCheck(`${name}`)
+      .optional()
+      .trim()
+      .isLength({ min: 2, max: 20 })
+      .withMessage(`${name} must be at least 2 characters, and maximum 20`)
+      .not()
+      .matches(/^[A-Za-z]+[-]{1}[A-Za-z]+([-]{1}[A-Za-z]+)+$/, 'g')
+      .withMessage(`invalid input for ${name}`)
+      .not()
+      .matches(/^[A-Za-z]+[']+[A-Za-z]+[']+[A-Za-z]+$/, 'g')
+      .withMessage(`invalid input for ${name}`)
+      .matches(/^[A-Za-z]+(['-]?[A-Za-z]+)?([ -]?[A-Za-z]+)?(['-]?[A-Za-z]+)?$/, 'g')
+      .withMessage(`invalid input for ${name}`)
+      .customSanitizer(value => makeLowerCase(value));
+  }
+
+  /**
   * Password validator
   * @returns {function} call to a Check API middleware
   * @memberof Validation
@@ -74,16 +125,24 @@ export default class UserValidator {
   }
 
   /**
+  * Profile Password validator
+  * @returns {function} call to a Check API middleware
+  * @memberof Validation
+  */
+  static checkProfilePassword() {
+    return UserValidator.inputCheck('password')
+      .withMessage('password cannot be updated here')
+      .isLength({ min: 0, max: 0 })
+      .withMessage('password cannot be updated here');
+  }
+
+  /**
   * AvatarUrl validator
   * @returns {function} call to a Check API middleware
   * @memberof Validation
   */
   static checkAvatarUrl() {
-    return check('avatarUrl')
-      .optional()
-      .trim()
-      .not()
-      .isEmpty({ ignore_whitespace: true })
+    return UserValidator.inputCheck('avatarUrl')
       .withMessage('avatarUrl cannot be blank')
       .isURL()
       .withMessage('avatarUrl must be a valid URL string');
@@ -126,6 +185,23 @@ export default class UserValidator {
       UserValidator.checkPassword(),
       UserValidator.checkAvatarUrl(),
       checkForErrors,
+    ];
+  }
+
+  /**
+  * Update profile  validation
+  * @returns {array} an array of Check API middlewares
+  * @memberof Validation
+  */
+  static profileValidation() {
+    return [
+      UserValidator.checkProfileEmail(),
+      UserValidator.checkProfileName('firstName'),
+      UserValidator.checkProfileName('lastName'),
+      UserValidator.checkAvatarUrl(),
+      UserValidator.checkProfilePassword(),
+      checkForErrors,
+      emptyBody,
     ];
   }
 

@@ -2,10 +2,11 @@ import models from '../database/models';
 import helpers from '../helpers';
 
 const {
-  Author, FavouriteAuthor, FavoriteBook, Book, BookAuthor
+  Author, FavouriteAuthor, FavoriteBook, Book, BookAuthor, User
 } = models;
 
 const { responseMessage } = helpers;
+
 
 /**
  * @class UserController
@@ -130,6 +131,34 @@ export default class UserController {
     } catch (error) {
       /* istanbul ignore next-line */
       return responseMessage(response, 500, { message: error.message });
+    }
+  }
+
+  /**
+  * @description allows a user to edit their profile
+  * @param {object} request request object
+  * @param {object} response response object
+  * @returns {json} the json response been return by the server
+  * @memberof UserController
+  */
+  static async editProfile(request, response) {
+    const { body, userData } = request;
+    const { id } = userData;
+    const { email } = body;
+    try {
+      if (email) {
+        const existingEmail = await User.findOne({ where: { email } });
+        if (existingEmail) {
+          return responseMessage(response, 409, { message: 'email already exist' });
+        }
+      }
+      await User.update({
+        ...body
+      }, { where: { id } });
+      return responseMessage(response, 200, { status: 'success', message: 'update successful' });
+    } catch (error) {
+      /* istanbul ignore next */
+      responseMessage(response, 500, { message: error.message });
     }
   }
 }

@@ -7,6 +7,7 @@ import * as messages from './messages';
 import enforceVerification from './enforceVerification';
 import createUserRole from './createUserRole';
 import setupNewUser from './setupNewUser';
+import emptyBody from './emptyBody';
 
 const { signupMessage, createUserMessage, resetpasswordMessage } = messages;
 export default {
@@ -21,4 +22,5 @@ export default {
   createUserRole,
   setupNewUser,
   resetpasswordMessage,
+  emptyBody,
 };

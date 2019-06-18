@@ -5,13 +5,17 @@ import testData from './__mocks__';
 
 const {
   userData: {
-    newBook, nonExistingBook, InvalidBook, InvalidBook1, InvalidBook2, patronLogin
+    newBook, nonExistingBook, InvalidBook, InvalidBook1, InvalidBook2,
+    patronLogin,
+    patronSignup, patronProfile
   }
 } = testData;
 
 const API_VERSION = '/api/v1';
 const BASE_URL = `${API_VERSION}/favorites/book/`;
 const loginUrl = `${API_VERSION}/auth/login`;
+const UPDATE_URL = '/api/v1/user/update';
+
 let patronToken;
 
 chai.use(chaiHttp);
@@ -138,6 +142,70 @@ describe('Unfavorite Book Test', () => {
         expect(response).to.have.status(404);
         expect(response.body.message).to.be.a('string');
         expect(response.body.message).to.equal('book not found');
+        done();
+      });
+  });
+});
+describe('Update user profile', () => {
+  it('should update a user profile', (done) => {
+    chai.request(server)
+      .patch(`${UPDATE_URL}`)
+      .query({ token: patronToken })
+      .send(patronProfile)
+      .end((error, response) => {
+        expect(response).to.have.status(200);
+        expect(response.body).to.be.an('object');
+        expect(response.body.status).to.equal('success');
+        expect(response.body.message).to.equal('update successful');
+        done();
+      });
+  });
+  it('should not update a user profile if the email already exist in the database', (done) => {
+    chai.request(server)
+      .patch(`${UPDATE_URL}`)
+      .query({ token: patronToken })
+      .send(patronSignup)
+      .end((error, response) => {
+        expect(response).to.have.status(409);
+        expect(response.body).to.be.an('object');
+        expect(response.body.status).to.equal('failure');
+        expect(response.body.message).to.equal('email already exist');
+        done();
+      });
+  });
+  it('should not update a user profile if password is a parameter', (done) => {
+    chai.request(server)
+      .patch(`${UPDATE_URL}`)
+      .query({ token: patronToken })
+      .send(patronLogin)
+      .end((error, response) => {
+        expect(response).to.have.status(400);
+        expect(response.body).to.be.an('object');
+        expect(response.body.status).to.equal('failure');
+        done();
+      });
+  });
+  it('should not update a user profile if request body is empty', (done) => {
+    chai.request(server)
+      .patch(`${UPDATE_URL}`)
+      .query({ token: patronToken })
+      .send({})
+      .end((error, response) => {
+        expect(response).to.have.status(400);
+        expect(response.body).to.be.an('object');
+        expect(response.body.status).to.equal('failure');
+        done();
+      });
+  });
+  it('should not update a user profile if token is empty', (done) => {
+    chai.request(server)
+      .patch(`${UPDATE_URL}`)
+      .query({})
+      .send({})
+      .end((error, response) => {
+        expect(response).to.have.status(401);
+        expect(response.body).to.be.an('object');
+        expect(response.body.status).to.equal('failure');
         done();
       });
   });
