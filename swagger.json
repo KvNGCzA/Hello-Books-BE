@@ -20,10 +20,6 @@
       "description": "Authorize users"
     },
     {
-      "name": "SuperAdmin",
-      "description": "Super admin of the library"
-    },
-    {
       "name": "Admin",
       "description": "Admin can add an author"
     },
@@ -72,6 +68,73 @@
           },
           "500" : {
             "description" : "server error"
+          }
+        }
+      }
+    },"/update": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Users can update their profile",
+        "description": "",
+        "operationId": "update",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [{
+          "in": "body",
+          "name": "body",
+          "description": "User object that needs to be updated",
+          "required": true,
+          "schema": {
+            "$ref": "#/definitions/update"
+          }
+        }],
+        "responses": {
+          "201": {
+            "description": "update successful"
+          },
+          "500": {
+            "description": "server error"
+          }
+        }
+      }
+    },"/admin/book": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Add books to the library",
+        "description": "",
+        "operationId": "addBook",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [{
+          "in": "body",
+          "name": "body",
+          "description": "Book object that needs to be added",
+          "required": true,
+          "schema": {
+            "$ref": "#/definitions/book"
+          }
+        }],
+        "responses": {
+          "201": {
+            "description": "book successfully added"
+          },
+          "409": {
+            "description": "book already exist"
+          },
+          "500": {
+            "description": "server error"
           }
         }
       }
@@ -644,6 +707,74 @@
         "avatarUrl": {
           "type": "string",
           "example": "https://gravatar.com/avatar/aed61baf1e9256ed7d70e2cbbfcba9aa?s=400&d=robohash&r=x"
+        }
+      }
+    }, "update": {
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "example": "John",
+          "minLength": 4
+        },
+        "lastName": {
+          "type": "string",
+          "example": "Doe",
+          "minLength": 4
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "example": "johndoe@gmail.com",
+          "minLength": 4
+        },
+        "password": {
+          "type": "string",
+          "example": "password",
+          "minLength": 4
+        },
+        "avatarUrl": {
+          "type": "string",
+          "example": "https://gravatar.com/avatar/aed61baf1e9256ed7d70e2cbbfcba9aa?s=400&d=robohash&r=x"
+        }
+      }
+    },"book": {
+      "type": "object",
+      "required": [
+        "title",
+        "isbn",
+        "description",
+        "price",
+        "yearPublished",
+        "authorName"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "example": "hello world"
+         
+        },
+        "isbn": {
+          "type": "string",
+          "example": "9783161484100"
+          
+        },
+        "description": {
+          "type": "string",
+          "example": "story story"
+          
+        },
+        "price": {
+          "type": "integer",
+          "example": "234"
+        },
+        "yearPublished": {
+          "type": "integer",
+          "example": "2019"
+        },
+        "authorName": {
+          "type": "string",
+          "example": "tyler"
         }
       }
     },
