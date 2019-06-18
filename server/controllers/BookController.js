@@ -43,6 +43,40 @@ class BookController {
       return responseMessage(response, 500, { message: error.message });
     }
   }
+
+  /**
+* Fetch Books
+* @name fetchBooks
+* @param {Object} request
+* @param {Object} response
+* @returns {JSON} object
+* @memberof BookController
+*/
+  static async fetchBooks(request, response) {
+    let { page, limit } = request.query;
+    page = page || 1;
+    limit = limit || 10;
+    try {
+      const countResults = await Book.findAndCountAll();
+      const { count } = countResults;
+      const pages = Math.ceil(count / limit);
+      const offset = limit * (+page - 1);
+      if (page > pages) return responseMessage(response, 400, { status: 'failure', message: 'no books found' });
+      const results = await Book.findAll({
+        limit,
+        offset,
+        include: [{
+          model: BookAuthor, include: [{ model: Author, attributes: ['fullname'] }], attributes: ['authorId'], order: [['id']]
+        }]
+      });
+      return responseMessage(response, 200, {
+        status: 'success', message: 'request successful', count, pages, current: +page, results
+      });
+    } catch (error) {
+      /* istanbul ignore next-line */
+      return responseMessage(response, 500, { message: error.message });
+    }
+  }
 }
 
 export default BookController;

@@ -110,6 +110,20 @@ export default class BookValidator {
   }
 
   /**
+ * Generic Default Number validator
+ * @param {integer} item
+ * @returns {function} call to a check API middleware
+ * @memberof Validation
+ */
+  static checkNumberForDefault(item) {
+    return UserValidator.genericCheck(item)
+      .optional()
+      .trim()
+      .isInt({ min: 1 })
+      .withMessage(`${item} value must be at least 1 and an integer`);
+  }
+
+  /**
    * Book validator
    * @returns {array} an array of check API middleware
    * @memberof Validation
@@ -122,6 +136,19 @@ export default class BookValidator {
       BookValidator.checkPrice(),
       BookValidator.checkYearPublished(),
       BookValidator.authorName(),
+      checkForErrors,
+    ];
+  }
+
+  /**
+   * Fetch Book Validation
+   * @returns {array} an array of check API middleware
+   * @memberof Validation
+   */
+  static FetchBookValidation() {
+    return [
+      BookValidator.checkNumberForDefault('page'),
+      BookValidator.checkNumberForDefault('limit'),
       checkForErrors,
     ];
   }

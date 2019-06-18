@@ -553,6 +553,56 @@
       }
     }
   },
+"/books": {
+  "get": {
+    "tags": [
+      "books"
+    ],
+    "summary": "Get Books",
+    "description": "User can search for books",
+    "operationId": "fetchBooks",
+    "consumes": [
+      "application/json"
+    ],
+    "produces": [
+      "application/json"
+    ], 
+    "parameters": [
+      {
+        "in": "query",
+        "name": "body",
+        "schema": {
+          "type": "object",
+          "properties": { 
+            "page": {
+              "type": "integer"
+            },
+            "limit": {
+              "type": "integer"
+            }
+          }
+        },
+        "required": true
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "request successful"
+      },
+      "400": {
+        "description": "no body found"
+      },
+      "500": {
+        "description": "Server error"
+      }
+    },
+    "security": [
+      {
+        "Authorization": []
+      }
+    ]
+  }
+},  
   "securityDefinitions": {
     "Authorization": {
       "type": "apiKey",

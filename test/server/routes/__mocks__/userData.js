@@ -136,7 +136,7 @@ export const newBook = {
 };
 
 export const nonExistingBook = {
-  id: 20,
+  id: 100,
 };
 
 export const InvalidBook = {
