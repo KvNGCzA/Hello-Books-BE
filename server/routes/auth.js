@@ -1,6 +1,7 @@
 import express from 'express';
 import AuthController from '../controllers/AuthController';
 
+
 import middlewares from '../middlewares';
 
 const { verifyToken, UserValidator } = middlewares;
