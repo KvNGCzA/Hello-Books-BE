@@ -39,8 +39,6 @@ describe('AUTH', () => {
           expect(response).to.have.status(201);
           expect(response.body).to.be.an('object');
           expect(response.body.message).to.equal('sign up successful');
-          expect(response.body).to.have.property('token');
-          token = response.body.token;
           done();
         });
     });
@@ -67,7 +65,6 @@ describe('AUTH', () => {
           expect(response.body).to.be.an('object');
           expect(response.body.status).to.equal('success');
           expect(response.body.message).to.equal('sign up successful');
-          expect(response.body).to.have.property('token');
           done();
         });
     });
@@ -81,7 +78,6 @@ describe('AUTH', () => {
           expect(response.body).to.be.an('object');
           expect(response.body.status).to.equal('success');
           expect(response.body.message).to.equal('sign up successful');
-          expect(response.body).to.have.property('token');
           done();
         });
     });
@@ -95,7 +91,6 @@ describe('AUTH', () => {
           expect(response.body).to.be.an('object');
           expect(response.body.status).to.equal('success');
           expect(response.body.message).to.equal('sign up successful');
-          expect(response.body).to.have.property('token');
           done();
         });
     });
@@ -109,7 +104,6 @@ describe('AUTH', () => {
           expect(response.body).to.be.an('object');
           expect(response.body.status).to.equal('success');
           expect(response.body.message).to.equal('sign up successful');
-          expect(response.body).to.have.property('token');
           done();
         });
     });
@@ -276,6 +270,18 @@ describe('AUTH', () => {
   });
 
   describe('User logs in', () => {
+    it('It should login user with valid login credentials', (done) => {
+      chai.request(server)
+        .post(`${BASE_URL}/login`)
+        .send(User)
+        .end((error, response) => {
+          expect(response).to.have.status(200);
+          expect(response.body).to.be.an('object');
+          /* eslint-disable-next-line */
+          token = response.body.token;
+          done();
+        });
+    });
     it('returns a status 200 if user supplies the valid email and password', (done) => {
       const body = {
         email: 'jamiefoxx@gmail.com',
@@ -473,13 +479,13 @@ describe('AUTH', () => {
           done();
         });
     });
-    it('It should get response:"no books found" if current page is greater than pages', (done) => {
+    it('It should get response:"page does not exist" if current page is greater than pages', (done) => {
       chai.request(server)
         .get(`${BOOKS_BASE_URL}?page=10000000&limit=10`)
         .end((error, response) => {
           expect(response).to.have.status(400);
           expect(response.body).to.be.an('object');
-          expect(response.body.message).to.equal('no books found');
+          expect(response.body.message).to.equal('page does not exist');
           done();
         });
     });

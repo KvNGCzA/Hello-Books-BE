@@ -22,7 +22,7 @@ export default class UserController {
    */
   static async favouriteAuthor(request, response) {
     try {
-      const { authorId } = request.body;
+      const { authorId } = request.params;
       const { id } = request.userData;
       const author = await Author.findOne({ where: { id: authorId } });
       if (!author) return responseMessage(response, 404, { message: 'an author with the given id does not exists' });
@@ -31,7 +31,7 @@ export default class UserController {
       const newFavourite = await FavouriteAuthor.create({ userId: id, authorId });
       if (newFavourite) {
         const { dataValues } = newFavourite;
-        responseMessage(response, 201, { status: 'success', message: 'author successfully added to favourites', data: { ...dataValues } });
+        responseMessage(response, 201, { status: 'success', message: 'author successfully added to favourites', data: { ...dataValues, author: author.fullname } });
       }
     } catch (error) {
       /* istanbul ignore next */
@@ -98,12 +98,12 @@ export default class UserController {
    */
   static async unfavouriteAuthor(request, response) {
     try {
-      const { authorId } = request.body;
+      const { authorId } = request.params;
       const { id } = request.userData;
       const author = await Author.findOne({ where: { id: authorId } });
       if (!author) return responseMessage(response, 404, { message: 'an author with the given id does not exists' });
       const alreadyFavourite = await FavouriteAuthor.findOne({ where: { userId: id, authorId } });
-      if (!alreadyFavourite) return responseMessage(response, 400, { message: 'author is not among your favourites' });
+      if (!alreadyFavourite) return responseMessage(response, 404, { message: 'author is not among your favourites' });
       const deleted = await FavouriteAuthor.destroy({ where: { userId: id, authorId } });
       if (deleted) responseMessage(response, 200, { status: 'success', message: 'author successfully removed from favourites' });
     } catch (error) {
@@ -122,7 +122,7 @@ export default class UserController {
   static async unfavoriteBook(request, response) {
     try {
       const [favoritebook, param] = await UserController.findBook(request, response);
-      if (!favoritebook) return responseMessage(response, 409, { message: 'this book is not in your favourites' });
+      if (!favoritebook) return responseMessage(response, 404, { message: 'this book is not in your favourites' });
       await FavoriteBook.destroy({ where: param });
       return responseMessage(response, 200, {
         status: 'success',

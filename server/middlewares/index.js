@@ -4,6 +4,7 @@ import checkForErrors from './checkForErrors';
 import AuthorValidator from './AuthorValidator';
 import authorizeUser from './authorizeUser';
 import BookValidator from './BookValidator';
+import checkRole from './checkRole';
 
 export default {
   verifyToken,
@@ -12,4 +13,5 @@ export default {
   AuthorValidator,
   authorizeUser,
   BookValidator,
+  checkRole,
 };

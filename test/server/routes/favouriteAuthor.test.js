@@ -6,7 +6,7 @@ import testData from './__mocks__';
 chai.use(chaiHttp);
 const { userData: { existingUser } } = testData;
 
-const BASE_URL = '/api/v1/favourites';
+const BASE_URL = '/api/v1/favourites/author/';
 const LOGIN_URL = '/api/v1/auth/login';
 
 describe('FAVOURITE AUTHOR ROUTES', () => {
@@ -24,8 +24,8 @@ describe('FAVOURITE AUTHOR ROUTES', () => {
   describe('Favourite Author', () => {
     it('should favourite an author for a user', (done) => {
       chai.request(app)
-        .post(`${BASE_URL}?token=${userToken}`)
-        .send({ authorId: 2 })
+        .post(`${BASE_URL}2`)
+        .query({ token: userToken })
         .end((error, response) => {
           expect(response).to.have.status(201);
           expect(response.body).to.be.an('object');
@@ -38,8 +38,8 @@ describe('FAVOURITE AUTHOR ROUTES', () => {
 
     it('should return an error if the authorId provided does not match any author in the database', (done) => {
       chai.request(app)
-        .post(`${BASE_URL}?token=${userToken}`)
-        .send({ authorId: 100 })
+        .post(`${BASE_URL}100`)
+        .query({ token: userToken })
         .end((error, response) => {
           expect(response).to.have.status(404);
           expect(response.body).to.be.an('object');
@@ -52,8 +52,8 @@ describe('FAVOURITE AUTHOR ROUTES', () => {
 
     it('should return an error if the user tries to favourite their already favourited author', (done) => {
       chai.request(app)
-        .post(`${BASE_URL}?token=${userToken}`)
-        .send({ authorId: 1 })
+        .post(`${BASE_URL}1`)
+        .query({ token: userToken })
         .end((error, response) => {
           expect(response).to.have.status(409);
           expect(response.body).to.be.an('object');
@@ -68,8 +68,8 @@ describe('FAVOURITE AUTHOR ROUTES', () => {
   describe('Unfavourite Author', () => {
     it('should favourite an author for a user', (done) => {
       chai.request(app)
-        .delete(`${BASE_URL}?token=${userToken}`)
-        .send({ authorId: 2 })
+        .delete(`${BASE_URL}2`)
+        .query({ token: userToken })
         .end((error, response) => {
           expect(response).to.have.status(200);
           expect(response.body).to.be.an('object');
@@ -82,8 +82,8 @@ describe('FAVOURITE AUTHOR ROUTES', () => {
 
     it('should return an error if the authorId provided does not match any author in the database', (done) => {
       chai.request(app)
-        .delete(`${BASE_URL}?token=${userToken}`)
-        .send({ authorId: 100 })
+        .delete(`${BASE_URL}100`)
+        .query({ token: userToken })
         .end((error, response) => {
           expect(response).to.have.status(404);
           expect(response.body).to.be.an('object');
@@ -96,10 +96,10 @@ describe('FAVOURITE AUTHOR ROUTES', () => {
 
     it('should return an error if user tries to unfavourite an author who isn\'t their favourite', (done) => {
       chai.request(app)
-        .delete(`${BASE_URL}?token=${userToken}`)
-        .send({ authorId: 2 })
+        .delete(`${BASE_URL}2`)
+        .query({ token: userToken })
         .end((error, response) => {
-          expect(response).to.have.status(400);
+          expect(response).to.have.status(404);
           expect(response.body).to.be.an('object');
           expect(response.body).to.have.keys('status', 'message');
           expect(response.body.status).to.equal('failure');
@@ -112,48 +112,48 @@ describe('FAVOURITE AUTHOR ROUTES', () => {
   describe('Fav Author Validations', () => {
     it('should return an error message if a user inputs alphabets as authorId', (done) => {
       chai.request(app)
-        .delete(`${BASE_URL}?token=${userToken}`)
-        .send({ authorId: 'abc' })
+        .delete(`${BASE_URL}abc`)
+        .query({ token: userToken })
         .end((error, response) => {
           expect(response).to.have.status(400);
           expect(response.body).to.be.an('object');
           expect(response.body).to.have.keys('status', 'errors');
           expect(response.body.status).to.equal('failure');
           expect(response.body.errors).to.be.an('object');
-          expect(response.body.errors).to.have.haveOwnProperty('body');
-          expect(response.body.errors.body.authorId).to.equal('authorId must be an integer, greater than 0 and must not contain leading zeros');
+          expect(response.body.errors).to.have.haveOwnProperty('params');
+          expect(response.body.errors.params.authorId).to.equal('authorId must be an integer, greater than 0 and must not contain leading zeros');
           done();
         });
     });
 
     it('should return an error message if a user inputs a negative number as authorId', (done) => {
       chai.request(app)
-        .delete(`${BASE_URL}?token=${userToken}`)
-        .send({ authorId: '-1' })
+        .delete(`${BASE_URL}-1`)
+        .query({ token: userToken })
         .end((error, response) => {
           expect(response).to.have.status(400);
           expect(response.body).to.be.an('object');
           expect(response.body).to.have.keys('status', 'errors');
           expect(response.body.status).to.equal('failure');
           expect(response.body.errors).to.be.an('object');
-          expect(response.body.errors).to.have.haveOwnProperty('body');
-          expect(response.body.errors.body.authorId).to.equal('authorId must be an integer, greater than 0 and must not contain leading zeros');
+          expect(response.body.errors).to.have.haveOwnProperty('params');
+          expect(response.body.errors.params.authorId).to.equal('authorId must be an integer, greater than 0 and must not contain leading zeros');
           done();
         });
     });
 
     it('should return an error message if a user inputs special characters as authorId', (done) => {
       chai.request(app)
-        .delete(`${BASE_URL}?token=${userToken}`)
-        .send({ authorId: '@#%' })
+        .delete(`${BASE_URL}***`)
+        .query({ token: userToken })
         .end((error, response) => {
           expect(response).to.have.status(400);
           expect(response.body).to.be.an('object');
           expect(response.body).to.have.keys('status', 'errors');
           expect(response.body.status).to.equal('failure');
           expect(response.body.errors).to.be.an('object');
-          expect(response.body.errors).to.have.haveOwnProperty('body');
-          expect(response.body.errors.body.authorId).to.equal('authorId must be an integer, greater than 0 and must not contain leading zeros');
+          expect(response.body.errors).to.have.haveOwnProperty('params');
+          expect(response.body.errors.params.authorId).to.equal('authorId must be an integer, greater than 0 and must not contain leading zeros');
           done();
         });
     });

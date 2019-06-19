@@ -13,7 +13,7 @@ const {
   UserValidator: { profileValidation }
 } = middlewares;
 const user = express.Router();
-const FAVOURITES_BASE_URL = '/favourites';
+const FAVOURITES_BASE_URL = '/favourites/author/:authorId';
 const BOOKS_BASE_URL = '/books';
 // Update User Profile
 const UPDATE_BASE_URL = '/user/update';

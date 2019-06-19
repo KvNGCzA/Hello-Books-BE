@@ -1,19 +1,19 @@
 /* eslint-disable */
 module.exports = {
     up: queryInterface => queryInterface.bulkInsert('Roles', [{
-        id: 2113,
+        id: process.env.ADMIN_ROLE,
         roleName: 'admin',
         description: 'Administrator of the library',
         createdAt: new Date(),
         updatedAt: new Date()
     }, {
-        id: 2768,
+        id: process.env.PATRON_ROLE,
         roleName: 'patron',
         description: 'A full supporter of the library',
         createdAt: new Date(),
         updatedAt: new Date()
     }, {
-        id: 1002,
+        id: process.env.SUPERADMIN_ROLE,
         roleName: 'superadmin',
         description: 'Super administrator of the library',
         createdAt: new Date(),

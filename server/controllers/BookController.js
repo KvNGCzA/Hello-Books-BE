@@ -26,17 +26,15 @@ class BookController {
       const existingBook = await Book.findOrCreate({
         where: { isbn },
         defaults: {
-          description,
-          title,
-          price,
-          yearPublished
+          description, title, price, yearPublished
         }
       });
       await BookAuthor.create({ authorId: newAuthor[0].id, bookId: existingBook[0].id });
       const { dataValues } = existingBook[0];
       const message = `book successfully added${newAuthor[1] ? ' and author created' : ''}`;
+      const author = { id: newAuthor[0].id, name: authorName };
       return existingBook[1]
-        ? responseMessage(response, 201, { status: 'success', message, book: { ...dataValues, author: newAuthor[0].id } })
+        ? responseMessage(response, 201, { status: 'success', message, book: { ...dataValues, author } })
         : responseMessage(response, 409, { message: 'book already exist' });
     } catch (error) {
       /* istanbul ignore next-line */
@@ -61,7 +59,7 @@ class BookController {
       const { count } = countResults;
       const pages = Math.ceil(count / limit);
       const offset = limit * (+page - 1);
-      if (page > pages) return responseMessage(response, 400, { status: 'failure', message: 'no books found' });
+      if (page > pages) return responseMessage(response, 400, { status: 'failure', message: 'page does not exist' });
       const results = await Book.findAll({
         limit,
         offset,

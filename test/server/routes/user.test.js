@@ -127,7 +127,7 @@ describe('Unfavorite Book Test', () => {
       .delete(`${BASE_URL}${newBook.id}`)
       .query({ token: patronToken })
       .end((error, response) => {
-        expect(response).to.have.status(409);
+        expect(response).to.have.status(404);
         expect(response.body.message).to.be.a('string');
         expect(response.body.message).to.equal('this book is not in your favourites');
         done();

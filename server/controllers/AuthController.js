@@ -3,8 +3,8 @@ import models from '../database/models';
 import helpers from '../helpers';
 
 const {
-  responseMessage, createToken, sendMail,
-  signupMessage, setupNewUser, resetpasswordMessage, findUser
+  responseMessage, createToken, sendMail, signupMessage, setupNewUser, resetpasswordMessage,
+  findUser
 } = helpers;
 const { User, UserRole } = models;
 const defaultPassword = process.env.PASSWORD || 'setpassword';
@@ -24,7 +24,7 @@ export default class AuthController {
    */
   static async createUser(request, response) {
     const {
-      firstName, lastName, email, password, role, avatarUrl
+      firstName, lastName, email, password, roleId, avatarUrl
     } = request.body;
     let newUserFromAdmin;
     try {
@@ -41,13 +41,13 @@ export default class AuthController {
       const token = createToken({ id }, '24h');
       delete dataValues.password;
       if (newUserFromAdmin) {
-        return setupNewUser(response, dataValues, role, token);
+        return setupNewUser(response, dataValues, roleId, token);
       }
       await UserRole.create({ userId: id });
       const message = signupMessage(firstName, token);
       await sendMail(process.env.ADMIN_MAIL, email, message);
       return responseMessage(response, 201, {
-        status: 'success', message: 'sign up successful', user: { ...dataValues }, token
+        status: 'success', message: 'sign up successful', user: { ...dataValues }
       });
     } catch (error) {
       /* istanbul ignore next-line */
