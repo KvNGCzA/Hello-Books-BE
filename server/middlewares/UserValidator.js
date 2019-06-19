@@ -95,7 +95,10 @@ export default class UserValidator {
    * @memberof Validation
    */
   static checkRole() {
-    return UserValidator.genericCheck('role');
+    return UserValidator.genericCheck('roleId')
+      .trim()
+      .isInt({ allow_leading_zeroes: false })
+      .withMessage('roleId value must be an integer');
   }
 
   /**

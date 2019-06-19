@@ -93,6 +93,16 @@ module.exports = {
       status: 'active',
       createdAt: new Date(),
       updatedAt: new Date()
+    }, {
+      firstName: 'Exec',
+      lastName: 'Admin',
+      email: 'adminaccount@gmail.com.ng',
+      password: bcrypt.hashSync('adminpassword', 10),
+      avatarUrl: 'https://banner2.kisspng.com/20180408/tvw/kisspng-user-computer-icons-gravatar-blog-happy-woman-5aca6d03e6c3f5.6041125615232156199452.jpg',
+      verified: true,
+      status: 'active',
+      createdAt: new Date(),
+      updatedAt: new Date()
     }], {}),
 
   down: queryInterface => queryInterface.bulkDelete('Users', null, {})

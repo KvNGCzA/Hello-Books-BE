@@ -66,7 +66,7 @@ export const blankInput = {
   email: '',
   password: '',
   avatarUrl: '',
-  role: '',
+  roleId: '',
   status: '',
 };
 

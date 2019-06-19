@@ -349,7 +349,7 @@ describe('Admin creates new user', () => {
       firstName: 'Sday',
       lastName: 'Olseh',
       email: 'sundayolseh@email.com',
-      role: 'patron'
+      roleId: process.env.PATRON_ROLE
     };
     chai.request(app)
       .post('/api/v1/admin/user')
@@ -373,7 +373,7 @@ describe('Admin creates new user', () => {
       firstName: 'New',
       lastName: 'Admin',
       email: 'newadmin@email.com',
-      role: 'admin'
+      roleId: process.env.ADMIN_ROLE
     };
     chai.request(app)
       .post('/api/v1/admin/user')
@@ -397,7 +397,7 @@ describe('Admin creates new user', () => {
       firstName: 'Sunday',
       lastName: 'Oliseh',
       email: 'sundayoliseh@email.com',
-      role: 'notfound'
+      roleId: 4444
     };
     chai.request(app)
       .post('/api/v1/admin/user')
@@ -419,11 +419,11 @@ describe('Admin creates new user', () => {
       .end((error, response) => {
         expect(response).to.have.status(400);
         expect(response.body).to.haveOwnProperty('errors');
-        expect(response.body.errors.body).to.have.keys('firstName', 'lastName', 'email', 'role');
+        expect(response.body.errors.body).to.have.keys('firstName', 'lastName', 'email', 'roleId');
         expect(response.body.errors.body.firstName).to.equal('firstName is missing');
         expect(response.body.errors.body.lastName).to.equal('lastName is missing');
         expect(response.body.errors.body.email).to.equal('email is missing');
-        expect(response.body.errors.body.role).to.equal('role is missing');
+        expect(response.body.errors.body.roleId).to.equal('roleId is missing');
         done();
       });
   });
@@ -435,11 +435,11 @@ describe('Admin creates new user', () => {
       .end((error, response) => {
         expect(response).to.have.status(400);
         expect(response.body).to.haveOwnProperty('errors');
-        expect(response.body.errors.body).to.have.keys('firstName', 'lastName', 'email', 'role');
+        expect(response.body.errors.body).to.have.keys('firstName', 'lastName', 'email', 'roleId');
         expect(response.body.errors.body.firstName).to.equal('firstName cannot be blank');
         expect(response.body.errors.body.lastName).to.equal('lastName cannot be blank');
         expect(response.body.errors.body.email).to.equal('email cannot be blank');
-        expect(response.body.errors.body.role).to.equal('role cannot be blank');
+        expect(response.body.errors.body.roleId).to.equal('roleId cannot be blank');
         done();
       });
   });
@@ -448,7 +448,7 @@ describe('Admin creates new user', () => {
       firstName: 'Peter',
       lastName: 'Taye',
       email: 'petertaye@email.com',
-      role: 'user'
+      roleId: 'user'
     };
     chai.request(app)
       .post('/api/v1/admin/user')
@@ -476,7 +476,7 @@ describe('Admin creates new user', () => {
           firstName: 'Peter',
           lastName: 'Taye',
           email: 'petertaye@email.com',
-          role: 'user'
+          roleId: 'user'
         };
         chai.request(app)
           .post('/api/v1/admin/user')
@@ -533,7 +533,7 @@ describe('Admin can deactivate or activate a user', () => {
       .send(body)
       .set('Authorization', usertoken)
       .end((err, response) => {
-        expect(response).to.have.status(400);
+        expect(response).to.have.status(409);
         expect(response).to.be.a('object');
         expect(response.body).to.have.all.keys('status', 'message');
         expect(response.body.message).to.be.a('String');
@@ -566,7 +566,7 @@ describe('Admin can deactivate or activate a user', () => {
       .send(body)
       .set('Authorization', usertoken)
       .end((err, response) => {
-        expect(response).to.have.status(400);
+        expect(response).to.have.status(409);
         expect(response).to.be.a('object');
         expect(response.body).to.have.all.keys('status', 'message');
         expect(response.body.message).to.be.a('String');
