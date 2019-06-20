@@ -9,6 +9,7 @@ import * as messages from './messages';
 import enforceVerification from './enforceVerification';
 import setupNewUser from './setupNewUser';
 import emptyBody from './emptyBody';
+import genericBookHelpers from './genericBookHelpers';
 
 const { signupMessage, createUserMessage, resetpasswordMessage } = messages;
 const helpers = {
@@ -25,6 +26,7 @@ const helpers = {
   setupNewUser,
   resetpasswordMessage,
   emptyBody,
+  genericBookHelpers,
 };
 
 export default helpers;

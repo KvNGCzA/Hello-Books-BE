@@ -14,7 +14,6 @@ const {
 chai.use(chaiHttp);
 
 const BASE_URL = '/api/v1/auth';
-const BOOKS_BASE_URL = '/api/v1/books';
 
 describe('AUTH', () => {
   let userToken = '';
@@ -442,49 +441,6 @@ describe('AUTH', () => {
           expect(response.body).to.be.an('object');
           expect(response.body.status).to.equal('success');
           expect(response.body.message).to.equal('password changed successfully');
-          done();
-        });
-    });
-  });
-  describe('Fetch Books router', () => {
-    it('It should get book with query string page and limit', (done) => {
-      chai.request(server)
-        .get(`${BOOKS_BASE_URL}?page=1&limit=10`)
-        .end((error, response) => {
-          expect(response).to.have.status(200);
-          expect(response.body).to.be.an('object');
-          expect(response.body.message).to.equal('request successful');
-          done();
-        });
-    });
-    it('It should get book without query string page and limit', (done) => {
-      chai.request(server)
-        .get(`${BOOKS_BASE_URL}`)
-        .end((error, response) => {
-          expect(response).to.have.status(200);
-          expect(response.body).to.be.an('object');
-          expect(response.body.message).to.equal('request successful');
-          done();
-        });
-    });
-    it('It should get response:"page does not exist" if current page is greater than pages', (done) => {
-      chai.request(server)
-        .get(`${BOOKS_BASE_URL}?page=10000000&limit=10`)
-        .end((error, response) => {
-          expect(response).to.have.status(400);
-          expect(response.body).to.be.an('object');
-          expect(response.body.message).to.equal('page does not exist');
-          done();
-        });
-    });
-    it('It should get book wrong query string page and limit', (done) => {
-      chai.request(server)
-        .get(`${BOOKS_BASE_URL}?page=ed&limit=lcd`)
-        .end((error, response) => {
-          expect(response).to.have.status(400);
-          expect(response.body.errors).to.be.an('object');
-          expect(response.body.errors.query.page).to.be.equal('page value must be at least 1 and an integer');
-          expect(response.body.errors.query.limit).to.be.equal('limit value must be at least 1 and an integer');
           done();
         });
     });

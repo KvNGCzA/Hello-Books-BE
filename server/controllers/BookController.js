@@ -1,7 +1,7 @@
 import models from '../database/models';
 import helpers from '../helpers';
 
-const { responseMessage, makeLowerCase } = helpers;
+const { responseMessage, makeLowerCase, genericBookHelpers: { filter, extractBooks } } = helpers;
 const { Book, Author, BookAuthor } = models;
 
 /**
@@ -18,7 +18,7 @@ class BookController {
   static async addBook(request, response) {
     const {
       body: {
-        title, description, isbn, price, yearPublished, authorName
+        title, description, isbn, price, yearPublished, tag, authorName
       }
     } = request;
     try {
@@ -27,7 +27,7 @@ class BookController {
       const existingBook = await Book.findOrCreate({
         where: { isbn },
         defaults: {
-          description, title, price, yearPublished
+          description, title, price, yearPublished, tag
         }
       });
       await BookAuthor.create({ authorId: newAuthor[0].id, bookId: existingBook[0].id });
@@ -52,24 +52,23 @@ class BookController {
 * @memberof BookController
 */
   static async fetchBooks(request, response) {
-    let { page, limit } = request.query;
-    page = page || 1;
-    limit = limit || 10;
+    const {
+      title, author, tag, keyword, page = 1, limit = 10
+    } = request.query;
+    const standardQueries = title || author || tag;
+    const queryFilter = filter(title, tag, author, keyword);
     try {
-      const countResults = await Book.findAndCountAll();
+      if (keyword && standardQueries) return responseMessage(response, 400, { status: 'failure', message: 'keyword cannot be used with title, author or tag' });
+      const countResults = await BookAuthor.findAndCountAll(queryFilter);
       const { count } = countResults;
+      if (!count) return responseMessage(response, 404, { status: 'failure', message: 'no book found' });
       const pages = Math.ceil(count / limit);
       const offset = limit * (+page - 1);
       if (page > pages) return responseMessage(response, 400, { status: 'failure', message: 'page does not exist' });
-      const results = await Book.findAll({
-        limit,
-        offset,
-        include: [{
-          model: BookAuthor, include: [{ model: Author, attributes: ['authorName'] }], attributes: ['authorId'], order: [['id']]
-        }]
-      });
+      const results = await BookAuthor.findAll({ limit, offset, ...queryFilter });
+      const books = extractBooks(results);
       return responseMessage(response, 200, {
-        status: 'success', message: 'request successful', count, pages, current: +page, results
+        status: 'success', message: 'request successful', count, pages, current: +page, books
       });
     } catch (error) {
       /* istanbul ignore next-line */

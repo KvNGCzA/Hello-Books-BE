@@ -4,6 +4,7 @@ export const book = {
   isbn: 9788175257665,
   price: 500,
   yearPublished: 2019,
+  tag: 'Epic',
   authorName: 'Soyinka'
 };
 
@@ -13,6 +14,7 @@ export const badBook = {
   isbn: 9783161484100,
   price: 500,
   yearPublished: 2019,
+  tag: 'Epic',
   authorName: ''
 };
 

@@ -5,6 +5,7 @@ import testData from './__mocks__';
 
 const API_VERSION = '/api/v1';
 const borrowUrl = `${API_VERSION}/borrow`;
+const BOOKS_BASE_URL = '/api/v1/books';
 const loginUrl = `${API_VERSION}/auth/login`;
 const UPDATE_URL = '/api/v1/user/update';
 
@@ -206,6 +207,7 @@ describe('PATRON ROUTES', () => {
     });
   });
 });
+
 describe('Update user profile', () => {
   it('should update a user profile', (done) => {
     chai.request(app)
@@ -269,6 +271,146 @@ describe('Update user profile', () => {
         expect(response).to.have.status(401);
         expect(response.body).to.be.an('object');
         expect(response.body.status).to.equal('failure');
+        done();
+      });
+  });
+});
+
+let bookTitle;
+describe('Fetch Books router', () => {
+  it('It should get book with query string page and limit', (done) => {
+    chai.request(app)
+      .get(`${BOOKS_BASE_URL}?page=1&limit=10`)
+      .end((error, response) => {
+        expect(response).to.have.status(200);
+        expect(response.body).to.be.an('object');
+        expect(response.body.message).to.equal('request successful');
+        done();
+      });
+  });
+  it('It should get book without query string page and limit', (done) => {
+    chai.request(app)
+      .get(`${BOOKS_BASE_URL}`)
+      .end((error, response) => {
+        bookTitle = response.body.books[0].title.slice(0, 7);
+        expect(response).to.have.status(200);
+        expect(response.body).to.be.an('object');
+        expect(response.body.message).to.equal('request successful');
+        done();
+      });
+  });
+  it('It should get response:"page does not exist" if current page is greater than pages', (done) => {
+    chai.request(app)
+      .get(`${BOOKS_BASE_URL}?page=10000000&limit=10`)
+      .end((error, response) => {
+        expect(response).to.have.status(400);
+        expect(response.body).to.be.an('object');
+        expect(response.body.message).to.equal('page does not exist');
+        done();
+      });
+  });
+  it('It should get book wrong query string page and limit', (done) => {
+    chai.request(app)
+      .get(`${BOOKS_BASE_URL}?page=ed&limit=lcd`)
+      .end((error, response) => {
+        expect(response).to.have.status(400);
+        expect(response.body.errors).to.be.an('object');
+        expect(response.body.errors.query.page).to.be.equal('page value must be at least 1 and an integer');
+        expect(response.body.errors.query.limit).to.be.equal('limit value must be at least 1 and an integer');
+        done();
+      });
+  });
+});
+
+describe('Search Books', () => {
+  it('should search a book based on the book title', (done) => {
+    chai.request(app)
+      .get(`${BOOKS_BASE_URL}`)
+      .query({ title: bookTitle })
+      .end((error, response) => {
+        expect(response).to.have.status(200);
+        expect(response.body.status).to.equal('success');
+        expect(response.body.message).to.equal('request successful');
+        expect(response.body.books).to.be.an('array');
+        expect(response.body.books.length).to.not.equal(0);
+        done();
+      });
+  });
+
+  it('should search a book based on the tag', (done) => {
+    chai.request(app)
+      .get(`${BOOKS_BASE_URL}`)
+      .query({ tag: 'Epic' })
+      .end((error, response) => {
+        expect(response).to.have.status(200);
+        expect(response.body.status).to.equal('success');
+        expect(response.body.message).to.equal('request successful');
+        expect(response.body.books).to.be.an('array');
+        expect(response.body.books.length).to.not.equal(0);
+        done();
+      });
+  });
+
+  it('should search a book based on the author name', (done) => {
+    chai.request(app)
+      .get(`${BOOKS_BASE_URL}`)
+      .query({ author: 'doe' })
+      .end((error, response) => {
+        expect(response).to.have.status(200);
+        expect(response.body.status).to.equal('success');
+        expect(response.body.message).to.equal('request successful');
+        expect(response.body.books).to.be.an('array');
+        expect(response.body.books.length).to.not.equal(0);
+        done();
+      });
+  });
+
+  it('should search books based on a keyword', (done) => {
+    chai.request(app)
+      .get(`${BOOKS_BASE_URL}`)
+      .query({ keyword: 'doe' })
+      .end((error, response) => {
+        expect(response).to.have.status(200);
+        expect(response.body.status).to.equal('success');
+        expect(response.body.message).to.equal('request successful');
+        expect(response.body.books).to.be.an('array');
+        expect(response.body.books.length).to.not.equal(0);
+        done();
+      });
+  });
+
+  it('should return a failure status if there are no related books based on the keyword', (done) => {
+    chai.request(app)
+      .get(`${BOOKS_BASE_URL}`)
+      .query({ keyword: 'blahblahblahx5' })
+      .end((error, response) => {
+        expect(response).to.have.status(404);
+        expect(response.body.status).to.equal('failure');
+        expect(response.body.message).to.equal('no book found');
+        done();
+      });
+  });
+
+  it('should return a failure status if there are no related books based any other parameters', (done) => {
+    chai.request(app)
+      .get(`${BOOKS_BASE_URL}`)
+      .query({ author: 'blahblahblahx5' })
+      .end((error, response) => {
+        expect(response).to.have.status(404);
+        expect(response.body.status).to.equal('failure');
+        expect(response.body.message).to.equal('no book found');
+        done();
+      });
+  });
+
+  it('should return a failure status if the keyword query param is used with other params except page or limit', (done) => {
+    chai.request(app)
+      .get(`${BOOKS_BASE_URL}`)
+      .query({ author: 'blahblahblahx5', keyword: 'john' })
+      .end((error, response) => {
+        expect(response).to.have.status(400);
+        expect(response.body.status).to.equal('failure');
+        expect(response.body.message).to.equal('keyword cannot be used with title, author or tag');
         done();
       });
   });
