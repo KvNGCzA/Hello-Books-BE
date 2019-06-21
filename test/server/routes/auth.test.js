@@ -23,6 +23,7 @@ const {
 } = userData;
 
 chai.use(chaiHttp);
+chai.use(require('chai-passport-strategy'));
 
 const BASE_URL = '/api/v1/auth';
 const BOOKS_BASE_URL = '/api/v1/books';
@@ -501,4 +502,16 @@ describe('AUTH', () => {
         });
     });
   });
+  /*
+  describe('passport social Login', () => {```
+      const strategy = new Strategy({
+  clientID: process.env.FACEBOOK_APP_ID,
+  clientSecret: process.env.FACEBOOK_APP_SECRET,
+  callbackURL: 'http://localhost:3001/api/v1/auth/facebook/callback',
+  profileFields: ['id', 'first_name', 'last_name', 'photos', 'email']
+}, (accessToken, refreshToken, profile, cb) => {
+   if(profile.id) return cb(null, profile);
+   return cb(null, false);
+});
+  });*/
 });

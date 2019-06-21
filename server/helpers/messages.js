@@ -21,7 +21,7 @@ const createUserMessage = (user, role, token) => {
              <span style= "text-align:center">Welcome to hello books ${capitalizeFirstLetter(user.firstName)}</span></div>
              <div style="margin-top:30px" >You have been added as ${role === 'admin' ? 'an' : 'a'} ${role}. Your login details are email: ${user.email}
              password: ${process.env.PASSWORD || 'setPassword'}</div>
-             <div> Click on this link to confirm your email <a href=${process.env.BASE_URL}/api/v1/auth/verify?token=${token}> LINK </a></div >
+             <div> Click on this link to confirm your email <a href=http://localhost:3001/api/v1/auth/verify?token=${token}> LINK </a></div >
              <div>
                  <p>Login to change your password immediately 
              </div>

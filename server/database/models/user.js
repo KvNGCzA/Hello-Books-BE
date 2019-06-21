@@ -6,7 +6,8 @@ export default (sequelize, DataTypes) => {
     password: DataTypes.STRING,
     avatarUrl: DataTypes.STRING,
     verified: DataTypes.BOOLEAN,
-    status: DataTypes.STRING
+    status: DataTypes.STRING,
+    facebookId: DataTypes.BIGINT,
   }, {});
 
   User.associate = (models) => {

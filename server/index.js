@@ -18,6 +18,9 @@ app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(validator());
 app.use(cors());
+app.use(require('express-session')({
+  secret: 'keyboard cat', resave: true, saveUninitialized: true
+}));
 
 // index route
 app.get('/', (request, response) => {
@@ -30,11 +33,9 @@ app.use('/api/v1', routes);
 swaggerDocument.host = `localhost:${PORT}`;
 swaggerDocument.schemes[0] = 'http';
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
-
 app.use('*', (request, response) => {
   response.status(404).send('Not Found');
 });
-
 // eslint-disable-next-line no-console
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 
