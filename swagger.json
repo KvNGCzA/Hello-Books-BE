@@ -71,8 +71,8 @@
           }
         }
       }
-    },"/update": {
-      "post": {
+    },"/user/update": {
+      "patch": {
         "tags": [
           "User"
         ],
@@ -91,7 +91,7 @@
           "description": "User object that needs to be updated",
           "required": true,
           "schema": {
-            "$ref": "#/definitions/update"
+            "$ref": "#/definitions/userUpdate"
           }
         }],
         "responses": {
@@ -100,10 +100,150 @@
           },
           "500": {
             "description": "server error"
+          },
+          "401": {
+            "description": "no token provided"
+           }
+        }
+      }
+    },
+    "/admin/author/{authorId}": {
+        "patch": {
+          "tags": [
+            "Admin"
+          ],
+          "summary": "Admin can update Author profile",
+          "description": "",
+          "operationId": "update",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "token",
+              "in": "query",
+              "required": true,
+              "type": "string"
+            },{
+            "in": "path",
+            "name": "authorId",
+            "description": "Id of the author that needs to be updated",
+            "required": true,
+            "type":"integer"
+          },{
+            "in": "body",
+            "name": "authorName",
+            "description": "Author name update",
+            "required": true,
+            "schema": {
+                "$ref": "#/definitions/authorUpdate"
+          }}],
+          "responses": {
+            "200": {
+              "description": "author updated successfully"
+            },
+            "404": {
+              "description": "author not found"
+            },
+            "409": {
+              "description": "author name is the same"
+            },
+            "500": {
+                "description": "server error"
+            },"401": {
+                "description": "no token provided"
+            }
+          }
+        },
+        "delete": {
+          "tags": [
+            "Admin"
+          ],
+          "summary": "Admin can delete Author",
+          "description": "",
+          "operationId": "delete",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "token",
+              "in": "query",
+              "required": true,
+              "type": "string"
+            },{
+            "in": "path",
+            "name": "authorId",
+            "description": "Id of the author that needs to be deleted",
+            "required": true,
+            "type":"integer"
+          }],
+          "responses": {
+            "200": {
+              "description": "author successfully deleted"
+            },
+            "404": {
+              "description": "author not found"
+            },
+            "500": {
+              "description": "server error"
+            }
+          }
+        }
+      },"/books": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get Books",
+        "description": "User can search for books",
+        "operationId": "fetchBooks",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "page": {
+                  "type": "integer"
+                },
+                "limit": {
+                  "type": "integer"
+                }
+              }
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "request successful",
+              "$ref": "#/definitions/error"
+          },
+          "400": {
+            "description": "page does not exist",
+              "$ref": "#/definitions/error"
+          },
+          "500": {
+            "description": "Server error",
+              "$ref": "#/definitions/error"
           }
         }
       }
-    },"/admin/book": {
+      },"/admin/book": {
       "post": {
         "tags": [
           "Admin"
@@ -138,8 +278,8 @@
           }
         }
       }
-    },
-    "/auth/login": {
+      },
+      "/auth/login": {
       "post": {
         "tags": [
           "Auth"
@@ -615,57 +755,7 @@
         } ]
       }
     }
-  },
-"/books": {
-  "get": {
-    "tags": [
-      "books"
-    ],
-    "summary": "Get Books",
-    "description": "User can search for books",
-    "operationId": "fetchBooks",
-    "consumes": [
-      "application/json"
-    ],
-    "produces": [
-      "application/json"
-    ], 
-    "parameters": [
-      {
-        "in": "query",
-        "name": "body",
-        "schema": {
-          "type": "object",
-          "properties": { 
-            "page": {
-              "type": "integer"
-            },
-            "limit": {
-              "type": "integer"
-            }
-          }
-        },
-        "required": true
-      }
-    ],
-    "responses": {
-      "200": {
-        "description": "request successful"
-      },
-      "400": {
-        "description": "no body found"
-      },
-      "500": {
-        "description": "Server error"
-      }
-    },
-    "security": [
-      {
-        "Authorization": []
-      }
-    ]
-  }
-},  
+  },  
   "securityDefinitions": {
     "Authorization": {
       "type": "apiKey",
@@ -709,28 +799,17 @@
           "example": "https://gravatar.com/avatar/aed61baf1e9256ed7d70e2cbbfcba9aa?s=400&d=robohash&r=x"
         }
       }
-    }, "update": {
+    }, "userUpdate": {
       "type": "object",
       "properties": {
         "firstName": {
           "type": "string",
-          "example": "John",
+          "example": "Mattew",
           "minLength": 4
         },
         "lastName": {
           "type": "string",
           "example": "Doe",
-          "minLength": 4
-        },
-        "email": {
-          "type": "string",
-          "format": "email",
-          "example": "johndoe@gmail.com",
-          "minLength": 4
-        },
-        "password": {
-          "type": "string",
-          "example": "password",
           "minLength": 4
         },
         "avatarUrl": {
@@ -884,6 +963,15 @@
         }
       }
     },
+    "authorUpdate" : {
+        "type" : "object",
+        "properties" : {
+          "authorName" : {
+            "type" : "string",
+            "example" : "uzumaki naruto"
+          }
+        }
+      },
     "acti_deactParams": {
       "type": "object",
       "required": [

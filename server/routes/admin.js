@@ -12,9 +12,9 @@ const {
   verifyToken, authorizeUser, AuthorValidator, BookValidator, checkRole
 } = middlewares;
 const { addBook } = BookController;
-const { addAuthor } = AuthorController;
+const { addAuthor, deleteAuthor, updateAuthor } = AuthorController;
 const { changeUserStatus } = AdminController;
-const { authorValidation } = AuthorValidator;
+const { authorValidation, favAuthorValidation } = AuthorValidator;
 
 const { BookValidation } = BookValidator;
 
@@ -28,5 +28,9 @@ admin.post('/admin/user', verifyToken, authorizeUser(['superadmin']), createUser
 admin.patch('/admin/user/:id', verifyToken, authorizeUser(['superadmin', 'admin']), changeStatusValidation(), changeUserStatus);
 // Admin add book route
 admin.post(`${BASE_URL}/book`, verifyToken, authorizeUser(['superadmin', 'admin']), BookValidation(), addBook);
+// route to update author
+admin.patch(`${BASE_URL}/author/:authorId`, verifyToken, authorizeUser(['superadmin', 'admin']), favAuthorValidation(), authorValidation(), updateAuthor);
+// route to delete author
+admin.delete(`${BASE_URL}/author/:authorId`, verifyToken, authorizeUser(['superadmin', 'admin']), favAuthorValidation(), deleteAuthor);
 
 export default admin;
