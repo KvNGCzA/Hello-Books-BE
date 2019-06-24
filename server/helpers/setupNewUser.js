@@ -23,9 +23,9 @@ const setupNewUser = async (response, userData, roleId, token) => {
       return responseMessage(response, 404, { message: 'role does not exit' });
     }
     const { roleName } = role;
-    await UserRole.create({ userId: id, roleId });
+    await UserRole.findOrCreate({ where: { userId: id }, defaults: { userId: id, roleId } });
     const message = createUserMessage(userData, roleName, token);
-    await sendMail(process.env.ADMIN_MAIL, email, message);
+    await sendMail(process.env.ADMIN_MAIL, email, message)
     return responseMessage(response, 201, {
       status: 'success', message: `${roleName} successfully created`, user: { ...userData, role: roleName }
     });

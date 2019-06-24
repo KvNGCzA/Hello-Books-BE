@@ -55,6 +55,36 @@ export default class AuthController {
     }
   }
 
+/**
+ *
+ *
+ * @static
+ * @param {object} request
+ * @param {object} response
+ * @returns {json} json
+ * @memberof AuthController
+ */
+  static async setupUserBySocialLogin(request, response) {
+    if (request.user.err) {
+      return responseMessage(response, 401, {
+        status: 'failure', message: 'Auth failed', user: {}
+      });
+    }
+    const userData = request.user[0].dataValues;
+    const { verified, id } = userData;
+    const roleId = parseInt(process.env.PATRON_ROLE, 10);
+    const token = createToken({ id }, '24h');
+    userData.token = token;
+    if (verified === false) {
+      await UserRole.findOrCreate({ where: { userId: id }, defaults: { userId: id, roleId } });
+      return setupNewUser(response, userData, roleId, token);
+    }
+    delete userData.password;
+    return responseMessage(response, 201, {
+      status: 'success', message: 'sign up successful', user: { ...userData }
+    });
+  }
+
   /**
    * Method for handling signin route(POST api/v1/auth/signin)
    * @param {object} request - the request object

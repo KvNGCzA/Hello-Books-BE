@@ -39,6 +39,10 @@ module.exports = {
         type: Sequelize.STRING,
         defaultValue: 'active'
       },
+      facebookId: {
+        allowNull: true,
+        type: Sequelize.BIGINT
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
