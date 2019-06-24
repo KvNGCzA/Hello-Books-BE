@@ -5,7 +5,9 @@ import testData from './__mocks__';
 import * as userData from './__mocks__/userData';
 
 const {
-  authorData, bookData: { badBook, book }, userData: { admin, notVerified, notAdmin }
+  authorData,
+  bookData: { badBook, book },
+  userData: { admin, notVerified, notAdmin }
 } = testData;
 
 const API_VERSION = '/api/v1';
@@ -36,6 +38,7 @@ describe('ADMIN ROUTES', () => {
   let authorUrlForUnverified;
   let authorUrlForNonAdmin;
   let bookUrlForAdmin;
+  let updateAuthorUrlForAdmin;
 
   before((done) => {
     chai.request(app)
@@ -58,6 +61,7 @@ describe('ADMIN ROUTES', () => {
       .end((error, response) => {
         unverifiedUserToken = response.body.token;
         authorUrlForUnverified = `${BASE_URL}/author?token=${unverifiedUserToken}`;
+        updateAuthorUrlForAdmin = `${BASE_URL}/author/3?token=${adminToken}`;
         done();
       });
   });
@@ -328,7 +332,243 @@ describe('ADMIN ROUTES', () => {
         });
     });
   });
+
+  describe('Admin can deactivate or activate a user', () => {
+    let usertoken;
+    before((done) => {
+      const body = {
+        email: 'hellobooks@email.com',
+        password: 'password',
+      };
+      chai.request(app)
+        .post('/api/v1/auth/login')
+        .send(body)
+        .end((err, response) => {
+          usertoken = response.body.token;
+          done();
+        });
+    });
+    it('returns a status 200 if user is successfully deactivated if active', (done) => {
+      const body = {
+        status: 'inactive'
+      };
+      chai.request(app)
+        .patch('/api/v1/admin/user/6')
+        .send(body)
+        .set('Authorization', usertoken)
+        .end((err, response) => {
+          expect(response).to.have.status(200);
+          expect(response).to.be.an('object');
+          expect(response.body).to.include.all.keys('status', 'message');
+          expect(response.body.status).to.be.equal('success');
+          expect(response.body.message).to.be.equal('user successfully deactivated');
+          done();
+        });
+    });
+    it('returns a status 400 if user is already active', (done) => {
+      const body = {
+        status: 'active'
+      };
+      chai.request(app)
+        .patch('/api/v1/admin/user/2')
+        .send(body)
+        .set('Authorization', usertoken)
+        .end((err, response) => {
+          expect(response).to.have.status(409);
+          expect(response).to.be.a('object');
+          expect(response.body).to.have.all.keys('status', 'message');
+          expect(response.body.message).to.be.a('String');
+          done();
+        });
+    });
+    it('returns a status 200 if user is successfully activated if inactive', (done) => {
+      const body = {
+        status: 'active'
+      };
+      chai.request(app)
+        .patch('/api/v1/admin/user/7')
+        .send(body)
+        .set('Authorization', usertoken)
+        .end((err, response) => {
+          expect(response).to.have.status(200);
+          expect(response).to.be.an('object');
+          expect(response.body).to.include.all.keys('status', 'message');
+          expect(response.body.status).to.be.equal('success');
+          expect(response.body.message).to.be.equal('user successfully activated');
+          done();
+        });
+    });
+    it('returns a status 400 if user is already inactive', (done) => {
+      const body = {
+        status: 'inactive'
+      };
+      chai.request(app)
+        .patch('/api/v1/admin/user/8')
+        .send(body)
+        .set('Authorization', usertoken)
+        .end((err, response) => {
+          expect(response).to.have.status(409);
+          expect(response).to.be.a('object');
+          expect(response.body).to.have.all.keys('status', 'message');
+          expect(response.body.message).to.be.a('String');
+          done();
+        });
+    });
+    it('returns a status 404 if user does not exit', (done) => {
+      const body = {
+        status: 'inactive'
+      };
+      chai.request(app)
+        .patch('/api/v1/admin/user/116718')
+        .send(body)
+        .set('Authorization', usertoken)
+        .end((err, response) => {
+          expect(response).to.have.status(404);
+          expect(response).to.be.a('object');
+          expect(response.body).to.have.all.keys('status', 'message');
+          expect(response.body.message).to.be.a('String');
+          done();
+        });
+    });
+    it('should return validation errors for required input fields not supplied in request', (done) => {
+      chai.request(app)
+        .patch('/api/v1/admin/user/4345')
+        .send(missingInput)
+        .set('Authorization', usertoken)
+        .end((error, response) => {
+          expect(response).to.have.status(400);
+          expect(response.body).to.haveOwnProperty('errors');
+          expect(response.body.errors.body.status).to.equal('status is missing');
+          done();
+        });
+    });
+    it('should return validation errors for blank input fields in the request', (done) => {
+      chai.request(app)
+        .patch('/api/v1/admin/user/5678')
+        .send(blankInput)
+        .set('Authorization', usertoken)
+        .end((error, response) => {
+          expect(response).to.have.status(400);
+          expect(response.body).to.haveOwnProperty('errors');
+          expect(response.body.errors.body).to.have.keys('status');
+          expect(response.body.errors.body.status).to.equal('status cannot be blank');
+          done();
+        });
+    });
+    it('should return a status 401 if user does not have a valid token', (done) => {
+      chai.request(app)
+        .patch('/api/v1/admin/user/8908')
+        .set('Authorization', 'indfafadavldfafidtoddakddfendfadf')
+        .end((err, response) => {
+          expect(response).to.have.status(401);
+          expect(response).to.be.a('object');
+          expect(response.body).to.have.all.keys('status', 'message');
+          expect(response.body.message).to.be.a('String');
+          done();
+        });
+    });
+    it('should return a status 403 if user does have the permission to access the route', (done) => {
+      const body = {
+        email: 'notsuperadmin@email.com',
+        password: 'password',
+      };
+      chai.request(app)
+        .post('/api/v1/auth/login')
+        .send(body)
+        .end((err, response) => {
+          const { token } = response.body;
+          chai.request(app)
+            .patch('/api/v1/admin/user/8908')
+            .set('Authorization', token)
+            .end((err, response1) => {
+              expect(response1).to.have.status(403);
+              expect(response1).to.be.a('object');
+              expect(response1.body).to.have.all.keys('status', 'message');
+              expect(response1.body.message).to.be.a('String');
+              done();
+            });
+        });
+    });
+  });
+  describe('Update And Delete Author Controller', () => {
+    /**
+     * Test the POST /admin/author endpoint
+     */
+    it('should be able to update an author', (done) => {
+      chai.request(app)
+        .patch(updateAuthorUrlForAdmin)
+        .send({
+          authorName: 'hamato yoshi'
+        })
+
+        .end((error, response) => {
+          expect(response.body).to.be.an('object');
+          expect(response).to.have.status(200);
+          expect(response.body.status).to.equal('success');
+          expect(response.body.message).to.be.a('string');
+          done();
+        });
+    });
+
+    it('should not be able to add an author with name that already exists', (done) => {
+      chai.request(app)
+        .patch(updateAuthorUrlForAdmin)
+        .send({
+          authorName: 'hamato yoshi'
+        })
+
+        .end((error, response) => {
+          expect(response.body).to.be.an('object');
+          expect(response).to.have.status(409);
+          expect(response.body.status).to.equal('failure');
+          expect(response.body.message).to.be.a('string');
+          done();
+        });
+    });
+
+    it('should delete an author', (done) => {
+      chai.request(app)
+        .delete(updateAuthorUrlForAdmin)
+
+        .end((error, response) => {
+          expect(response.body).to.be.an('object');
+          expect(response).to.have.status(200);
+          expect(response.body.status).to.equal('success');
+          expect(response.body.message).to.be.a('string');
+          done();
+        });
+    });
+
+    it('should not be able to delete an that does not exist', (done) => {
+      chai.request(app)
+        .patch(updateAuthorUrlForAdmin)
+        .send({
+          authorName: 'hamato yoshi'
+        })
+        .end((error, response) => {
+          expect(response.body).to.be.an('object');
+          expect(response).to.have.status(404);
+          expect(response.body.status).to.equal('failure');
+          expect(response.body.message).to.be.a('string');
+          done();
+        });
+    });
+
+    it('should not be able to delete an that does not exist', (done) => {
+      chai.request(app)
+        .delete(updateAuthorUrlForAdmin)
+
+        .end((error, response) => {
+          expect(response.body).to.be.an('object');
+          expect(response).to.have.status(404);
+          expect(response.body.status).to.equal('failure');
+          expect(response.body.message).to.be.a('string');
+          done();
+        });
+    });
+  });
 });
+
 describe('Admin creates new user', () => {
   let usertoken;
   before((done) => {
@@ -481,163 +721,6 @@ describe('Admin creates new user', () => {
         chai.request(app)
           .post('/api/v1/admin/user')
           .send(body2)
-          .set('Authorization', token)
-          .end((err, response1) => {
-            expect(response1).to.have.status(403);
-            expect(response1).to.be.a('object');
-            expect(response1.body).to.have.all.keys('status', 'message');
-            expect(response1.body.message).to.be.a('String');
-            done();
-          });
-      });
-  });
-});
-describe('Admin can deactivate or activate a user', () => {
-  let usertoken;
-  before((done) => {
-    const body = {
-      email: 'hellobooks@email.com',
-      password: 'password',
-    };
-    chai.request(app)
-      .post('/api/v1/auth/login')
-      .send(body)
-      .end((err, response) => {
-        usertoken = response.body.token;
-        done();
-      });
-  });
-  it('returns a status 200 if user is successfully deactivated if active', (done) => {
-    const body = {
-      status: 'inactive'
-    };
-    chai.request(app)
-      .patch('/api/v1/admin/user/6')
-      .send(body)
-      .set('Authorization', usertoken)
-      .end((err, response) => {
-        expect(response).to.have.status(200);
-        expect(response).to.be.an('object');
-        expect(response.body).to.include.all.keys('status', 'message');
-        expect(response.body.status).to.be.equal('success');
-        expect(response.body.message).to.be.equal('user successfully deactivated');
-        done();
-      });
-  });
-  it('returns a status 400 if user is already active', (done) => {
-    const body = {
-      status: 'active'
-    };
-    chai.request(app)
-      .patch('/api/v1/admin/user/2')
-      .send(body)
-      .set('Authorization', usertoken)
-      .end((err, response) => {
-        expect(response).to.have.status(409);
-        expect(response).to.be.a('object');
-        expect(response.body).to.have.all.keys('status', 'message');
-        expect(response.body.message).to.be.a('String');
-        done();
-      });
-  });
-  it('returns a status 200 if user is successfully activated if inactive', (done) => {
-    const body = {
-      status: 'active'
-    };
-    chai.request(app)
-      .patch('/api/v1/admin/user/7')
-      .send(body)
-      .set('Authorization', usertoken)
-      .end((err, response) => {
-        expect(response).to.have.status(200);
-        expect(response).to.be.an('object');
-        expect(response.body).to.include.all.keys('status', 'message');
-        expect(response.body.status).to.be.equal('success');
-        expect(response.body.message).to.be.equal('user successfully activated');
-        done();
-      });
-  });
-  it('returns a status 400 if user is already inactive', (done) => {
-    const body = {
-      status: 'inactive'
-    };
-    chai.request(app)
-      .patch('/api/v1/admin/user/8')
-      .send(body)
-      .set('Authorization', usertoken)
-      .end((err, response) => {
-        expect(response).to.have.status(409);
-        expect(response).to.be.a('object');
-        expect(response.body).to.have.all.keys('status', 'message');
-        expect(response.body.message).to.be.a('String');
-        done();
-      });
-  });
-  it('returns a status 404 if user does not exit', (done) => {
-    const body = {
-      status: 'inactive'
-    };
-    chai.request(app)
-      .patch('/api/v1/admin/user/116718')
-      .send(body)
-      .set('Authorization', usertoken)
-      .end((err, response) => {
-        expect(response).to.have.status(404);
-        expect(response).to.be.a('object');
-        expect(response.body).to.have.all.keys('status', 'message');
-        expect(response.body.message).to.be.a('String');
-        done();
-      });
-  });
-  it('should return validation errors for required input fields not supplied in request', (done) => {
-    chai.request(app)
-      .patch('/api/v1/admin/user/4345')
-      .send(missingInput)
-      .set('Authorization', usertoken)
-      .end((error, response) => {
-        expect(response).to.have.status(400);
-        expect(response.body).to.haveOwnProperty('errors');
-        expect(response.body.errors.body.status).to.equal('status is missing');
-        done();
-      });
-  });
-  it('should return validation errors for blank input fields in the request', (done) => {
-    chai.request(app)
-      .patch('/api/v1/admin/user/5678')
-      .send(blankInput)
-      .set('Authorization', usertoken)
-      .end((error, response) => {
-        expect(response).to.have.status(400);
-        expect(response.body).to.haveOwnProperty('errors');
-        expect(response.body.errors.body).to.have.keys('status');
-        expect(response.body.errors.body.status).to.equal('status cannot be blank');
-        done();
-      });
-  });
-  it('should return a status 401 if user does not have a valid token', (done) => {
-    chai.request(app)
-      .patch('/api/v1/admin/user/8908')
-      .set('Authorization', 'indfafadavldfafidtoddakddfendfadf')
-      .end((err, response) => {
-        expect(response).to.have.status(401);
-        expect(response).to.be.a('object');
-        expect(response.body).to.have.all.keys('status', 'message');
-        expect(response.body.message).to.be.a('String');
-        done();
-      });
-  });
-  it('should return a status 403 if user does have the permission to access the route', (done) => {
-    const body = {
-      email: 'notsuperadmin@email.com',
-      password: 'password',
-    };
-    chai.request(app)
-      .post('/api/v1/auth/login')
-      .send(body)
-      .end((err, response) => {
-        const { token } = response.body;
-        chai.request(app)
-          .patch('/api/v1/admin/user/8908')
           .set('Authorization', token)
           .end((err, response1) => {
             expect(response1).to.have.status(403);

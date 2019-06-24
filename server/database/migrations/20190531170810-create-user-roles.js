@@ -21,7 +21,7 @@ module.exports = {
       roleId: {
         allowNull: false,
         type: Sequelize.INTEGER,
-        defaultValue: '2768',
+        defaultValue: process.env.PATRON_ROLE,
         onDelete: 'CASCADE',
         references: {
           model: 'Roles',
