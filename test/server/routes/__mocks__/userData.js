@@ -31,6 +31,11 @@ export const notAdmin2 = {
   password: 'password',
 };
 
+export const brokePatron = {
+  email: 'cantpay@gmail.com',
+  password: 'password',
+};
+
 export const validInput = {
   firstName: 'Shaquille O\'neal',
   lastName: 'van Dijk',

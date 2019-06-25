@@ -4,12 +4,13 @@ import UserController from '../controllers/UserController';
 import BookController from '../controllers/BookController';
 
 const {
-  editProfile, favouriteAuthor, unfavouriteAuthor, favouriteBook, unfavouriteBook, borrowBook
+  editProfile, favouriteAuthor, unfavouriteAuthor, favouriteBook, unfavouriteBook,
+  borrowBook, extendBorrowedBook
 } = UserController;
 const { fetchBooks } = BookController;
 const {
   verifyToken, authorizeUser, AuthorValidator: { favAuthorValidation },
-  BookValidator: { FavouriteBookValidation, FetchBookValidation },
+  BookValidator: { FavouriteBookValidation, FetchBookValidation, ExtensionValidation },
   UserValidator: { profileValidation },
   BorrowValidator: { BorrowValidation }
 } = middlewares;
@@ -38,5 +39,8 @@ user.patch(`${BASE_URL}/update`, verifyToken, authorizeUser(['patron', 'superadm
 
 // Route to borrow a book
 user.post('/borrow', verifyToken, authorizeUser(['patron']), BorrowValidation(), borrowBook);
+
+// Route to extend a borrowed book
+user.post('/borrow/extend', verifyToken, authorizeUser(['patron']), ExtensionValidation(), extendBorrowedBook);
 
 export default user;

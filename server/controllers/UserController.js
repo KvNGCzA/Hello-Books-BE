@@ -10,8 +10,10 @@ const {
   LendingHistory,
   User
 } = models;
+
 const {
-  responseMessage, findBook, findLendingHistory
+  responseMessage, findBook, findLendingHistory, getNumberOfDays, checkToken,
+  createToken, getDateString, formatDuration
 } = helpers;
 
 
@@ -187,5 +189,57 @@ export default class UserController {
       /* istanbul ignore next-line */
       return responseMessage(response, 500, { message: error.message });
     }
+  }
+
+  /**
+   * @description allows users to borrow a book
+   * @description extend the duration of a borrowed book
+   * @param {object} request express request object
+   * @param {object} response express response object
+   * @returns {json} json
+   * @memberof UserController
+   */
+  static async extendBorrowedBook(request, response) {
+    try {
+      const { userData: { id, paymentStatus }, body: { bookId } } = request;
+      const numberOfDays = 31;
+      const lendingHistoryQueryParam = {
+        userId: id, type: 'borrowed', bookId
+      };
+      const userLendingHistory = await LendingHistory.findOne({ where: lendingHistoryQueryParam });
+      const check = await UserController.extensionErrorCheck(userLendingHistory, paymentStatus);
+      if (typeof check !== 'number') return responseMessage(response, check[0], { message: check[1] });
+      const { duration } = userLendingHistory;
+      const extensionPeriod = numberOfDays + check;
+      const newDurationToken = await createToken({ userId: id, bookId }, `${extensionPeriod}d`);
+      const data = await LendingHistory.update({
+        durationToken: newDurationToken,
+        duration: formatDuration(duration),
+      }, { where: { bookId, userId: id }, returning: true, plain: true });
+      const message = `book will expire on ${await getDateString(extensionPeriod)}`;
+      delete data[1].dataValues.durationToken;
+      return responseMessage(response, 200, { status: 'success', message, data: data[1].dataValues });
+    } catch (error) {
+      /* istanbul ignore next-line */
+      return responseMessage(response, 500, { message: error.message });
+    }
+  }
+
+  /**
+   * @description  check for errors with extending the duration of a borrowed book
+   * @param {object} userLendingHistory user lending history object
+   * @param {boolean} paymentStatus payment status
+   * @returns {array} errors
+   * @memberof UserController
+   */
+  static async extensionErrorCheck(userLendingHistory, paymentStatus) {
+    if (!userLendingHistory) return [404, 'this book is not among user\'s actively borrowed book'];
+    const { durationToken } = userLendingHistory;
+    if (!paymentStatus) return [402, 'insufficient funds to extend borrowing period'];
+    const expiryDate = await checkToken(durationToken);
+    if (expiryDate === null) return [400, 'borrowing period expired.'];
+    const noOfDaysRemaining = await getNumberOfDays(expiryDate);
+    if (noOfDaysRemaining === null) return [400, 'borrowing period expired.'];
+    return noOfDaysRemaining;
   }
 }
