@@ -1,10 +1,11 @@
-import '@babel/polyfill';
 import express, { json, urlencoded } from 'express';
 import { config } from 'dotenv';
 import logger from 'morgan';
 import validator from 'express-validator';
 import cors from 'cors';
+import socketIO from 'socket.io';
 import swaggerUI from 'swagger-ui-express';
+import helpers from './helpers';
 import swaggerDocument from '../swagger.json';
 import routes from './routes';
 
@@ -12,6 +13,7 @@ config();
 
 const { PORT } = process.env; // setup port to be used
 const app = express(); // calling an instance of express
+const { socket } = helpers;
 
 app.use(logger('dev'));
 app.use(json());
@@ -34,6 +36,10 @@ app.use('*', (request, response) => {
 });
 
 // eslint-disable-next-line no-console
-app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+const server = app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+
+// notification service
+const io = socketIO(server);
+(socket)(io);
 
 export default app;

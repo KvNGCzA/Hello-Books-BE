@@ -4,9 +4,9 @@ import helpers from '../helpers';
 
 const {
   responseMessage, createToken, sendMail, signupMessage, setupNewUser, resetpasswordMessage,
-  findUser
+  findUser, notifications
 } = helpers;
-const { User, UserRole } = models;
+const { User, UserRole, Role } = models;
 const defaultPassword = process.env.PASSWORD || 'setpassword';
 
 /**
@@ -72,13 +72,11 @@ export default class AuthController {
           message: 'Your account is deactivated, please contact the admin for more information'
         });
       }
+      const role = await UserRole.findOne({ where: { userId: id }, include: [Role] });
+      if (role.Role.roleName === 'admin') notifications.overdueBook();
       const token = createToken({ id });
       delete dataValues.password;
-      return responseMessage(response, 200, {
-        status: 'success',
-        user: { ...dataValues },
-        token
-      });
+      return responseMessage(response, 200, { status: 'success', user: { ...dataValues }, token });
     } catch (error) {
       /* istanbul ignore next-line */
       return responseMessage(response, 500, { message: error.message });

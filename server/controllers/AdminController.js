@@ -5,6 +5,7 @@ const {
   responseMessage, findUser
 } = helpers;
 const { User } = models;
+const { ADMIN_ROLE, PATRON_ROLE } = process.env;
 
 /**
  * Admin controller class
@@ -45,15 +46,16 @@ class AdminController {
    */
   static async checkErrors(request, response) {
     const { id } = request.params;
-    const { roleId } = request.userData.UserRoles;
+    const { roleId } = request.userData.UserRoles[0];
     const { status } = request.body;
     const user = await findUser(id, response);
     const { dataValues, UserRoles } = user;
-    if (roleId === process.env.ADMIN_ROLE && UserRoles[0].roleId !== process.env.PATRON_ROLE) {
-      return [400, 'An admin can only activate/deactivate a patron'];
-    }
     if (parseInt(id, 10) === request.userData.id) {
       return [409, 'user cannot perform this action'];
+    }
+    if (roleId === parseInt(ADMIN_ROLE, 10)
+    && UserRoles[0].roleId !== parseInt(PATRON_ROLE, 10)) {
+      return [400, 'An admin can only activate/deactivate a patron'];
     }
     if (status === dataValues.status) {
       return [409, `user is already ${status}`];

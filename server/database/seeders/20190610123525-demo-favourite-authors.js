@@ -8,6 +8,16 @@ module.exports = {
       authorId: 1,
       createdAt: new Date(),
       updatedAt: new Date()
+    }, {
+      userId: 8,
+      authorId: 1,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }, {
+      userId: 9,
+      authorId: 1,
+      createdAt: new Date(),
+      updatedAt: new Date()
     }], {});
   },
 

@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 const messageHeader = "<div style='width:600px;font-family: Arial,Helvetica,sans-serif; text-decoration: none; margin:auto; font-size: 14px;'><div style='background-color:rgba(23, 117, 147); color:#fff; padding:20px;text-align: center;font-size: 18px;'><span style='margin-right: 10px'>Hello Books</span></div><div style='padding:15px'>";
 const messageFooter = "<p style='margin-top:20px; margin-bottom:0px; color: rgb(106, 108, 111); line-height: 1.35em;'>Thank you,</p><p style='margin-top:0px; margin-bottom:5px; color: rgb(106, 108, 111); line-height: 1.35em;'>The Hello Books Team</p></div><div style='background-color:rgba(23, 117, 147); color:#fff; padding:7px'></div></div>";
 
@@ -41,8 +43,42 @@ const resetpasswordMessage = (firstName, token) => {
   return message;
 };
 
+const newBookNotificationMessage = (authorName, title) => {
+  const message = {
+    text: 'New Book Notification',
+    html: `  ${messageHeader}
+             <div style="margin-top:30px"> This is to inform you that a book by one of your favourite authors with details below has been added to our collection.</div>
+             <div style= "text-align:center;margin-top:10px">
+             <div><strong>Title</strong>: ${title}</div>
+             <div style= "text-align:center;"><strong>Author</strong>: ${authorName}</div>
+                 <div style="margin-top:10px">Login to read this book.</div>
+             </div>
+             ${messageFooter}`,
+  };
+  return message;
+};
+
+const overdueBookNotificationMessage = (bookDetail, date) => {
+  const { title, yearPublished, fullname } = bookDetail;
+  const message = {
+    text: 'Hello Books',
+    html: `  ${messageHeader}
+             <div style="margin-top:30px"> This is to inform you that one of your borrowed books with details below will expire ${date}.</div>
+               <div style="text-align:center">
+                <div style="margin-top:10px"><strong>Title: </strong> ${title}</div>
+                <div><strong>Author: </strong> ${fullname}</div>
+                <div><strong>Year Published: </strong> ${yearPublished}</div>
+                <p style="text-align:left;margin-top:8px">Login to extend the due date of this book.
+             </div>
+             ${messageFooter}`,
+  };
+  return message;
+};
+
 export {
   signupMessage,
   createUserMessage,
   resetpasswordMessage,
+  newBookNotificationMessage,
+  overdueBookNotificationMessage,
 };

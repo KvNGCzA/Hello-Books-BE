@@ -5,6 +5,7 @@ export default (sequelize, DataTypes) => {
     email: DataTypes.STRING,
     password: DataTypes.STRING,
     avatarUrl: DataTypes.STRING,
+    notifyByEmail: DataTypes.BOOLEAN,
     verified: DataTypes.BOOLEAN,
     status: DataTypes.STRING,
     paymentStatus: DataTypes.BOOLEAN
@@ -17,6 +18,11 @@ export default (sequelize, DataTypes) => {
     });
 
     User.hasMany(models.UserRole, {
+      foreignKey: 'userId',
+      onDelete: 'CASCADE'
+    });
+
+    User.hasMany(models.UserNotification, {
       foreignKey: 'userId',
       onDelete: 'CASCADE'
     });
