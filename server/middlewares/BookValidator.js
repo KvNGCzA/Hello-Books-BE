@@ -92,19 +92,6 @@ export default class BookValidator {
    * @returns {function} call to a check API middleware
    * @memberof Validation
    */
-  static checkNumber(item) {
-    return UserValidator.genericCheck(item)
-      .trim()
-      .isInt({ min: 1 })
-      .withMessage(`${item} value must be at least 1 and an integer`);
-  }
-
-  /**
-   * Generic Number validator
-   * @param {string} item
-   * @returns {function} call to a check API middleware
-   * @memberof Validation
-   */
   static authorName() {
     return AuthorValidator.checkAuthorName();
   }
@@ -154,13 +141,13 @@ export default class BookValidator {
   }
 
   /**
-   * Favorite Book validator
+   * Favourite Book validator
    * @returns {array} an array of check API middleware
    * @memberof Validation
    */
-  static FavoriteBookValidation() {
+  static FavouriteBookValidation() {
     return [
-      BookValidator.checkNumber('bookId'),
+      UserValidator.checkNumber('bookId'),
       checkForErrors,
     ];
   }

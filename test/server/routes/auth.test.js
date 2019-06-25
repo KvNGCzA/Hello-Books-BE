@@ -1,37 +1,26 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import server from '../../../server/index';
+import server from '../../../server';
 import testData from './__mocks__';
 
 const { userData } = testData;
 const { expect } = chai;
 const {
-  User,
-  validInput,
-  validInput1,
-  validInput2,
-  validInput3,
-  missingInput,
-  blankInput,
-  invalidInput,
-  invalidInput1,
-  invalidInput2,
-  invalidInput3,
-  invalidInput4,
-  invalidInput5,
-  wrongLengthInput,
+  User, validInput, validInput1, validInput2, validInput3, missingInput, blankInput,
+  invalidInput, invalidInput1, invalidInput2, invalidInput3, invalidInput4,
+  invalidInput5, wrongLengthInput,
 } = userData;
 
 chai.use(chaiHttp);
 
 const BASE_URL = '/api/v1/auth';
 const BOOKS_BASE_URL = '/api/v1/books';
-let token = '';
 
 describe('AUTH', () => {
+  let userToken = '';
   // Test Signing up a user
   describe('User signup', () => {
-    it('It Should create user with valid signup credentials', (done) => {
+    it('It should create user with valid signup credentials', (done) => {
       chai.request(server)
         .post(`${BASE_URL}/signup`)
         .send(User)
@@ -277,8 +266,7 @@ describe('AUTH', () => {
         .end((error, response) => {
           expect(response).to.have.status(200);
           expect(response.body).to.be.an('object');
-          /* eslint-disable-next-line */
-          token = response.body.token;
+          userToken = response.body.token;
           done();
         });
     });
@@ -392,7 +380,7 @@ describe('AUTH', () => {
 
     it('It Should verify user email address', (done) => {
       chai.request(server)
-        .get(`${BASE_URL}/verify?token=${token}`)
+        .get(`${BASE_URL}/verify?token=${userToken}`)
         .send(User)
         .end((error, response) => {
           expect(response).to.have.status(200);
@@ -404,7 +392,7 @@ describe('AUTH', () => {
 
     it('It Should fail to verify user email address', (done) => {
       chai.request(server)
-        .get(`${BASE_URL}/verify?token=${token}`)
+        .get(`${BASE_URL}/verify?token=${userToken}`)
         .send(User)
         .end((error, response) => {
           expect(response).to.have.status(409);
@@ -421,7 +409,7 @@ describe('AUTH', () => {
         .end((error, response) => {
           expect(response).to.have.status(200);
           expect(response.body).to.be.an('object');
-          expect(response.body.message).to.equal('you will recieve a link in your mail shortly to proceed');
+          expect(response.body.message).to.equal('you will receive a link in your mail shortly to proceed');
           done();
         });
     });
@@ -447,7 +435,7 @@ describe('AUTH', () => {
         password: 'adekorede',
       };
       chai.request(server)
-        .patch(`${BASE_URL}/passwordresetVerify?token=${token}`)
+        .patch(`${BASE_URL}/passwordresetverify?token=${userToken}`)
         .send(body)
         .end((error, response) => {
           expect(response).to.have.status(200);

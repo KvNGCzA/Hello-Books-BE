@@ -11,6 +11,7 @@ module.exports = {
       avatarUrl: '',
       verified: false,
       status: 'active',
+      paymentStatus: false,
       createdAt: new Date(),
       updatedAt: new Date()
     }, {
@@ -21,6 +22,7 @@ module.exports = {
       avatarUrl: '',
       verified: true,
       status: 'active',
+      paymentStatus: false,
       createdAt: new Date(),
       updatedAt: new Date()
     }, {
@@ -31,6 +33,7 @@ module.exports = {
       avatarUrl: '',
       verified: true,
       status: 'active',
+      paymentStatus: true,
       createdAt: new Date(),
       updatedAt: new Date()
     }, {
@@ -41,6 +44,7 @@ module.exports = {
       avatarUrl: '',
       verified: true,
       status: 'active',
+      paymentStatus: false,
       createdAt: new Date(),
       updatedAt: new Date()
     },{
@@ -51,6 +55,7 @@ module.exports = {
       avatarUrl: '',
       verified: true,
       status: 'active',
+      paymentStatus: false,
       createdAt: new Date(),
       updatedAt: new Date()
     }, {
@@ -61,6 +66,7 @@ module.exports = {
       avatarUrl: '',
       verified: true,
       status: 'active',
+      paymentStatus: false,
       createdAt: new Date(),
       updatedAt: new Date()
     }, {
@@ -71,6 +77,7 @@ module.exports = {
       avatarUrl: '',
       verified: true,
       status: 'inactive',
+      paymentStatus: false,
       createdAt: new Date(),
       updatedAt: new Date()
     }, {
@@ -81,6 +88,7 @@ module.exports = {
       avatarUrl: '',
       verified: true,
       status: 'inactive',
+      paymentStatus: false,
       createdAt: new Date(),
       updatedAt: new Date()
     }, {
@@ -91,6 +99,7 @@ module.exports = {
       avatarUrl: 'https://banner2.kisspng.com/20180408/tvw/kisspng-user-computer-icons-gravatar-blog-happy-woman-5aca6d03e6c3f5.6041125615232156199452.jpg',
       verified: true,
       status: 'active',
+      paymentStatus: true,
       createdAt: new Date(),
       updatedAt: new Date()
     }, {
@@ -101,6 +110,7 @@ module.exports = {
       avatarUrl: 'https://banner2.kisspng.com/20180408/tvw/kisspng-user-computer-icons-gravatar-blog-happy-woman-5aca6d03e6c3f5.6041125615232156199452.jpg',
       verified: true,
       status: 'active',
+      paymentStatus: true,
       createdAt: new Date(),
       updatedAt: new Date()
     }], {}),

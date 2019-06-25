@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 module.exports = {
-  up: queryInterface => queryInterface.bulkInsert('FavoriteBooks', [{
+  up: queryInterface => queryInterface.bulkInsert('FavouriteBooks', [{
     bookId: 1,
     userId: 5,
     createdAt: new Date(),
@@ -13,6 +13,6 @@ module.exports = {
     updatedAt: new Date()
   }], {}),
 
-  down: queryInterface => queryInterface.bulkDelete('FavoriteBooks', null, {})
+  down: queryInterface => queryInterface.bulkDelete('FavouriteBooks', null, {})
 
 };

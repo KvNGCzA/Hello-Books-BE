@@ -1,7 +1,7 @@
 import models from '../database/models';
 import helpers from '../helpers';
 
-const { responseMessage } = helpers;
+const { responseMessage, makeLowerCase } = helpers;
 const { Book, Author, BookAuthor } = models;
 
 /**
@@ -22,7 +22,8 @@ class BookController {
       }
     } = request;
     try {
-      const newAuthor = await Author.findOrCreate({ where: { fullname: authorName } });
+      const fullname = makeLowerCase(authorName);
+      const newAuthor = await Author.findOrCreate({ where: { authorName: fullname } });
       const existingBook = await Book.findOrCreate({
         where: { isbn },
         defaults: {
@@ -64,7 +65,7 @@ class BookController {
         limit,
         offset,
         include: [{
-          model: BookAuthor, include: [{ model: Author, attributes: ['fullname'] }], attributes: ['authorId'], order: [['id']]
+          model: BookAuthor, include: [{ model: Author, attributes: ['authorName'] }], attributes: ['authorId'], order: [['id']]
         }]
       });
       return responseMessage(response, 200, {

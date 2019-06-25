@@ -12,22 +12,13 @@ const {
 
 const API_VERSION = '/api/v1';
 const BASE_URL = `${API_VERSION}/admin`;
-const loginUrl = `${API_VERSION}/auth/login`;
+const LOGIN_URL = `${API_VERSION}/auth/login`;
 const {
-  invalidAuthor,
-  invalidAuthor1,
-  invalidAuthor2,
-  blankAuthor,
-  validAuthor,
-  validAuthor1,
-  validAuthor2,
-  missingAuthorInput,
-  wrongLengthAuthor1,
-  wrongLengthAuthor2,
+  invalidAuthor, invalidAuthor1, invalidAuthor2, blankAuthor, validAuthor, validAuthor1,
+  validAuthor2, missingAuthorInput, wrongLengthAuthor1, wrongLengthAuthor2,
 } = authorData;
 const {
-  missingInput,
-  blankInput,
+  missingInput, blankInput,
 } = userData;
 
 chai.use(chaiHttp);
@@ -42,7 +33,7 @@ describe('ADMIN ROUTES', () => {
 
   before((done) => {
     chai.request(app)
-      .post(loginUrl)
+      .post(LOGIN_URL)
       .send(admin)
       .end((error, response) => {
         adminToken = response.body.token;
@@ -56,7 +47,7 @@ describe('ADMIN ROUTES', () => {
   let unverifiedUserToken;
   before((done) => {
     chai.request(app)
-      .post(loginUrl)
+      .post(LOGIN_URL)
       .send(notVerified)
       .end((error, response) => {
         unverifiedUserToken = response.body.token;
@@ -69,7 +60,7 @@ describe('ADMIN ROUTES', () => {
   let nonAdminToken;
   before((done) => {
     chai.request(app)
-      .post(loginUrl)
+      .post(LOGIN_URL)
       .send(notAdmin)
       .end((error, response) => {
         nonAdminToken = response.body.token;
@@ -577,7 +568,7 @@ describe('Admin creates new user', () => {
       password: 'password',
     };
     chai.request(app)
-      .post('/api/v1/auth/login')
+      .post(LOGIN_URL)
       .send(body)
       .end((err, response) => {
         usertoken = response.body.token;
@@ -592,7 +583,7 @@ describe('Admin creates new user', () => {
       roleId: process.env.PATRON_ROLE
     };
     chai.request(app)
-      .post('/api/v1/admin/user')
+      .post(`${BASE_URL}/user`)
       .send(body)
       .set('Authorization', usertoken)
       .end((err, response) => {
@@ -616,7 +607,7 @@ describe('Admin creates new user', () => {
       roleId: process.env.ADMIN_ROLE
     };
     chai.request(app)
-      .post('/api/v1/admin/user')
+      .post(`${BASE_URL}/user`)
       .send(body)
       .set('Authorization', usertoken)
       .end((err, response) => {
@@ -632,7 +623,7 @@ describe('Admin creates new user', () => {
         done();
       });
   });
-  it('returns a status 404 if role does not exit', (done) => {
+  it('returns a status 404 if role does not exist', (done) => {
     const body = {
       firstName: 'Sunday',
       lastName: 'Oliseh',
@@ -640,7 +631,7 @@ describe('Admin creates new user', () => {
       roleId: 4444
     };
     chai.request(app)
-      .post('/api/v1/admin/user')
+      .post(`${BASE_URL}/user`)
       .send(body)
       .set('Authorization', usertoken)
       .end((err, response) => {
@@ -653,7 +644,7 @@ describe('Admin creates new user', () => {
   });
   it('should return validation errors for required input fields not supplied in request', (done) => {
     chai.request(app)
-      .post('/api/v1/admin/user')
+      .post(`${BASE_URL}/user`)
       .send(missingInput)
       .set('Authorization', usertoken)
       .end((error, response) => {
@@ -669,7 +660,7 @@ describe('Admin creates new user', () => {
   });
   it('should return validation errors for blank input fields in the request', (done) => {
     chai.request(app)
-      .post('/api/v1/admin/user')
+      .post(`${BASE_URL}/user`)
       .send(blankInput)
       .set('Authorization', usertoken)
       .end((error, response) => {
@@ -691,7 +682,7 @@ describe('Admin creates new user', () => {
       roleId: 'user'
     };
     chai.request(app)
-      .post('/api/v1/admin/user')
+      .post(`${BASE_URL}/user`)
       .send(body)
       .set('Authorization', 'indfafadavldfafidtoddakddfendfadf')
       .end((err, response) => {
@@ -708,7 +699,7 @@ describe('Admin creates new user', () => {
       password: 'password',
     };
     chai.request(app)
-      .post('/api/v1/auth/login')
+      .post(LOGIN_URL)
       .send(body)
       .end((err, response) => {
         const { token } = response.body;
@@ -719,7 +710,7 @@ describe('Admin creates new user', () => {
           roleId: 'user'
         };
         chai.request(app)
-          .post('/api/v1/admin/user')
+          .post(`${BASE_URL}/user`)
           .send(body2)
           .set('Authorization', token)
           .end((err, response1) => {

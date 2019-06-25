@@ -4,6 +4,7 @@ import checkForErrors from './checkForErrors';
 import AuthorValidator from './AuthorValidator';
 import authorizeUser from './authorizeUser';
 import BookValidator from './BookValidator';
+import BorrowValidator from './BorrowValidator';
 import checkRole from './checkRole';
 
 export default {
@@ -13,5 +14,6 @@ export default {
   AuthorValidator,
   authorizeUser,
   BookValidator,
-  checkRole,
+  BorrowValidator,
+  checkRole
 };

@@ -26,6 +26,11 @@ export const notAdmin = {
   password: 'kylianMbappe',
 };
 
+export const notAdmin2 = {
+  email: 'notsuperadmin@email.com',
+  password: 'password',
+};
+
 export const validInput = {
   firstName: 'Shaquille O\'neal',
   lastName: 'van Dijk',

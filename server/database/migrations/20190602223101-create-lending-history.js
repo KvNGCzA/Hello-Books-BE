@@ -1,3 +1,4 @@
+/* eslint-disable */
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
@@ -8,14 +9,8 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      duration: {
-        type: Sequelize.STRING
-      },
-      status: {
-        type: Sequelize.STRING
-      },
-
       userId: {
+        allowNull: false,
         type: Sequelize.INTEGER,
         onDelete: 'CASCADE',
         references: {
@@ -24,12 +19,31 @@ module.exports = {
         },
       },
       bookId: {
+        allowNull: false,
         type: Sequelize.INTEGER,
         onDelete: 'CASCADE',
         references: {
           model: 'Books',
           key: 'id',
         },
+      },
+      charge: {
+        allowNull: false,
+        type: Sequelize.INTEGER
+      },
+      type: {
+        allowNull: false,
+        type: Sequelize.STRING,
+        defaultValue: 'borrowed'
+      },
+      duration: {
+        allowNull: false,
+        type: Sequelize.STRING,
+        defaultValue: '1 month'
+      },
+      durationToken: {
+        allowNull: false,
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,

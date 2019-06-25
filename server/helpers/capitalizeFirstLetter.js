@@ -1,8 +1,6 @@
 const capitalizeFirstLetter = (word) => {
   const formattedWord = word.toLowerCase().split(' ')
-    .map((f) => {
-      return f.charAt(0).toUpperCase() + f.substring(1);
-    }).join(' ');
+    .map(f => f.charAt(0).toUpperCase() + f.substring(1)).join(' ');
   return formattedWord;
 };
 export default capitalizeFirstLetter;

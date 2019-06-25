@@ -1,19 +1,19 @@
 /* eslint-disable */
 module.exports = (sequelize, DataTypes) => {
-  const FavoriteBook = sequelize.define('FavoriteBook', {
+  const FavouriteBook = sequelize.define('FavouriteBook', {
     bookId: DataTypes.INTEGER,
     userId: DataTypes.INTEGER
   }, {});
-  FavoriteBook.associate = (models) => {
-    FavoriteBook.belongsTo(models.User, {
+  FavouriteBook.associate = (models) => {
+    FavouriteBook.belongsTo(models.User, {
       foreignKey: 'userId',
       onDelete: 'CASCADE'
     });
 
-    FavoriteBook.belongsTo(models.Book, {
+    FavouriteBook.belongsTo(models.Book, {
       foreignKey: 'bookId',
       onDelete: 'CASCADE'
     });
   };
-  return FavoriteBook;
+  return FavouriteBook;
 };

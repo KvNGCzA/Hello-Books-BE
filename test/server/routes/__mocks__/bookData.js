@@ -15,3 +15,31 @@ export const badBook = {
   yearPublished: 2019,
   authorName: ''
 };
+
+export const newBookToBorrow = {
+  bookId: 5
+};
+
+export const newBookToBorrow2 = {
+  bookId: 1
+};
+
+export const nonExistingBookToBorrow = {
+  bookId: 990490
+};
+
+export const InvalidBookToBorrow = {
+  bookId: 'ee20ui'
+};
+
+export const InvalidBookToBorrow1 = {
+  bookId: -200
+};
+
+export const InvalidBookToBorrow2 = {
+  bookId: '11***'
+};
+
+export const InvalidBookToBorrow3 = {
+  bookId: ''
+};
