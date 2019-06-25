@@ -75,6 +75,18 @@ export default class BookValidator {
   }
 
   /**
+   * Tag validator
+   * @returns {function} call to a check API middleware
+   * @memberof Validation
+   */
+  static checkTag() {
+    return UserValidator.genericCheck('tag')
+      .trim()
+      .isAlpha()
+      .withMessage('tag can only be alphabets');
+  }
+
+  /**
    * Year published validator
    * @returns {function} call to a check API middleware
    * @memberof Validation
@@ -122,6 +134,7 @@ export default class BookValidator {
       BookValidator.checkIsbn(),
       BookValidator.checkPrice(),
       BookValidator.checkYearPublished(),
+      BookValidator.checkTag(),
       BookValidator.authorName(),
       checkForErrors,
     ];
@@ -136,6 +149,10 @@ export default class BookValidator {
     return [
       BookValidator.checkNumberForDefault('page'),
       BookValidator.checkNumberForDefault('limit'),
+      BookValidator.checkTitle().optional(),
+      AuthorValidator.checkAuthorName().optional(),
+      BookValidator.checkTag().optional(),
+      UserValidator.genericCheck('keyword').optional(),
       checkForErrors,
     ];
   }

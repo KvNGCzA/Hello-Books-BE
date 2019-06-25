@@ -6,6 +6,7 @@ const lodash = require('lodash');
 
 module.exports = {
   up: (queryInterface) => {
+    const tags = ['Romance', 'Action', 'Science', 'Epic'];
     const seedData = lodash.times(14, () => ({
       title: faker.name.title(),
       description: faker.lorem.sentence(),
@@ -13,6 +14,10 @@ module.exports = {
         min: 10000000000,
         max: 50000000000
       }),
+      tag: tags[faker.random.number({
+        min: 0,
+        max: 3
+      })],
       price: faker.random.number({
         min: 1000,
         max: 5000

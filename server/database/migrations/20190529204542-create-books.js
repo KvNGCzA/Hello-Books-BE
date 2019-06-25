@@ -21,6 +21,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.BIGINT
       },
+      tag: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
       price: {
         allowNull: false,
         type: Sequelize.INTEGER

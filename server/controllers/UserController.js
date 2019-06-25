@@ -139,10 +139,15 @@ export default class UserController {
           return responseMessage(response, 409, { message: 'email already exist' });
         }
       }
-      await User.update({
+      const updatedUser = await User.update({
         ...body
-      }, { where: { id } });
-      return responseMessage(response, 200, { status: 'success', message: 'profile update successful' });
+      }, {
+        where: { id },
+        returning: true,
+        raw: true
+      });
+      delete updatedUser[1][0].password;
+      return responseMessage(response, 200, { status: 'success', message: 'profile update successful', user: updatedUser[1][0] });
     } catch (error) {
       /* istanbul ignore next */
       responseMessage(response, 500, { message: error.message });

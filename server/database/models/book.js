@@ -3,6 +3,7 @@ export default (sequelize, DataTypes) => {
     title: DataTypes.STRING,
     description: DataTypes.TEXT,
     isbn: DataTypes.BIGINT,
+    tag: DataTypes.STRING,
     price: DataTypes.INTEGER,
     yearPublished: DataTypes.INTEGER
   }, {});
