@@ -1,8 +1,11 @@
 import UserValidator from './UserValidator';
 import checkForErrors from './checkForErrors';
+import helpers from '../helpers';
 import AuthorValidator from './AuthorValidator';
 
 const year = new Date().getFullYear();
+const { emptyBody } = helpers;
+
 
 /**
  * @class BookValidator
@@ -99,6 +102,19 @@ export default class BookValidator {
   }
 
   /**
+  * Generic check Number validator
+  * @param { integer } item
+  * @returns { function} call to a check API middleware
+  * @memberof Validation
+  */
+  static checkNumber(item) {
+    return UserValidator.genericCheck(item)
+      .trim()
+      .isInt({ min: 1 })
+      .withMessage(`${item} value must be at least 1 and an integer`);
+  }
+
+  /**
    * Generic Number validator
    * @param {string} item
    * @returns {function} call to a check API middleware
@@ -109,17 +125,58 @@ export default class BookValidator {
   }
 
   /**
- * Generic Default Number validator
+ * Generic Optional Number validator
  * @param {integer} item
  * @returns {function} call to a check API middleware
  * @memberof Validation
  */
-  static checkNumberForDefault(item) {
-    return UserValidator.genericCheck(item)
-      .optional()
-      .trim()
-      .isInt({ min: 1 })
-      .withMessage(`${item} value must be at least 1 and an integer`);
+  static optionalNumber(item) {
+    return this.checkNumber(item).optional();
+  }
+
+  /**
+   * Optional Title validator
+   * @returns {function} call to a check API middleware
+   * @memberof Validation
+   */
+  static optionalTitle() {
+    return this.checkTitle().optional();
+  }
+
+  /**
+    * Optional Description validator
+    * @returns {function} call to a check API middleware
+    * @memberof Validation
+    */
+  static optionalDescription() {
+    return this.checkDescription().optional();
+  }
+
+  /**
+  * Optional Isbn validator
+  * @returns {function} call to a check API middleware
+  * @memberof Validation
+  */
+  static optionalIsbn() {
+    return this.checkIsbn().optional();
+  }
+
+  /**
+  * Optional Price validator
+  * @returns {function} call to a check API middleware
+  * @memberof Validation
+  */
+  static optionalPrice() {
+    return this.checkPrice().optional();
+  }
+
+  /**
+  * Optional Year Published validator
+  * @returns {function} call to a check API middleware
+  * @memberof Validation
+  */
+  static optionalYearPublished() {
+    return this.checkYearPublished().optional();
   }
 
   /**
@@ -147,8 +204,8 @@ export default class BookValidator {
    */
   static FetchBookValidation() {
     return [
-      BookValidator.checkNumberForDefault('page'),
-      BookValidator.checkNumberForDefault('limit'),
+      BookValidator.optionalNumber('page'),
+      BookValidator.optionalNumber('limit'),
       BookValidator.checkTitle().optional(),
       AuthorValidator.checkAuthorName().optional(),
       BookValidator.checkTag().optional(),
@@ -165,6 +222,37 @@ export default class BookValidator {
   static FavouriteBookValidation() {
     return [
       UserValidator.checkNumber('bookId'),
+      checkForErrors,
+    ];
+  }
+
+  /**
+ * Edit validator
+ * @returns {array} an array of check API middleware
+ * @memberof Validation
+ */
+  static EditValidation() {
+    return [
+      BookValidator.checkNumber('id'),
+      BookValidator.optionalTitle(),
+      BookValidator.optionalDescription(),
+      BookValidator.optionalIsbn(),
+      BookValidator.optionalPrice(),
+      BookValidator.optionalYearPublished(),
+      BookValidator.optionalNumber('authorId'),
+      checkForErrors,
+      emptyBody,
+    ];
+  }
+
+  /**
+ * Delete validator
+ * @returns {array} an array of check API middleware
+ * @memberof Validation
+ */
+  static DeleteValidation() {
+    return [
+      BookValidator.checkNumber('id'),
       checkForErrors,
     ];
   }

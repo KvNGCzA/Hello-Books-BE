@@ -11,8 +11,8 @@ module.exports = {
       title: faker.name.title(),
       description: faker.lorem.sentence(),
       isbn: faker.random.number({
-        min: 10000000000,
-        max: 50000000000
+        min: 1000000000000,
+        max: 5000000000000
       }),
       tag: tags[faker.random.number({
         min: 0,

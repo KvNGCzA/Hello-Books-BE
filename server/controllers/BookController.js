@@ -75,6 +75,69 @@ class BookController {
       return responseMessage(response, 500, { message: error.message });
     }
   }
+
+  /**
+* Edit Books
+* @name editBook
+* @param {Object} request
+* @param {Object} response
+* @returns {JSON} object
+* @memberof BookController
+*/
+  static async editBook(request, response) {
+    const { id } = request.params;
+    const {
+      title, description, isbn, price, yearPublished, authorId
+    } = request.body;
+    let newAuthorId;
+    try {
+      const books = await Book.findAll();
+      const availableBook = books.find(book => book.id === +id);
+      if (!availableBook) return responseMessage(response, 400, { message: 'book does not exist' });
+      if (isbn) {
+        const availableIsbn = books.map(book => book.isbn).find(value => value === isbn);
+        if (availableIsbn === isbn) return responseMessage(response, 409, { message: 'isbn already exist' });
+      }
+      // eslint-disable-next-line no-unused-vars
+      const [numberOfAffectedRows, affectedRows] = await Book.update({
+        title, description, isbn, price, yearPublished
+      }, { where: { id: +id }, returning: true, plain: true });
+      if (authorId) {
+        const existingAuthorId = await Author.findOne({ where: { id: authorId } });
+        if (!existingAuthorId) return responseMessage(response, 400, { message: 'author does not exist' });
+        const newId = await BookAuthor.update({ authorId },
+          { where: { bookId: +id }, returning: true, raw: true });
+        newAuthorId = newId[1][0].authorId;
+      }
+      const data = title || description || isbn || price || yearPublished
+        ? { ...affectedRows.dataValues, newAuthorId } : { newAuthorId };
+      return responseMessage(response, 200, { status: 'success', message: 'book successfully updated', data });
+    } catch (error) {
+    /* istanbul ignore next-line */
+      return responseMessage(response, 500, { message: error.message });
+    }
+  }
+
+  /**
+* Delete Books
+* @name deleteBook
+* @param {Object} request
+* @param {Object} response
+* @returns {JSON} object
+* @memberof BookController
+*/
+  static async deleteBook(request, response) {
+    const { id } = request.params;
+    try {
+      const books = await Book.findOne({ where: { id: +id } });
+      if (!books) return responseMessage(response, 400, { message: 'book does not exist' });
+      await Book.destroy({ where: { id: +id } });
+      return responseMessage(response, 200, { status: 'success', message: 'book successfully deleted' });
+    } catch (error) {
+      /* istanbul ignore next-line */
+      return responseMessage(response, 500, { message: error.message });
+    }
+  }
 }
 
 export default BookController;
