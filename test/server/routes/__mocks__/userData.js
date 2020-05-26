@@ -11,6 +11,16 @@ export const existingUser = {
   password: 'kylianMbappe',
 };
 
+export const superAdmin = {
+  email: 'hellobooks@email.com',
+  password: 'password',
+};
+
+export const noLendingUser = {
+  email: 'nolending@gmail.com',
+  password: 'password',
+};
+
 export const admin = {
   email: 'eden@gmail.com',
   password: 'edenHazard',

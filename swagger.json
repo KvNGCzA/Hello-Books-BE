@@ -252,7 +252,43 @@
         }
       }
     },
-    "/auth/passwordreset": {
+    "/user/lendinghistory": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "get lending history",
+        "description": "user can see their lending history",
+        "operationId": "get lending history",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Request successful"
+          },
+          "404": {
+            "description": "no lending history",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        },
+        "security": [{
+          "Authorization": []
+        }]
+      }
+    },
+    "/admin/user": {
       "post": {
         "tags": [
           "Patron",
@@ -318,7 +354,43 @@
         }
       }
     },
-    "/auth/passwordresetverify": {
+    "/admin/lendinghistory": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "get lending history",
+        "description": "user can see their lending history",
+        "operationId": "get lending history",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Request successful"
+          },
+          "404": {
+            "description": "no lending history",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        },
+        "security": [{
+          "Authorization": []
+        }]
+      }
+    },
+    "/admin/user/{userId}": {
       "patch": {
         "tags": [
           "Patron",
@@ -854,220 +926,6 @@
           },
           "409": {
             "description": "book already exist",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/errorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/errorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/admin/user": {
-      "post": {
-        "tags": [
-          "Super Admin",
-          "Admin"
-        ],
-        "summary": "Create a new user",
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "firstName",
-                  "lastName",
-                  "email",
-                  "roleId"
-                ],
-                "properties": {
-                  "firstName": {
-                    "type": "string",
-                    "minLength": 4,
-                    "example": "John"
-                  },
-                  "lastName": {
-                    "type": "string",
-                    "minLength": 4,
-                    "example": "Doe"
-                  },
-                  "email": {
-                    "type": "string",
-                    "minLength": 4,
-                    "format": "email",
-                    "example": "johndoe@gmail.com"
-                  },
-                  "roleId": {
-                    "type": "number",
-                    "example": 1
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "user successfully created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/authResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/errorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "invalid token",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/errorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "please verify your account to perform this action",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/errorResponse"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "user already exist",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/errorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/errorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/admin/user/{userId}": {
-      "patch": {
-        "tags": [
-          "Super Admin",
-          "Admin"
-        ],
-        "summary": "Activate or deactivate a new user",
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "number",
-              "example": 1
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "status"
-                ],
-                "properties": {
-                  "status": {
-                    "type": "string",
-                    "minLength": 4,
-                    "example": "inactive"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "user successfully activated or deactivated"
-          },
-          "400": {
-            "description": "bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/errorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "invalid token",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/errorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "please verify your account to perform this action",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/errorResponse"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "user is already active or inactive",
             "content": {
               "application/json": {
                 "schema": {

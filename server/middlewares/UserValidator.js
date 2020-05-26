@@ -190,6 +190,19 @@ export default class UserValidator {
   }
 
   /**
+   * UserId validator
+   * @param {string} field - user id
+   * @returns {function} call to a Check API middleware
+   * @memberof Validation
+   */
+  static checkUserId(field) {
+    return check(field)
+      .trim()
+      .isInt({ min: 1 })
+      .withMessage(`${field} must be at least 1 and an integer`);
+  }
+
+  /**
   * Signup validation
   * @returns {array} an array of Check API middlewares
   * @memberof Validation
@@ -265,13 +278,26 @@ export default class UserValidator {
   }
 
   /**
-   * DeleteUser validation
+   * change user validation validation
    * @returns {array} an array of Check API middlewares
    * @memberof Validation
    */
   static changeStatusValidation() {
     return [
       UserValidator.checkStatus(),
+      UserValidator.checkUserId('id'),
+      checkForErrors
+    ];
+  }
+
+  /**
+   * userId validation
+   * @returns {array} an array of Check API middlewares
+   * @memberof Validation
+   */
+  static userIdValidation() {
+    return [
+      UserValidator.checkUserId('userId'),
       checkForErrors
     ];
   }

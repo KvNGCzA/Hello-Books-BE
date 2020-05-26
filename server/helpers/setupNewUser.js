@@ -18,10 +18,6 @@ const setupNewUser = async (response, userData, roleId, token) => {
   try {
     const { id, email } = userData;
     const role = await Role.findOne({ where: { id: roleId } });
-    if (!role) {
-      await User.destroy({ where: { id } });
-      return responseMessage(response, 404, { message: 'role does not exist' });
-    }
     const { roleName } = role;
     await UserRole.create({ userId: id, roleId });
     const message = createUserMessage(userData, roleName, token);

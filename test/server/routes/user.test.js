@@ -11,7 +11,8 @@ const UPDATE_URL = '/api/v1/user/update';
 
 const {
   userData: {
-    notAdmin, notAdmin2, patronLogin, patronSignup, patronProfile
+    notAdmin, notAdmin2, patronLogin, patronSignup,
+    patronProfile, existingUser, superAdmin, noLendingUser
   },
   bookData: {
     newBookToBorrow, newBookToBorrow2, nonExistingBookToBorrow, InvalidBookToBorrow,
@@ -411,6 +412,128 @@ describe('Search Books', () => {
         expect(response).to.have.status(400);
         expect(response.body.status).to.equal('failure');
         expect(response.body.message).to.equal('keyword cannot be used with title, author or tag');
+        done();
+      });
+  });
+});
+describe('User gets lending history', () => {
+  let userToken;
+  before((done) => {
+    chai.request(app)
+      .post('/api/v1/auth/login')
+      .send(existingUser)
+      .end((err, response) => {
+        userToken = response.body.token;
+        done();
+      });
+  });
+  it('returns a status 200 if the request is successful', (done) => {
+    chai.request(app)
+      .get('/api/v1/user/lendinghistory')
+      .set('Authorization', userToken)
+      .end((err, response) => {
+        expect(response).to.have.status(200);
+        expect(response).to.be.an('object');
+        expect(response.body).to.include.all.keys('status', 'data');
+        expect(response.body.status).to.be.equal('success');
+        expect(response.body.data).to.be.an('array');
+        expect(response.body.data[0]).to.include.all.keys('userId', 'bookId', 'Book', 'charge');
+        expect(response.body.data[0]).to.be.an('object');
+        done();
+      });
+  });
+  it('returns a status 200 if the request is successful', (done) => {
+    chai.request(app)
+      .get('/api/v1/user/lendinghistory?page=1&limit=1')
+      .set('Authorization', userToken)
+      .end((err, response) => {
+        expect(response).to.have.status(200);
+        expect(response).to.be.an('object');
+        expect(response.body).to.include.all.keys('status', 'data');
+        expect(response.body.status).to.be.equal('success');
+        expect(response.body.data).to.be.an('array');
+        expect(response.body.data[0]).to.include.all.keys('userId', 'bookId', 'Book', 'charge');
+        expect(response.body.data[0]).to.be.an('object');
+        done();
+      });
+  });
+  it('returns a status 200 if the request is successful (admin or superadmin)', (done) => {
+    chai.request(app)
+      .post('/api/v1/auth/login')
+      .send(superAdmin)
+      .end((err, response) => {
+        const {
+          token
+        } = response.body;
+        chai.request(app)
+          .get('/api/v1/user/lendinghistory')
+          .set('Authorization', token)
+          .end((err, response1) => {
+            expect(response1).to.have.status(200);
+            expect(response1).to.be.a('object');
+            expect(response1.body).to.include.all.keys('status', 'data');
+            expect(response1.body.status).to.be.equal('success');
+            expect(response1.body.data).to.be.an('array');
+            expect(response1.body.data[0]).to.include.all.keys('userId', 'bookId', 'Book', 'charge');
+            expect(response1.body.data[0]).to.be.an('object');
+            done();
+          });
+      });
+  });
+  it('returns a status 400 if the pages is greater than the total possible pages', (done) => {
+    chai.request(app)
+      .get('/api/v1/user/lendinghistory?page=10&limit=100')
+      .set('Authorization', userToken)
+      .end((err, response) => {
+        expect(response).to.have.status(400);
+        expect(response).to.be.a('object');
+        expect(response.body).to.have.all.keys('status', 'message');
+        expect(response.body.message).to.be.a('String');
+        done();
+      });
+  });
+  it('returns a status 400 if the pages or limit is less than one or not an integer', (done) => {
+    chai.request(app)
+      .get('/api/v1/user/lendinghistory?page=fadf&limit=-1')
+      .set('Authorization', userToken)
+      .end((err, response) => {
+        expect(response).to.have.status(400);
+        expect(response).to.be.a('object');
+        expect(response.body).to.have.all.keys('status', 'errors');
+        expect(response.body.errors).to.be.a('object');
+        done();
+      });
+  });
+  it('returns a status 404 if no lending history exits', (done) => {
+    chai.request(app)
+      .post('/api/v1/auth/login')
+      .send(noLendingUser)
+      .end((err, response) => {
+        const {
+          token
+        } = response.body;
+        chai.request(app)
+          .get('/api/v1/user/lendinghistory')
+          .set('Authorization', token)
+          .end((err1, response1) => {
+            expect(response1).to.have.status(404);
+            expect(response1).to.be.a('object');
+            expect(response1.body).to.have.all.keys('status', 'message');
+            expect(response1.body.message).to.be.a('String');
+            expect(response1.body.message).to.equal('no book borrowed yet');
+            done();
+          });
+      });
+  });
+  it('should return a status 401 if user does not have a valid token', (done) => {
+    chai.request(app)
+      .get('/api/v1/user/lendinghistory')
+      .set('Authorization', 'indfafadavldfafidtoddakddfendfadf')
+      .end((err, response) => {
+        expect(response).to.have.status(401);
+        expect(response).to.be.a('object');
+        expect(response.body).to.have.all.keys('status', 'message');
+        expect(response.body.message).to.be.a('String');
         done();
       });
   });
