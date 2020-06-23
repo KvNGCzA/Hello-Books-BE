@@ -6,12 +6,13 @@ import testData from './__mocks__';
 const API_VERSION = '/api/v1';
 const borrowUrl = `${API_VERSION}/borrow`;
 const BOOKS_BASE_URL = '/api/v1/books';
+const extendUrl = `${borrowUrl}/extend`;
 const loginUrl = `${API_VERSION}/auth/login`;
 const UPDATE_URL = '/api/v1/user/update';
 
 const {
   userData: {
-    notAdmin, notAdmin2, patronLogin, patronSignup, patronProfile
+    notAdmin, notAdmin2, patronLogin, patronSignup, patronProfile, brokePatron
   },
   bookData: {
     newBookToBorrow, newBookToBorrow2, nonExistingBookToBorrow, InvalidBookToBorrow,
@@ -22,6 +23,8 @@ const {
 chai.use(chaiHttp);
 
 let patronToken;
+let patronToken3;
+let patronToken4;
 
 describe('PATRON ROUTES', () => {
   let patronToken2;
@@ -41,6 +44,26 @@ describe('PATRON ROUTES', () => {
       .send(notAdmin2)
       .end((error, response) => {
         patronToken2 = response.body.token;
+        done();
+      });
+  });
+
+  before((done) => {
+    chai.request(app)
+      .post(loginUrl)
+      .send(brokePatron)
+      .end((error, response) => {
+        patronToken3 = response.body.token;
+        done();
+      });
+  });
+
+  before((done) => {
+    chai.request(app)
+      .post(loginUrl)
+      .send(patronLogin)
+      .end((error, response) => {
+        patronToken4 = response.body.token;
         done();
       });
   });
@@ -202,6 +225,141 @@ describe('PATRON ROUTES', () => {
           expect(response.body).to.be.an('object');
           expect(response).to.have.status(400);
           expect(response.body.status).to.equal('failure');
+          done();
+        });
+    });
+  });
+  describe('Extend Book Borrowing Period Test', () => {
+    before((done) => {
+      chai.request(app)
+        .post(`${borrowUrl}`)
+        .query({ token: patronToken3 })
+        .send({ bookId: 3 })
+        .end(() => {
+          done();
+        });
+    });
+
+    it('should extend the duration of a borrowed book', (done) => {
+      chai.request(app)
+        .post(`${extendUrl}`)
+        .query({ token: patronToken })
+        .send(newBookToBorrow)
+        .end((error, response) => {
+          expect(response).to.have.status(200);
+          expect(response.body).to.be.an('object');
+          expect(response.body).to.include.all.keys('status', 'message', 'data');
+          expect(response.body.status).to.equal('success');
+          expect(response.body.data).to.be.an('object');
+          expect(response.body.data).to.include.all.keys('type', 'duration');
+          done();
+        });
+    });
+    it('should not extend the duration of a borrowed book if user hasnt borrowed the book', (done) => {
+      chai.request(app)
+        .post(`${extendUrl}`)
+        .query({ token: patronToken4 })
+        .send(nonExistingBookToBorrow)
+        .end((error, response) => {
+          expect(response).to.have.status(404);
+          expect(response.body).to.be.an('object');
+          expect(response.body).to.include.all.keys('status', 'message');
+          expect(response.body.status).to.equal('failure');
+          expect(response.body.message).to.equal('this book is not among user\'s actively borrowed book');
+          done();
+        });
+    });
+    it('should not extend the duration of a borrowed book if duration token is malformed', (done) => {
+      chai.request(app)
+        .post(`${extendUrl}`)
+        .query({ token: patronToken3 })
+        .send(newBookToBorrow2)
+        .end((error, response) => {
+          expect(response).to.have.status(400);
+          expect(response.body).to.be.an('object');
+          expect(response.body).to.include.all.keys('status', 'message');
+          expect(response.body.status).to.equal('failure');
+          expect(response.body.message).to.equal('borrowing period expired.');
+          done();
+        });
+    });
+    it('should not extend the duration of a borrowed book if borrowing period has expired', (done) => {
+      chai.request(app)
+        .post(`${extendUrl}`)
+        .query({ token: patronToken3 })
+        .send({ bookId: 3 })
+        .end((error, response) => {
+          expect(response).to.have.status(400);
+          expect(response.body).to.be.an('object');
+          expect(response.body).to.include.all.keys('status', 'message');
+          expect(response.body.status).to.equal('failure');
+          expect(response.body.message).to.equal('borrowing period expired.');
+          done();
+        });
+    });
+  });
+  describe('Extend Book Borrowing Period Test', () => {
+    before((done) => {
+      chai.request(app)
+        .patch(`${UPDATE_URL}`)
+        .query({ token: patronToken4 })
+        .send({ paymentStatus: false })
+        .end(() => {
+          done();
+        });
+    });
+    after((done) => {
+      chai.request(app)
+        .patch(`${UPDATE_URL}`)
+        .query({ token: patronToken4 })
+        .send({ paymentStatus: true })
+        .end(() => {
+          done();
+        });
+    });
+    it('should not extend the duration of a borrowed book if user\'s payment status is false', (done) => {
+      chai.request(app)
+        .post(`${extendUrl}`)
+        .query({ token: patronToken4 })
+        .send({ bookId: 1 })
+        .end((error, response) => {
+          expect(response).to.have.status(402);
+          expect(response.body).to.be.an('object');
+          expect(response.body).to.include.all.keys('status', 'message');
+          expect(response.body.status).to.equal('failure');
+          expect(response.body.message).to.equal('insufficient funds to extend borrowing period');
+          done();
+        });
+    });
+  });
+  describe('Extend Book Borrowing Period Validation Test', () => {
+    it('should not extend the duration of a borrowed book if no data is given', (done) => {
+      chai.request(app)
+        .post(`${extendUrl}`)
+        .query({ token: patronToken4 })
+        .send({})
+        .end((error, response) => {
+          expect(response).to.have.status(400);
+          expect(response.body).to.be.an('object');
+          expect(response.body).to.include.all.keys('status', 'errors');
+          expect(response.body.status).to.equal('failure');
+          expect(response.body.errors).to.include.all.keys('body');
+          expect(response.body.errors.body).to.include.all.keys('bookId');
+          done();
+        });
+    });
+    it('should not extend the duration of a borrowed book if the body contains invalid parameters', (done) => {
+      chai.request(app)
+        .post(`${extendUrl}`)
+        .query({ token: patronToken4 })
+        .send(InvalidBookToBorrow)
+        .end((error, response) => {
+          expect(response).to.have.status(400);
+          expect(response.body).to.be.an('object');
+          expect(response.body).to.include.all.keys('status', 'errors');
+          expect(response.body.status).to.equal('failure');
+          expect(response.body.errors).to.include.all.keys('body');
+          expect(response.body.errors.body).to.include.all.keys('bookId');
           done();
         });
     });

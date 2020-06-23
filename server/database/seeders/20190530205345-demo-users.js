@@ -113,6 +113,17 @@ module.exports = {
       paymentStatus: true,
       createdAt: new Date(),
       updatedAt: new Date()
+    }, {
+      firstName: 'i cant',
+      lastName: 'pay',
+      email: 'cantpay@gmail.com',
+      password: bcrypt.hashSync('password', 10),
+      avatarUrl: '',
+      verified: true,
+      status: 'active',
+      paymentStatus: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
     }], {}),
 
   down: queryInterface => queryInterface.bulkDelete('Users', null, {})

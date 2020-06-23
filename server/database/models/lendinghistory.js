@@ -6,13 +6,15 @@ export default (sequelize, DataTypes) => {
     bookId: DataTypes.INTEGER,
     type: DataTypes.STRING,
     charge: DataTypes.INTEGER,
+    durationToken: DataTypes.STRING,
     duration: DataTypes.STRING,
-    durationToken: DataTypes.STRING
   }, {
     hooks: {
       beforeCreate: (model) => {
         if (model.userId === 3 && model.bookId === 1) {
           model.durationToken = createToken({ userId: model.userId, bookId: model.bookId }, '-10s');
+        } else if (model.userId === 11 && model.bookId === 3) {
+          model.durationToken = createToken({ userId: model.userId, bookId: model.bookId }, '-1s');
         } else {
           model.durationToken = createToken({ userId: model.userId, bookId: model.bookId }, '31d');
         }

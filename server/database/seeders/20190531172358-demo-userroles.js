@@ -26,6 +26,11 @@ module.exports = {
     createdAt: new Date(),
     updatedAt: new Date()
   }, {
+    userId: 11,
+    roleId: process.env.PATRON_ROLE,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }, {
     userId: 9,
     roleId: process.env.PATRON_ROLE,
     createdAt: new Date(),

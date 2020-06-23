@@ -34,6 +34,11 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         defaultValue: false
       },
+      paymentStatus: {
+        allowNull: false,
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
       status: {
         allowNull: false,
         type: Sequelize.STRING,

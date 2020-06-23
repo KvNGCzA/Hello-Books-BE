@@ -168,4 +168,16 @@ export default class BookValidator {
       checkForErrors,
     ];
   }
+
+  /**
+   * extend book borrowing period validator
+   * @returns {array} an array of check API middleware
+   * @memberof Validation
+   */
+  static ExtensionValidation() {
+    return [
+      UserValidator.checkNumber('bookId'),
+      checkForErrors,
+    ];
+  }
 }

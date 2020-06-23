@@ -10,8 +10,12 @@ import enforceVerification from './enforceVerification';
 import setupNewUser from './setupNewUser';
 import emptyBody from './emptyBody';
 import genericBookHelpers from './genericBookHelpers';
+import * as dateHelper from './dateHelper';
+import checkToken from './checkToken';
 
 const { signupMessage, createUserMessage, resetpasswordMessage } = messages;
+const { getNumberOfDays, getDateString, formatDuration } = dateHelper;
+
 const helpers = {
   createToken,
   responseMessage,
@@ -27,6 +31,10 @@ const helpers = {
   resetpasswordMessage,
   emptyBody,
   genericBookHelpers,
+  getNumberOfDays,
+  getDateString,
+  formatDuration,
+  checkToken,
 };
 
 export default helpers;
