@@ -280,8 +280,7 @@
               }
             }
           }
-        },
-        "responses": {
+        },"responses": {
           "200": {
             "description": "you will receive a link in your mail shortly to proceed"
           },
@@ -317,93 +316,111 @@
           }
         }
       }
-    },
-    "/auth/passwordresetverify": {
-      "patch": {
+    },"/admin/book/:id": {
+      "put": {
         "tags": [
-          "Patron",
-          "Admin",
-          "Super Admin"
+          "Admin"
         ],
-        "summary": "password reset for a logged in user",
+        "summary": "Admin can edit books",
+        "description": "Admin can edit unwanted books",
+        "operationId": "editBook",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
-            "name": "token",
-            "in": "path",
+            "in": "body",
+            "name": "body",
+            "description": "Books object that needs to be edited",
             "required": true,
             "schema": {
-              "type": "string"
+              "$ref": "#/definitions/book"
             }
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "password"
-                ],
-                "properties": {
-                  "password": {
-                    "type": "string",
-                    "minLength": 4,
-                    "example": "password"
-                  }
-                }
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
-            "description": "password changed successfully"
+            "description": "book successfully updated"
           },
           "400": {
-            "description": "bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/errorResponse"
-                }
-              }
-            }
+            "description": "book does not exist",
+              "$ref": "#/definitions/error"
           },
           "401": {
-            "description": "invalid token",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/errorResponse"
-                }
-              }
-            }
+            "description": "Invalid, expired or missing token",
+              "$ref": "#/definitions/error"
           },
           "403": {
-            "description": "please verify your account to perform this action",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/errorResponse"
-                }
-              }
-            }
-          },
+            "description": "unauthorized user",
+            "schema": {
+              "$ref": "#/definitions/error"
+            },
           "500": {
             "description": "server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/errorResponse"
-                }
-              }
-            }
+              "$ref": "#/definitions/error"
           }
         }
       }
-    },
-    "/admin/author": {
+    },"delete": {
+      "tags": [
+        "Admin"
+      ],
+      "summary": "Admin can delete books",
+      "description": "Admin can delete unwanted books",
+      "operationId": "deleteBook",
+      "consumes": [
+        "application/json"
+      ],
+      "produces": [
+        "application/json"
+      ],
+      "parameters": [
+        {
+          "in": "body",
+          "name": "body",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "authorId": {
+                "type": "integer"
+              }
+            }
+          },
+          "required": true
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "book successfully deleted",
+            "$ref": "#/definitions/error"
+        },
+        "400": {
+          "description": "book does not exist",
+            "$ref": "#/definitions/error"
+        },
+        "401": {
+          "description": "Invalid, expired or missing token",
+            "$ref": "#/definitions/error"
+        },
+        "403": {
+          "description": "Forbidden Access",
+            "$ref": "#/definitions/error"
+        },
+        "500": {
+          "description": "Server error",
+            "$ref": "#/definitions/error"
+        }
+      },
+      "security": [
+        {
+          "Authorization": []
+        }
+      ]
+    }
+  },"/admin/author": {
       "post": {
         "tags": [
           "Admin",

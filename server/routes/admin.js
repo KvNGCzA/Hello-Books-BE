@@ -5,19 +5,18 @@ import AuthController from '../controllers/AuthController';
 import AdminController from '../controllers/AdminController';
 import BookController from '../controllers/BookController';
 
-const { addBook } = BookController;
-const { createUser } = AuthController;
-const { changeUserStatus } = AdminController;
+const admin = express.Router();
+const BASE_URL = '/admin';
+const { addBook, editBook, deleteBook } = BookController;
 const { addAuthor, deleteAuthor, updateAuthor } = AuthorController;
+const { changeUserStatus } = AdminController;
+const { createUser } = AuthController;
 const {
   verifyToken, authorizeUser, checkRole,
-  BookValidator: { BookValidation },
+  BookValidator: { BookValidation, EditValidation, DeleteValidation },
   AuthorValidator: { authorValidation, favAuthorValidation },
   UserValidator: { createUserValidation, changeStatusValidation }
 } = middlewares;
-
-const admin = express.Router();
-const BASE_URL = '/admin';
 
 // Route to add author
 admin.post(`${BASE_URL}/author`, verifyToken, authorizeUser(['superadmin', 'admin']), authorValidation(), addAuthor);
@@ -36,5 +35,9 @@ admin.patch(`${BASE_URL}/author/:authorId`, verifyToken, authorizeUser(['superad
 
 // Route to delete author
 admin.delete(`${BASE_URL}/author/:authorId`, verifyToken, authorizeUser(['superadmin', 'admin']), favAuthorValidation(), deleteAuthor);
+// Admin edit book route
+admin.put(`${BASE_URL}/book/:id`, verifyToken, authorizeUser(['superadmin', 'admin']), EditValidation(), editBook);
+// Admin delete book route
+admin.delete(`${BASE_URL}/book/:id`, verifyToken, authorizeUser(['superadmin', 'admin']), DeleteValidation(), deleteBook);
 
 export default admin;
