@@ -188,4 +188,26 @@ export default class UserController {
       return responseMessage(response, 500, { message: error.message });
     }
   }
+
+  /**
+   * @description  user can opt-in/out of email notification
+   * @param {object} request express request object
+   * @param {object} response express response object
+   * @returns {json} json
+   * @memberof UserController
+   */
+  static async emailNotification(request, response) {
+    try {
+      const { id, notifyByEmail } = request.userData;
+      await User.update({ notifyByEmail: !notifyByEmail }, { where: { id } });
+      const message = `successfully opted-${notifyByEmail ? 'out of' : 'in to'} receiving email notifications`;
+      return responseMessage(response, 200, {
+        status: 'success',
+        message,
+      });
+    } catch (error) {
+      /* istanbul ignore next-line */
+      return responseMessage(response, 500, { message: error.message });
+    }
+  }
 }

@@ -10,8 +10,14 @@ import enforceVerification from './enforceVerification';
 import setupNewUser from './setupNewUser';
 import emptyBody from './emptyBody';
 import genericBookHelpers from './genericBookHelpers';
+import notifications from './notifications';
+import socket from './socket';
 
-const { signupMessage, createUserMessage, resetpasswordMessage } = messages;
+const {
+  signupMessage, createUserMessage, newBookNotificationMessage, resetpasswordMessage,
+  overdueBookNotificationMessage
+} = messages;
+
 const helpers = {
   createToken,
   responseMessage,
@@ -27,6 +33,10 @@ const helpers = {
   resetpasswordMessage,
   emptyBody,
   genericBookHelpers,
+  notifications,
+  newBookNotificationMessage,
+  overdueBookNotificationMessage,
+  socket
 };
 
 export default helpers;

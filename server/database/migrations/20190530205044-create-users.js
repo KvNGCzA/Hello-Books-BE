@@ -34,6 +34,11 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         defaultValue: false
       },
+      notifyByEmail: {
+        allowNull: false,
+        type: Sequelize.BOOLEAN,
+        defaultValue: true
+      },
       status: {
         allowNull: false,
         type: Sequelize.STRING,

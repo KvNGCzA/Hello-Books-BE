@@ -1,7 +1,10 @@
 import models from '../database/models';
 import helpers from '../helpers';
 
-const { responseMessage, makeLowerCase, genericBookHelpers: { filter, extractBooks } } = helpers;
+const {
+  responseMessage, makeLowerCase, genericBookHelpers: { filter, extractBooks },
+  notifications: { addBookNotification }
+} = helpers;
 const { Book, Author, BookAuthor } = models;
 
 /**
@@ -34,9 +37,11 @@ class BookController {
       const { dataValues } = existingBook[0];
       const message = `book successfully added${newAuthor[1] ? ' and author created' : ''}`;
       const author = { id: newAuthor[0].id, name: authorName };
-      return existingBook[1]
-        ? responseMessage(response, 201, { status: 'success', message, book: { ...dataValues, author } })
-        : responseMessage(response, 409, { message: 'book already exist' });
+      if (existingBook[1]) {
+        if (!newAuthor[1]) await addBookNotification(newAuthor[0].id, authorName, title);
+        return responseMessage(response, 201, { status: 'success', message, book: { ...dataValues, author } });
+      }
+      return responseMessage(response, 409, { message: 'book already exist' });
     } catch (error) {
       /* istanbul ignore next-line */
       return responseMessage(response, 500, { message: error.message });

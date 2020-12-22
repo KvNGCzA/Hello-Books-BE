@@ -324,7 +324,7 @@ describe('ADMIN ROUTES', () => {
     });
   });
 
-  describe('Admin can deactivate or activate a user', () => {
+  describe('Admin and Superadmin can deactivate or activate a user', () => {
     let usertoken;
     before((done) => {
       const body = {
@@ -554,6 +554,40 @@ describe('ADMIN ROUTES', () => {
           expect(response).to.have.status(404);
           expect(response.body.status).to.equal('failure');
           expect(response.body.message).to.be.a('string');
+          done();
+        });
+    });
+    it('returns a status 409 if admin tries to activate or deactivate theirself', (done) => {
+      const body = {
+        status: 'inactive'
+      };
+      chai.request(app)
+        .patch('/api/v1/admin/user/2')
+        .send(body)
+        .set('Authorization', adminToken)
+        .end((err, response) => {
+          expect(response).to.have.status(409);
+          expect(response).to.be.an('object');
+          expect(response.body).to.include.all.keys('status', 'message');
+          expect(response.body.status).to.be.equal('failure');
+          expect(response.body.message).to.be.equal('user cannot perform this action');
+          done();
+        });
+    });
+    it('returns a status 400 if admin tries to activate/deactivate another admin', (done) => {
+      const body = {
+        status: 'inactive'
+      };
+      chai.request(app)
+        .patch('/api/v1/admin/user/10')
+        .send(body)
+        .set('Authorization', adminToken)
+        .end((err, response) => {
+          expect(response).to.have.status(400);
+          expect(response).to.be.an('object');
+          expect(response.body).to.include.all.keys('status', 'message');
+          expect(response.body.status).to.be.equal('failure');
+          expect(response.body.message).to.be.equal('An admin can only activate/deactivate a patron');
           done();
         });
     });

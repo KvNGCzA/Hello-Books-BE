@@ -4,7 +4,8 @@ import UserController from '../controllers/UserController';
 import BookController from '../controllers/BookController';
 
 const {
-  editProfile, favouriteAuthor, unfavouriteAuthor, favouriteBook, unfavouriteBook, borrowBook
+  editProfile, favouriteAuthor, unfavouriteAuthor, favouriteBook, unfavouriteBook, borrowBook,
+  emailNotification
 } = UserController;
 const { fetchBooks } = BookController;
 const {
@@ -38,5 +39,8 @@ user.patch(`${BASE_URL}/update`, verifyToken, authorizeUser(['patron', 'superadm
 
 // Route to borrow a book
 user.post('/borrow', verifyToken, authorizeUser(['patron']), BorrowValidation(), borrowBook);
+
+// opt-in/out email notification
+user.patch('/emailnotification', verifyToken, authorizeUser(['patron']), emailNotification);
 
 export default user;

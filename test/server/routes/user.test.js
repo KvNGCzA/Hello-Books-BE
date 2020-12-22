@@ -415,3 +415,28 @@ describe('Search Books', () => {
       });
   });
 });
+describe('Change Email Notification Status', () => {
+  it('should opt-out of receiving email notifications', (done) => {
+    chai.request(app)
+      .patch(`${API_VERSION}/emailnotification`)
+      .query({ token: patronToken })
+      .end((error, response) => {
+        expect(response).to.have.status(200);
+        expect(response.body).to.be.an('object');
+        expect(response.body.message).to.equal('successfully opted-out of receiving email notifications');
+        done();
+      });
+  });
+
+  it('should opt-in to receiving email notifications', (done) => {
+    chai.request(app)
+      .patch(`${API_VERSION}/emailnotification`)
+      .query({ token: patronToken })
+      .end((error, response) => {
+        expect(response).to.have.status(200);
+        expect(response.body).to.be.an('object');
+        expect(response.body.message).to.equal('successfully opted-in to receiving email notifications');
+        done();
+      });
+  });
+});
